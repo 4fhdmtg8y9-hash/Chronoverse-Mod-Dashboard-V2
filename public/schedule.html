@@ -1,188 +1,146 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse • Schedule</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Schedule
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
-    }
-
-    .page {
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 45px 25px;
-    }
-
-    .back {
-      display: inline-block;
-      margin-bottom: 28px;
-      color: #9292a7;
-      text-decoration: none;
-    }
-
-    .back:hover {
-      color: #ffffff;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 28px;
-    }
-
-    .creator {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
-      padding: 22px;
-      margin-bottom: 28px;
-    }
-
-    .creator h2 {
-      font-size: 18px;
-      margin-bottom: 18px;
-    }
-
-    .grid {
+    .schedule-layout {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
 
-    .field {
-      margin-bottom: 16px;
-    }
+      grid-template-columns:
+        minmax(0, 1.35fr)
+        minmax(300px, .65fr);
 
-    .full {
-      grid-column: 1 / -1;
-    }
+      gap: 14px;
 
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid #2c2c3d;
-      background: #0b0b12;
-      color: #ffffff;
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .create-button {
-      width: 100%;
-      padding: 12px;
-      border: 0;
-      border-radius: 8px;
-      background: #ffffff;
-      color: #11111b;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .message {
       margin-top: 14px;
-      text-align: center;
-      color: #9292a7;
     }
 
-    .success {
-      color: #b9ffcf;
-    }
-
-    .error {
-      color: #ffbcbc;
-    }
-
-    .events {
+    .schedule-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+
+      gap: 10px;
     }
 
-    .event {
-      padding: 20px;
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
+    .event-card {
+      padding: 17px;
+
+      border-radius: 8px;
+
+      border:
+        1px solid rgba(158, 63, 66, .28);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34, 17, 19, .55),
+          rgba(7, 7, 8, .98)
+        );
     }
 
     .event-top {
       display: flex;
       justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 10px;
+      gap: 14px;
+
+      align-items: flex-start;
     }
 
     .event-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
 
-    .event-date {
-      color: #9292a7;
       font-size: 13px;
     }
 
+    .event-date {
+      color: var(--gold-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 9px;
+
+      text-align: right;
+    }
+
     .event-description {
-      color: #c9c9d4;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      margin-top: 9px;
+
+      color: #b5a8a1;
+
+      line-height: 1.6;
+
+      font-size: 10px;
+
       white-space: pre-wrap;
     }
 
     .event-meta {
-      color: #77778b;
-      font-size: 12px;
+      margin-top: 12px;
+
+      color: var(--muted);
+
+      font-size: 8px;
     }
 
-    .loading,
-    .empty {
-      padding: 40px;
+    .creator {
+      position: sticky;
+      top: 14px;
+    }
+
+    .message {
+      margin-top: 12px;
+
       text-align: center;
-      color: #9292a7;
+
+      color: var(--muted);
+
+      font-size: 9px;
     }
 
-    @media (max-width: 700px) {
-      .grid {
+    .message.success {
+      color: var(--success);
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 900px) {
+      .schedule-layout {
         grid-template-columns: 1fr;
       }
 
-      .full {
-        grid-column: auto;
+      .creator {
+        position: static;
       }
 
       .event-top {
         flex-direction: column;
+      }
+
+      .event-date {
+        text-align: left;
       }
     }
   </style>
@@ -190,40 +148,218 @@
 
 <body>
 
-  <main class="page">
+<div class="app">
 
-    <a href="/dashboard.html" class="back">
-      ← Back to Dashboard
-    </a>
+  <aside class="sidebar">
 
-    <h1>Staff Schedule</h1>
+    <div class="brand">
 
-    <p class="subtitle">
-      Add and view Chronoverse staff events and shifts.
-    </p>
+      <div class="brand-marvel">
+        MARVEL
+      </div>
 
-    <section class="creator">
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
 
-      <h2>Create Schedule Event</h2>
+      <div class="brand-divider"></div>
 
-      <form id="schedule-form">
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
 
-        <div class="grid">
+    </div>
 
-          <div class="field full">
+    <nav class="nav">
+
+      <a class="nav-link" href="/dashboard.html">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a class="nav-link" href="/log-action.html">
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a class="nav-link" href="/my-actions.html">
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a class="nav-link" href="/leaderboard.html">
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a class="nav-link" href="/announcements.html">
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/schedule.html"
+      >
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a class="nav-link" href="/inactivity.html">
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a class="nav-link" href="/requests.html">
+        <span class="nav-icon">♙</span>
+        Requests
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+        <h1>
+          Staff Schedule
+        </h1>
+
+        <p>
+          Meetings, shifts and Chronoverse events.
+        </p>
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+
+          <div
+            id="user-name"
+            class="user-name"
+          >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-hero.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+
+          <div class="hero-title">
+            The
+            <span class="red-text">
+              Timeline
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            STAFF OPERATIONS
+          </div>
+
+          <div class="hero-quote">
+            “Every mission has its moment.”
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="schedule-layout">
+
+      <article class="panel">
+
+        <div class="panel-title">
+          Upcoming Events
+        </div>
+
+        <div class="panel-description">
+          Chronoverse staff meetings and scheduled activities.
+        </div>
+
+        <div
+          id="schedule-list"
+          class="schedule-list mt"
+        >
+
+          <div class="empty">
+            Loading schedule...
+          </div>
+
+        </div>
+
+      </article>
+
+      <aside class="panel creator">
+
+        <div class="panel-title">
+          Add Schedule Event
+        </div>
+
+        <div class="panel-description">
+          Create a meeting, shift or staff event.
+        </div>
+
+        <form
+          id="schedule-form"
+          class="mt"
+        >
+
+          <div class="field">
+
             <label for="title">
               Event Title
             </label>
 
             <input
               id="title"
-              type="text"
               required
-              placeholder="Example: Moderator Meeting"
+              maxlength="100"
+              placeholder="Moderator Meeting"
             >
+
           </div>
 
           <div class="field">
+
             <label for="event-date">
               Date
             </label>
@@ -233,131 +369,182 @@
               type="date"
               required
             >
+
+          </div>
+
+          <div class="grid grid-2">
+
+            <div class="field">
+
+              <label for="start-time">
+                Start Time
+              </label>
+
+              <input
+                id="start-time"
+                type="time"
+              >
+
+            </div>
+
+            <div class="field">
+
+              <label for="end-time">
+                End Time
+              </label>
+
+              <input
+                id="end-time"
+                type="time"
+              >
+
+            </div>
+
           </div>
 
           <div class="field">
-            <label for="start-time">
-              Start Time
-            </label>
 
-            <input
-              id="start-time"
-              type="time"
-            >
-          </div>
-
-          <div class="field">
-            <label for="end-time">
-              End Time
-            </label>
-
-            <input
-              id="end-time"
-              type="time"
-            >
-          </div>
-
-          <div class="field full">
             <label for="description">
               Description
             </label>
 
             <textarea
               id="description"
-              placeholder="Add notes or details..."
+              placeholder="Add details for staff..."
             ></textarea>
+
           </div>
 
-        </div>
+          <button
+            type="submit"
+            class="btn btn-gold"
+            style="width:100%;"
+          >
+            Add to Timeline
+          </button>
 
-        <button
-          class="create-button"
-          type="submit"
-        >
-          Add to Schedule
-        </button>
+          <div
+            id="message"
+            class="message"
+          ></div>
 
-        <div
-          class="message"
-          id="message"
-        ></div>
+        </form>
 
-      </form>
+      </aside>
 
-    </section>
-
-    <section
-      class="events"
-      id="events"
-    >
-      <div class="loading">
-        Loading schedule...
-      </div>
     </section>
 
   </main>
 
-  <script>
-    const userId =
-      localStorage.getItem("discord_user_id");
+</div>
 
-    const username =
-      localStorage.getItem("discord_username");
+<script>
+  const list =
+    document.getElementById(
+      "schedule-list"
+    );
 
-    if (!userId || !username) {
+  const form =
+    document.getElementById(
+      "schedule-form"
+    );
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+  async function getJson(
+    url,
+    options
+  ) {
+    const response =
+      await fetch(
+        url,
+        options
+      );
+
+    if (
+      response.status === 401
+    ) {
       window.location.replace("/");
+      throw new Error(
+        "Not authenticated"
+      );
     }
 
-    const form =
-      document.getElementById("schedule-form");
+    const data =
+      await response.json();
 
-    const message =
-      document.getElementById("message");
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
 
-    async function loadSchedule() {
-      const container =
-        document.getElementById("events");
+    return data;
+  }
 
-      try {
-        const response =
-          await fetch("/api/schedule/list");
+  async function start() {
+    try {
 
-        const data =
-          await response.json();
+      const me =
+        await getJson(
+          "/api/auth/me"
+        );
 
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Unable to load schedule"
-          );
-        }
+      updateUser(
+        me.user
+      );
 
-        const events =
-          data.events || [];
+      await loadSchedule();
 
-        if (!events.length) {
-          container.innerHTML = `
-            <div class="empty">
-              No schedule events yet.
-            </div>
-          `;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-          return;
-        }
+  async function loadSchedule() {
+    try {
 
-        container.innerHTML =
-          events.map(event => `
-            <article class="event">
+      const data =
+        await getJson(
+          "/api/schedule/list"
+        );
+
+      const events =
+        data.events || [];
+
+      if (!events.length) {
+        list.innerHTML = `
+          <div class="empty">
+            No upcoming events yet.
+          </div>
+        `;
+
+        return;
+      }
+
+      list.innerHTML =
+        events
+          .map(event => `
+            <article class="event-card">
 
               <div class="event-top">
 
                 <div class="event-title">
-                  ${escapeHtml(event.title)}
+                  ${escapeHtml(
+                    event.title
+                  )}
                 </div>
 
                 <div class="event-date">
-                  ${formatDate(event.event_date)}
-                  ${formatTimeRange(
+                  ${formatDate(
+                    event.event_date
+                  )}
+
+                  ${formatTimes(
                     event.start_time,
                     event.end_time
                   )}
@@ -368,7 +555,7 @@
               <div class="event-description">
                 ${escapeHtml(
                   event.description ||
-                  "No description."
+                  "No description provided."
                 )}
               </div>
 
@@ -380,152 +567,191 @@
               </div>
 
             </article>
-          `).join("");
+          `)
+          .join("");
 
-      } catch (error) {
-        console.error(error);
+    } catch (error) {
 
-        container.innerHTML = `
-          <div class="empty">
-            Unable to load schedule.
-          </div>
-        `;
-      }
+      console.error(error);
+
+      list.innerHTML = `
+        <div class="empty">
+          Unable to load the schedule.
+        </div>
+      `;
     }
+  }
 
-    form.addEventListener(
-      "submit",
-      async event => {
-        event.preventDefault();
+  form.addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+
+      message.textContent =
+        "Adding event...";
+
+      message.className =
+        "message";
+
+      try {
+
+        await getJson(
+          "/api/schedule/create",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              title:
+                document
+                  .getElementById(
+                    "title"
+                  )
+                  .value
+                  .trim(),
+
+              description:
+                document
+                  .getElementById(
+                    "description"
+                  )
+                  .value
+                  .trim(),
+
+              event_date:
+                document
+                  .getElementById(
+                    "event-date"
+                  )
+                  .value,
+
+              start_time:
+                document
+                  .getElementById(
+                    "start-time"
+                  )
+                  .value,
+
+              end_time:
+                document
+                  .getElementById(
+                    "end-time"
+                  )
+                  .value
+            })
+          }
+        );
+
+        form.reset();
 
         message.textContent =
-          "Adding event...";
+          "Event added to the timeline.";
 
         message.className =
-          "message";
+          "message success";
 
-        try {
-          const response =
-            await fetch(
-              "/api/schedule/create",
-              {
-                method: "POST",
+        await loadSchedule();
 
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
+      } catch (error) {
 
-                body: JSON.stringify({
-                  title:
-                    document
-                      .getElementById("title")
-                      .value
-                      .trim(),
+        message.textContent =
+          error.message;
 
-                  description:
-                    document
-                      .getElementById("description")
-                      .value
-                      .trim() || null,
-
-                  event_date:
-                    document
-                      .getElementById("event-date")
-                      .value,
-
-                  start_time:
-                    document
-                      .getElementById("start-time")
-                      .value || null,
-
-                  end_time:
-                    document
-                      .getElementById("end-time")
-                      .value || null,
-
-                  created_by:
-                    userId,
-
-                  created_by_name:
-                    username
-                })
-              }
-            );
-
-          const data =
-            await response.json();
-
-          if (!response.ok) {
-            throw new Error(
-              data.error ||
-              "Unable to create event"
-            );
-          }
-
-          form.reset();
-
-          message.textContent =
-            "Schedule event added.";
-
-          message.className =
-            "message success";
-
-          await loadSchedule();
-
-        } catch (error) {
-          console.error(error);
-
-          message.textContent =
-            error.message;
-
-          message.className =
-            "message error";
-        }
+        message.className =
+          "message error";
       }
-    );
+    }
+  );
 
-    function formatDate(value) {
-      if (!value) {
-        return "Unknown date";
-      }
+  function updateUser(user) {
 
-      return new Date(
-        `${value}T00:00:00`
-      ).toLocaleDateString();
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (user.avatar) {
+
+      avatar.src =
+        user.avatar;
+
+    } else {
+
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function formatDate(value) {
+
+    if (!value) {
+      return "Unknown";
     }
 
-    function formatTimeRange(
-      start,
-      end
-    ) {
-      if (!start && !end) {
-        return "";
+    return new Date(
+      `${value}T00:00:00`
+    ).toLocaleDateString(
+      undefined,
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
       }
+    );
+  }
 
-      if (start && end) {
-        return ` • ${start.slice(0, 5)} - ${end.slice(0, 5)}`;
-      }
+  function formatTimes(
+    start,
+    end
+  ) {
 
-      if (start) {
-        return ` • ${start.slice(0, 5)}`;
-      }
-
+    if (!start && !end) {
       return "";
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    if (start && end) {
+
+      return ` • ${start.slice(
+        0,
+        5
+      )} - ${end.slice(
+        0,
+        5
+      )}`;
     }
 
-    loadSchedule();
-  </script>
+    if (start) {
+
+      return ` • ${start.slice(
+        0,
+        5
+      )}`;
+    }
+
+    return "";
+  }
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  start();
+</script>
 
 </body>
 </html>
-```
