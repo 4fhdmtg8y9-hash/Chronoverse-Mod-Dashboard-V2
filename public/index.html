@@ -1,148 +1,649 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse Moderator Login</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Staff Access
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
 
-      font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, #1a1a2b 0%, #0b0b12 45%);
-      color: #ffffff;
+      min-height: 100vh;
+
       padding: 24px;
+
+      overflow-x: hidden;
+
+      background:
+        radial-gradient(
+          circle at 75% 15%,
+          rgba(134, 38, 43, .2),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 20% 85%,
+          rgba(151, 95, 43, .09),
+          transparent 28%
+        ),
+        #040404;
     }
 
-    .login-card {
+    .login-background {
+      position: fixed;
+      inset: 0;
+
+      z-index: -3;
+
       width: 100%;
-      max-width: 430px;
+      height: 100%;
 
-      background: #11111b;
-      border: 1px solid #29293a;
-      border-radius: 18px;
+      object-fit: cover;
 
-      padding: 38px;
+      opacity: .27;
 
-      text-align: center;
+      filter:
+        saturate(.72)
+        contrast(1.08);
+    }
+
+    .login-shade {
+      position: fixed;
+      inset: 0;
+
+      z-index: -2;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(3, 3, 3, .94),
+          rgba(10, 4, 6, .72),
+          rgba(3, 3, 3, .9)
+        );
+    }
+
+    .login-shell {
+      width: min(
+        1080px,
+        100%
+      );
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.2fr)
+        minmax(330px, .8fr);
+
+      overflow: hidden;
+
+      border-radius: 12px;
+
+      border:
+        1px solid var(--gold-border);
+
+      background:
+        rgba(7, 6, 7, .9);
 
       box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.35);
+        0 40px 100px
+        rgba(0, 0, 0, .55);
+
+      backdrop-filter:
+        blur(10px);
     }
 
-    .logo {
-      width: 70px;
-      height: 70px;
+    .login-art {
+      min-height: 570px;
 
-      margin: 0 auto 22px;
+      position: relative;
+
+      padding: 48px;
 
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      justify-content: space-between;
+
+      overflow: hidden;
+
+      border-right:
+        1px solid var(--gold-border);
+    }
+
+    .login-art::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        url("/chronoverse-banner.png");
+
+      background-size: cover;
+      background-position: center;
+
+      opacity: .48;
+
+      filter:
+        saturate(.78)
+        contrast(1.08);
+    }
+
+    .login-art::after {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(8, 5, 6, .96),
+          rgba(18, 7, 9, .65),
+          rgba(19, 6, 8, .42)
+        );
+    }
+
+    .login-art > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-large {
+      width: fit-content;
+
+      text-align: center;
+    }
+
+    .brand-marvel-large {
+      color: var(--gold-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 14px;
+
+      letter-spacing: 6px;
+    }
+
+    .brand-chrono-large {
+      margin-top: 5px;
+
+      color: #f0d6b4;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: clamp(
+        28px,
+        4vw,
+        45px
+      );
+
+      letter-spacing: 2px;
+
+      text-shadow:
+        0 0 35px
+        rgba(206, 149, 91, .17);
+    }
+
+    .brand-line-large {
+      width: 70%;
+
+      height: 1px;
+
+      margin:
+        14px
+        auto;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+    }
+
+    .brand-panel-large {
+      color: #9d8065;
+
+      font-size: 9px;
+
+      letter-spacing: 5px;
+    }
+
+    .art-copy {
+      max-width: 470px;
+    }
+
+    .art-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: clamp(
+        28px,
+        4vw,
+        46px
+      );
+
+      font-weight: 500;
+
+      line-height: 1.15;
+    }
+
+    .art-title span {
+      color: var(--red-light);
+    }
+
+    .art-subtitle {
+      margin-top: 17px;
+
+      color: #b3a39b;
+
+      line-height: 1.7;
+
+      font-size: 11px;
+
+      max-width: 390px;
+    }
+
+    .art-quote {
+      margin-top: 24px;
+
+      color: #7d6f67;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-style: italic;
+
+      letter-spacing: 2px;
+
+      font-size: 10px;
+    }
+
+    .login-side {
+      min-height: 570px;
+
+      padding:
+        50px
+        38px;
+
+      display: flex;
+      flex-direction: column;
       justify-content: center;
 
-      border-radius: 18px;
-
-      background: #1d1d2b;
-
-      font-size: 30px;
-      font-weight: 800;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(20, 12, 13, .96),
+          rgba(7, 7, 8, .98)
+        );
     }
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
+    .login-kicker {
+      color: var(--gold);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 8px;
+
+      letter-spacing: 4px;
     }
 
-    .subtitle {
-      color: #9292a7;
-      line-height: 1.5;
-      margin-bottom: 30px;
+    .login-title {
+      margin-top: 10px;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 27px;
+
+      font-weight: 500;
+    }
+
+    .login-description {
+      margin-top: 11px;
+
+      color: var(--muted);
+
+      font-size: 10px;
+
+      line-height: 1.7;
+    }
+
+    .access-card {
+      margin-top: 30px;
+
+      padding: 18px;
+
+      border-radius: 8px;
+
+      border:
+        1px solid rgba(158, 63, 66, .3);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(42, 20, 22, .65),
+          rgba(8, 8, 9, .98)
+        );
+    }
+
+    .access-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 11px;
+    }
+
+    .access-text {
+      margin-top: 8px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+
+      line-height: 1.6;
     }
 
     .discord-button {
       width: 100%;
 
-      padding: 14px 18px;
+      margin-top: 24px;
 
-      border: none;
-      border-radius: 10px;
+      padding:
+        14px
+        18px;
 
-      background: #5865f2;
-      color: #ffffff;
+      border:
+        1px solid rgba(198, 154, 101, .38);
 
-      font-size: 15px;
-      font-weight: 700;
+      border-radius: 7px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #8a3035,
+          #4d191e
+        );
+
+      color: #fff5ed;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      letter-spacing: 1px;
 
       cursor: pointer;
 
       transition:
-        transform 0.15s ease,
-        opacity 0.15s ease;
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
     }
 
     .discord-button:hover {
-      transform: translateY(-1px);
-      opacity: 0.95;
+      transform:
+        translateY(-2px);
+
+      background:
+        linear-gradient(
+          135deg,
+          #a13b41,
+          #5d1f24
+        );
+
+      box-shadow:
+        0 12px 30px
+        rgba(136, 39, 45, .2);
     }
 
-    .note {
-      margin-top: 20px;
+    .login-status {
+      min-height: 18px;
 
-      color: #707083;
-      font-size: 12px;
-      line-height: 1.5;
+      margin-top: 14px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    .security-note {
+      margin-top: 24px;
+
+      padding-top: 18px;
+
+      border-top:
+        1px solid rgba(198, 154, 101, .14);
+
+      color: #695d56;
+
+      font-size: 8px;
+
+      line-height: 1.7;
+
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-art {
+        min-height: 390px;
+
+        padding: 32px;
+
+        border-right: 0;
+
+        border-bottom:
+          1px solid var(--gold-border);
+      }
+
+      .login-side {
+        min-height: auto;
+
+        padding:
+          38px
+          28px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="login-card">
+  <img
+    class="login-background"
+    src="/chronoverse-banner.png"
+    alt=""
+  >
 
-    <div class="logo">
-      C
-    </div>
+  <div class="login-shade"></div>
 
-    <h1>
-      Chronoverse
-    </h1>
+  <main class="login-shell">
 
-    <p class="subtitle">
-      Sign in with Discord to access the moderator dashboard.
-    </p>
+    <section class="login-art">
 
-    <button
-      class="discord-button"
-      onclick="loginWithDiscord()"
-    >
-      Continue with Discord
-    </button>
+      <div class="brand-large">
 
-    <p class="note">
-      Access is restricted to authorized Chronoverse staff roles.
-    </p>
+        <div class="brand-marvel-large">
+          MARVEL
+        </div>
+
+        <div class="brand-chrono-large">
+          CHRONOVERSE
+        </div>
+
+        <div class="brand-line-large"></div>
+
+        <div class="brand-panel-large">
+          STAFF COMMAND
+        </div>
+
+      </div>
+
+      <div class="art-copy">
+
+        <div class="art-title">
+          Guard the
+          <span>Timeline.</span>
+        </div>
+
+        <div class="art-subtitle">
+          The official staff command centre for moderation,
+          communications, scheduling, verification and
+          Chronoverse operations.
+        </div>
+
+        <div class="art-quote">
+          “Different worlds. One purpose.”
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="login-side">
+
+      <div class="login-kicker">
+        AUTHORIZED ACCESS
+      </div>
+
+      <h1 class="login-title">
+        Staff Login
+      </h1>
+
+      <p class="login-description">
+        Sign in using your Discord account. Your server membership
+        and staff role will be verified before dashboard access is
+        granted.
+      </p>
+
+      <div class="access-card">
+
+        <div class="access-title">
+          Chronoverse Personnel Only
+        </div>
+
+        <div class="access-text">
+          Access is limited to authorized members of the Marvel
+          Chronoverse staff hierarchy.
+        </div>
+
+      </div>
+
+      <button
+        id="login-button"
+        class="discord-button"
+        type="button"
+      >
+        CONTINUE WITH DISCORD
+      </button>
+
+      <div
+        id="login-status"
+        class="login-status"
+      >
+        Checking session...
+      </div>
+
+      <div class="security-note">
+        Secure Discord authentication • Staff role verification •
+        Protected Chronoverse session
+      </div>
+
+    </section>
 
   </main>
 
   <script>
-    function loginWithDiscord() {
-      window.location.href = "/api/auth/login";
+    const loginButton =
+      document.getElementById(
+        "login-button"
+      );
+
+    const loginStatus =
+      document.getElementById(
+        "login-status"
+      );
+
+    loginButton.addEventListener(
+      "click",
+      () => {
+        window.location.href =
+          "/api/auth/login";
+      }
+    );
+
+    async function checkExistingSession() {
+      try {
+        const response =
+          await fetch(
+            "/api/auth/me"
+          );
+
+        if (response.ok) {
+          loginStatus.textContent =
+            "Session found. Entering command centre...";
+
+          window.location.replace(
+            "/dashboard.html"
+          );
+
+          return;
+        }
+
+        loginStatus.textContent =
+          "Sign in to continue.";
+
+      } catch (error) {
+        console.error(error);
+
+        loginStatus.textContent =
+          "Sign in to continue.";
+      }
     }
+
+    checkExistingSession();
   </script>
 
 </body>
 </html>
-```
