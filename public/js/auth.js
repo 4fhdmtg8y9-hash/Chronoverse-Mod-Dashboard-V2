@@ -16,6 +16,45 @@ async function logoutChronoverse() {
   window.location.replace("/");
 }
 
+async function updateChronoverseRank() {
+  const roleElement =
+    document.querySelector(
+      ".user-role"
+    );
+
+  if (!roleElement) {
+    return;
+  }
+
+  try {
+    const response =
+      await fetch(
+        "/api/auth/me"
+      );
+
+    if (!response.ok) {
+      return;
+    }
+
+    const data =
+      await response.json();
+
+    if (
+      data.user &&
+      data.user.rank
+    ) {
+      roleElement.textContent =
+        data.user.rank;
+    }
+
+  } catch (error) {
+    console.error(
+      "Rank loading error:",
+      error
+    );
+  }
+}
+
 function addLogoutButton() {
   const sidebar =
     document.querySelector(
@@ -145,5 +184,8 @@ window.logoutChronoverse =
 
 document.addEventListener(
   "DOMContentLoaded",
-  addLogoutButton
+  () => {
+    addLogoutButton();
+    updateChronoverseRank();
+  }
 );
