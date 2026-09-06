@@ -9,289 +9,421 @@
   >
 
   <title>
-    Chronoverse • Announcements
+    Marvel Chronoverse • Announcements
   </title>
 
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .announcement-layout {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.35fr)
+        minmax(300px, .65fr);
+      gap: 14px;
+      margin-top: 14px;
     }
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: white;
+    .announcement-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .page {
-      max-width: 1000px;
-      margin: auto;
-      padding: 45px 25px;
+    .announcement-card {
+      padding: 17px;
+      border-radius: 8px;
+      border:
+        1px solid rgba(158, 63, 66, .28);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34, 17, 19, .55),
+          rgba(7, 7, 8, .98)
+        );
     }
 
-    .back {
-      display: inline-block;
-      color: #9292a7;
-      margin-bottom: 28px;
-      text-decoration: none;
+    .announcement-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+      font-size: 13px;
     }
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
+    .announcement-content {
+      margin-top: 9px;
+      color: #b5a8a1;
+      line-height: 1.65;
+      font-size: 10px;
+      white-space: pre-wrap;
     }
 
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 28px;
-    }
-
-    .composer,
-    .announcement {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
+    .announcement-meta {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 8px;
     }
 
     .composer {
-      padding: 22px;
-      margin-bottom: 28px;
-    }
-
-    .composer h2 {
-      margin-bottom: 18px;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: 700;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #2c2c3d;
-      border-radius: 8px;
-      background: #0b0b12;
-      color: white;
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: 0;
-      border-radius: 8px;
-      background: white;
-      color: #11111b;
-      font-weight: 700;
-      cursor: pointer;
+      position: sticky;
+      top: 14px;
     }
 
     .message {
+      margin-top: 12px;
       text-align: center;
-      margin-top: 14px;
-      color: #9292a7;
+      color: var(--muted);
+      font-size: 9px;
     }
 
-    .error {
-      color: #ffbcbc;
+    .message.success {
+      color: var(--success);
     }
 
-    .success {
-      color: #b9ffcf;
+    .message.error {
+      color: var(--danger);
     }
 
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
+    @media (max-width: 900px) {
+      .announcement-layout {
+        grid-template-columns: 1fr;
+      }
 
-    .announcement {
-      padding: 22px;
-    }
-
-    .announcement h3 {
-      margin-bottom: 10px;
-      font-size: 20px;
-    }
-
-    .content {
-      color: #d2d2dc;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      margin-bottom: 14px;
-    }
-
-    .meta {
-      color: #77778b;
-      font-size: 12px;
-    }
-
-    .loading,
-    .empty {
-      padding: 40px;
-      text-align: center;
-      color: #9292a7;
+      .composer {
+        position: static;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="page">
+<div class="app">
 
-    <a
-      href="/dashboard.html"
-      class="back"
-    >
-      ← Back to Dashboard
-    </a>
+  <aside class="sidebar">
 
-    <h1>Announcements</h1>
+    <div class="brand">
 
-    <p class="subtitle">
-      Chronoverse staff announcements.
-    </p>
+      <div class="brand-marvel">
+        MARVEL
+      </div>
 
-    <section class="composer">
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
 
-      <h2>
-        Post Announcement
-      </h2>
+      <div class="brand-divider"></div>
 
-      <form id="form">
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
 
-        <div class="field">
-          <label for="title">
-            Title
-          </label>
+    </div>
 
-          <input
-            id="title"
-            required
-            maxlength="100"
+    <nav class="nav">
+
+      <a class="nav-link" href="/dashboard.html">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a class="nav-link" href="/log-action.html">
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a class="nav-link" href="/my-actions.html">
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a class="nav-link" href="/leaderboard.html">
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/announcements.html"
+      >
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a class="nav-link" href="/schedule.html">
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a class="nav-link" href="/inactivity.html">
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a class="nav-link" href="/requests.html">
+        <span class="nav-icon">♙</span>
+        Requests
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+        <h1>Announcements</h1>
+        <p>
+          Official Chronoverse staff updates.
+        </p>
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+          <div
+            id="user-name"
+            class="user-name"
           >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
         </div>
 
-        <div class="field">
-          <label for="content">
-            Message
-          </label>
+      </div>
 
-          <textarea
-            id="content"
-            required
-            maxlength="2000"
-          ></textarea>
+    </header>
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-banner.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+          <div class="hero-title">
+            Staff
+            <span class="red-text">
+              Broadcasts
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            OFFICIAL COMMUNICATIONS
+          </div>
+
+          <div class="hero-quote">
+            “One message can align an entire timeline.”
+          </div>
         </div>
 
-        <button type="submit">
-          Post Announcement
-        </button>
-
-        <div
-          id="message"
-          class="message"
-        ></div>
-
-      </form>
+      </div>
 
     </section>
 
-    <section
-      id="list"
-      class="list"
-    >
-      <div class="loading">
-        Loading announcements...
-      </div>
+    <section class="announcement-layout">
+
+      <article class="panel">
+
+        <div class="panel-title">
+          Latest Announcements
+        </div>
+
+        <div class="panel-description">
+          Visible to all authorized Chronoverse staff.
+        </div>
+
+        <div
+          id="announcement-list"
+          class="announcement-list mt"
+        >
+          <div class="empty">
+            Loading announcements...
+          </div>
+        </div>
+
+      </article>
+
+      <aside class="panel composer">
+
+        <div class="panel-title">
+          Post Announcement
+        </div>
+
+        <div class="panel-description">
+          Restricted to authorized senior staff.
+        </div>
+
+        <form
+          id="announcement-form"
+          class="mt"
+        >
+
+          <div class="field">
+            <label for="title">
+              Title
+            </label>
+
+            <input
+              id="title"
+              maxlength="100"
+              required
+              placeholder="Announcement title"
+            >
+          </div>
+
+          <div class="field">
+            <label for="content">
+              Message
+            </label>
+
+            <textarea
+              id="content"
+              maxlength="2000"
+              required
+              placeholder="Write the staff announcement..."
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-gold"
+            style="width:100%;"
+          >
+            Publish Announcement
+          </button>
+
+          <div
+            id="message"
+            class="message"
+          ></div>
+
+        </form>
+
+      </aside>
+
     </section>
 
   </main>
 
-  <script>
-    const form =
-      document.getElementById("form");
+</div>
 
-    const message =
-      document.getElementById("message");
+<script>
+  const list =
+    document.getElementById(
+      "announcement-list"
+    );
 
-    async function requireLogin() {
-      const response =
-        await fetch("/api/auth/me");
+  const form =
+    document.getElementById(
+      "announcement-form"
+    );
 
-      if (!response.ok) {
-        window.location.replace("/");
-        return false;
-      }
+  const message =
+    document.getElementById(
+      "message"
+    );
 
-      return true;
+  async function getJson(url, options) {
+    const response =
+      await fetch(url, options);
+
+    if (response.status === 401) {
+      window.location.replace("/");
+      throw new Error(
+        "Not authenticated"
+      );
     }
 
-    async function loadAnnouncements() {
-      const list =
-        document.getElementById("list");
+    const data =
+      await response.json();
 
-      try {
-        const response =
-          await fetch(
-            "/api/announcements/list"
-          );
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
 
-        if (response.status === 401) {
-          window.location.replace("/");
-          return;
-        }
+    return data;
+  }
 
-        const data =
-          await response.json();
+  async function start() {
+    try {
+      const me =
+        await getJson("/api/auth/me");
 
-        if (!response.ok) {
-          throw new Error(data.error);
-        }
+      updateUser(me.user);
 
-        const announcements =
-          data.announcements || [];
+      await loadAnnouncements();
 
-        if (!announcements.length) {
-          list.innerHTML = `
-            <div class="empty">
-              No announcements yet.
-            </div>
-          `;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-          return;
-        }
+  async function loadAnnouncements() {
+    try {
+      const data =
+        await getJson(
+          "/api/announcements/list"
+        );
 
-        list.innerHTML =
-          announcements.map(item => `
-            <article class="announcement">
+      const announcements =
+        data.announcements || [];
 
-              <h3>
+      if (!announcements.length) {
+        list.innerHTML = `
+          <div class="empty">
+            No announcements yet.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML =
+        announcements
+          .map(item => `
+            <article class="announcement-card">
+
+              <div class="announcement-title">
                 ${escapeHtml(item.title)}
-              </h3>
+              </div>
 
-              <div class="content">
+              <div class="announcement-content">
                 ${escapeHtml(item.content)}
               </div>
 
-              <div class="meta">
+              <div class="announcement-meta">
                 Posted by
                 ${escapeHtml(item.author_name)}
                 •
@@ -299,103 +431,129 @@
               </div>
 
             </article>
-          `).join("");
+          `)
+          .join("");
 
-      } catch (error) {
-        console.error(error);
+    } catch (error) {
+      console.error(error);
 
-        list.innerHTML = `
-          <div class="empty">
-            Unable to load announcements.
-          </div>
-        `;
-      }
+      list.innerHTML = `
+        <div class="empty">
+          Unable to load announcements.
+        </div>
+      `;
     }
+  }
 
-    form.addEventListener(
-      "submit",
-      async event => {
-        event.preventDefault();
+  form.addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+
+      message.textContent =
+        "Publishing...";
+
+      message.className =
+        "message";
+
+      try {
+        const data =
+          await getJson(
+            "/api/announcements/create",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                title:
+                  document
+                    .getElementById("title")
+                    .value
+                    .trim(),
+
+                content:
+                  document
+                    .getElementById("content")
+                    .value
+                    .trim()
+              })
+            }
+          );
+
+        form.reset();
 
         message.textContent =
-          "Posting...";
+          "Announcement published.";
 
         message.className =
-          "message";
+          "message success";
 
-        try {
-          const response =
-            await fetch(
-              "/api/announcements/create",
-              {
-                method: "POST",
+        await loadAnnouncements();
 
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
+      } catch (error) {
+        message.textContent =
+          error.message;
 
-                body: JSON.stringify({
-                  title:
-                    document
-                      .getElementById("title")
-                      .value
-                      .trim(),
-
-                  content:
-                    document
-                      .getElementById("content")
-                      .value
-                      .trim()
-                })
-              }
-            );
-
-          const data =
-            await response.json();
-
-          if (response.status === 401) {
-            window.location.replace("/");
-            return;
-          }
-
-          if (!response.ok) {
-            throw new Error(
-              data.error ||
-              "Unable to post"
-            );
-          }
-
-          form.reset();
-
-          message.textContent =
-            "Announcement posted.";
-
-          message.className =
-            "message success";
-
-          await loadAnnouncements();
-
-        } catch (error) {
-          message.textContent =
-            error.message;
-
-          message.className =
-            "message error";
-        }
+        message.className =
+          "message error";
       }
-    );
+    }
+  );
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+  function updateUser(user) {
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (user.avatar) {
+      avatar.src =
+        user.avatar;
+    } else {
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function formatDate(value) {
+    if (!value) {
+      return "Unknown";
     }
 
-    function formatDate(value) {
-      return new Date(
-        value
-     
+    return new Date(
+      value
+    ).toLocaleString(
+      undefined,
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  start();
+</script>
+
+</body>
+</html>
