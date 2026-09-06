@@ -1,13 +1,75 @@
-const ALLOWED_ROLES = [
-  "1538324425546666114",
-  "1538505102644740167",
-  "1543383003445723159",
-  "1538626569831055390",
-  "1538626890649174170",
-  "1538534696483426365",
-  "1538569564340879420",
-  "1538569917471916083"
+import {
+  getSupabase
+} from "../../_lib/supabase.js";
+
+const STAFF_ROLES = [
+  {
+    id: "1538324425546666114",
+    name: "FOUNDER",
+    priority: 1
+  },
+  {
+    id: "1538505102644740167",
+    name: "CHRONARCH OVERSEER",
+    priority: 2
+  },
+  {
+    id: "1543383003445723159",
+    name: "EXECUTIVE DIVISION",
+    priority: 3
+  },
+  {
+    id: "1538626569831055390",
+    name: "NEXUS DIRECTOR",
+    priority: 4
+  },
+  {
+    id: "1538626890649174170",
+    name: "ADMINISTRATOR",
+    priority: 5
+  },
+  {
+    id: "1538534696483426365",
+    name: "LEAD MODERATOR",
+    priority: 6
+  },
+  {
+    id: "1538569564340879420",
+    name: "SENIOR MODERATOR",
+    priority: 7
+  },
+  {
+    id: "1538569917471916083",
+    name: "MODERATOR",
+    priority: 8
+  }
 ];
+
+const ALLOWED_ROLES =
+  STAFF_ROLES.map(
+    role => role.id
+  );
+
+function getHighestRank(memberRoles) {
+  const matches =
+    STAFF_ROLES
+      .filter(role =>
+        memberRoles.includes(
+          role.id
+        )
+      )
+      .sort(
+        (a, b) =>
+          a.priority -
+          b.priority
+      );
+
+  if (!matches.length) {
+    return null;
+  }
+
+  return matches[0].name;
+}
 
 function base64urlEncode(str) {
   return btoa(
@@ -20,29 +82,37 @@ function base64urlEncode(str) {
     .replace(/=+$/g, "");
 }
 
-async function signSession(payload, secret) {
-  const encoder = new TextEncoder();
+async function signSession(
+  payload,
+  secret
+) {
+  const encoder =
+    new TextEncoder();
 
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    {
-      name: "HMAC",
-      hash: "SHA-256"
-    },
-    false,
-    ["sign"]
-  );
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      {
+        name: "HMAC",
+        hash: "SHA-256"
+      },
+      false,
+      ["sign"]
+    );
 
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(payload)
-  );
+  const signature =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(payload)
+    );
 
   return btoa(
     String.fromCharCode(
-      ...new Uint8Array(signature)
+      ...new Uint8Array(
+        signature
+      )
     )
   )
     .replace(/\+/g, "-")
@@ -50,12 +120,18 @@ async function signSession(payload, secret) {
     .replace(/=+$/g, "");
 }
 
-export async function onRequestGet(context) {
+export async function onRequestGet(
+  context
+) {
   const requestUrl =
-    new URL(context.request.url);
+    new URL(
+      context.request.url
+    );
 
   const code =
-    requestUrl.searchParams.get("code");
+    requestUrl.searchParams.get(
+      "code"
+    );
 
   if (!code) {
     return new Response(
@@ -92,6 +168,11 @@ export async function onRequestGet(context) {
   }
 
   try {
+
+    // =====================================
+    // EXCHANGE DISCORD AUTH CODE
+    // =====================================
+
     const tokenResponse =
       await fetch(
         "https://discord.com/api/oauth2/token",
@@ -103,21 +184,22 @@ export async function onRequestGet(context) {
               "application/x-www-form-urlencoded"
           },
 
-          body: new URLSearchParams({
-            client_id:
-              DISCORD_CLIENT_ID,
+          body:
+            new URLSearchParams({
+              client_id:
+                DISCORD_CLIENT_ID,
 
-            client_secret:
-              DISCORD_CLIENT_SECRET,
+              client_secret:
+                DISCORD_CLIENT_SECRET,
 
-            grant_type:
-              "authorization_code",
+              grant_type:
+                "authorization_code",
 
-            code,
+              code,
 
-            redirect_uri:
-              DISCORD_REDIRECT_URI
-          })
+              redirect_uri:
+                DISCORD_REDIRECT_URI
+            })
         }
       );
 
@@ -132,6 +214,10 @@ export async function onRequestGet(context) {
 
     const tokenData =
       await tokenResponse.json();
+
+    // =====================================
+    // GET DISCORD USER
+    // =====================================
 
     const userResponse =
       await fetch(
@@ -156,6 +242,10 @@ export async function onRequestGet(context) {
     const user =
       await userResponse.json();
 
+    // =====================================
+    // GET SERVER MEMBER + ROLES
+    // =====================================
+
     const memberResponse =
       await fetch(
         `https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/members/${user.id}`,
@@ -179,9 +269,15 @@ export async function onRequestGet(context) {
     const member =
       await memberResponse.json();
 
+    const memberRoles =
+      member.roles || [];
+
     const allowed =
-      member.roles.some(role =>
-        ALLOWED_ROLES.includes(role)
+      memberRoles.some(
+        role =>
+          ALLOWED_ROLES.includes(
+            role
+          )
       );
 
     if (!allowed) {
@@ -193,18 +289,113 @@ export async function onRequestGet(context) {
       );
     }
 
+    // =====================================
+    // DETERMINE HIGHEST STAFF RANK
+    // =====================================
+
+    const rank =
+      getHighestRank(
+        memberRoles
+      );
+
+    if (!rank) {
+      return new Response(
+        "Unable to determine your Chronoverse staff rank.",
+        {
+          status: 403
+        }
+      );
+    }
+
+    // =====================================
+    // DISCORD AVATAR
+    // =====================================
+
     const avatar =
       user.avatar
         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
         : "";
 
+    // =====================================
+    // SAVE STAFF MEMBER
+    // =====================================
+
+    try {
+      const supabase =
+        getSupabase(
+          context.env
+        );
+
+      const now =
+        new Date()
+          .toISOString();
+
+      const {
+        error: staffError
+      } =
+        await supabase
+          .from(
+            "staff_members"
+          )
+          .upsert(
+            {
+              discord_id:
+                user.id,
+
+              username:
+                user.username,
+
+              avatar,
+
+              rank,
+
+              last_login:
+                now
+            },
+            {
+              onConflict:
+                "discord_id"
+            }
+          );
+
+      if (staffError) {
+        console.error(
+          "Staff directory update failed:",
+          staffError
+        );
+      }
+
+    } catch (staffError) {
+      /*
+        Don't break Discord login if
+        Staff Directory tracking fails.
+      */
+
+      console.error(
+        "Staff directory error:",
+        staffError
+      );
+    }
+
+    // =====================================
+    // CREATE SESSION
+    // =====================================
+
     const payload =
       base64urlEncode(
         JSON.stringify({
-          id: user.id,
-          username: user.username,
+          id:
+            user.id,
+
+          username:
+            user.username,
+
           avatar,
-          created_at: Date.now()
+
+          rank,
+
+          created_at:
+            Date.now()
         })
       );
 
@@ -217,20 +408,30 @@ export async function onRequestGet(context) {
     const token =
       `${payload}.${signature}`;
 
-    return new Response(null, {
-      status: 302,
+    // =====================================
+    // REDIRECT TO DASHBOARD
+    // =====================================
 
-      headers: {
-        Location:
-          "/dashboard.html",
+    return new Response(
+      null,
+      {
+        status: 302,
 
-        "Set-Cookie":
-          `chronoverse_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`
+        headers: {
+          Location:
+            "/dashboard.html",
+
+          "Set-Cookie":
+            `chronoverse_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`
+        }
       }
-    });
+    );
 
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Discord authentication error:",
+      error
+    );
 
     return new Response(
       "Discord authentication failed.",
