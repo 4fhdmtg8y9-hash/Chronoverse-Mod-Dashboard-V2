@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chronoverse • Log Action</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b0b12;
+      color: #ffffff;
+    }
+
+    .page {
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 45px 25px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #9292a7;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9292a7;
+      margin-bottom: 28px;
+    }
+
+    .form-card {
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+      padding: 25px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0b0b12;
+      border: 1px solid #2c2c3d;
+      border-radius: 8px;
+      color: #ffffff;
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #5b5b74;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .submit {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 16px;
+      background: #ffffff;
+      color: #11111b;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 18px;
+      text-align: center;
+      color: #9292a7;
+    }
+
+    .success {
+      color: #b9ffcf;
+    }
+
+    .error {
+      color: #ffbcbc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <a href="/dashboard.html" class="back">
+      ← Back to Dashboard
+    </a>
+
+    <h1>Log Moderation Action</h1>
+
+    <p class="subtitle">
+      Record a moderation action for the Chronoverse staff system.
+    </p>
+
+    <form class="form-card" id="action-form">
+
+      <div class="field">
+        <label for="action-type">
+          Action Type
+        </label>
+
+        <select id="action-type" required>
+          <option value="">
+            Select an action
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="target-id">
+          Target Discord User ID
+        </label>
+
+        <input
+          id="target-id"
+          type="text"
+          placeholder="Example: 123456789012345678"
+        >
+      </div>
+
+      <div class="field">
+        <label for="target-name">
+          Target Username
+        </label>
+
+        <input
+          id="target-name"
+          type="text"
+          placeholder="Example: username"
+        >
+      </div>
+
+      <div class="field">
+        <label for="reason">
+          Reason
+        </label>
+
+        <textarea
+          id="reason"
+          placeholder="Explain why this action was taken..."
+        ></textarea>
+      </div>
+
+      <button
+        class="submit"
+        id="submit-button"
+        type="submit"
+      >
+        Submit Action
+      </button>
+
+      <div
+        class="message"
+        id="message"
+      ></div>
+
+    </form>
+
+  </main>
+
+  <script>
+    const form =
+      document.getElementById("action-form");
+
+    const actionType =
+      document.getElementById("action-type");
+
+    const submitButton =
+      document.getElementById("submit-button");
+
+    const message =
+      document.getElementById("message");
+
+    async function loadActionTypes() {
+      try {
+        const response =
+          await fetch("/api/actions/types");
+
+        if (!response.ok) {
+          throw new Error("Unable to load action types");
+        }
+
+        const data = await response.json();
+
+        for (const type of data.action_types || []) {
+          const option =
+            document.createElement("option");
+
+          option.value = type;
+          option.textContent =
+            formatActionName(type);
+
+          actionType.appendChild(option);
+        }
+
+      } catch (error) {
+        console.error(error);
+
+        message.textContent =
+          "Unable to load moderation action types.";
+
+        message.className =
+          "message error";
+      }
+    }
+
+    form.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        const moderatorId =
+          localStorage.getItem("discord_user_id");
+
+        const moderatorName =
+          localStorage.getItem("discord_username");
+
+        if (!moderatorId || !moderatorName) {
+          message.textContent =
+            "You must be logged in before logging an action.";
+
+          message.className =
+            "message error";
+
+          return;
+        }
+
+        submitButton.disabled = true;
+        message.textContent = "Submitting...";
+        message.className = "message";
+
+        try {
+          const response =
+            await fetch("/api/actions/log", {
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                moderator_id: moderatorId,
+                moderator_name: moderatorName,
+                action_type: actionType.value,
+
+                target_user_id:
+                  document
+                    .getElementById("target-id")
+                    .value
+                    .trim() || null,
+
+                target_user_name:
+                  document
+                    .getElementById("target-name")
+                    .value
+                    .trim() || null,
+
+                reason:
+                  document
+                    .getElementById("reason")
+                    .value
+                    .trim() || null
+              })
+            });
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.error ||
+              "Unable to record action"
+            );
+          }
+
+          form.reset();
+
+          message.textContent =
+            "Moderation action recorded successfully.";
+
+          message.className =
+            "message success";
+
+        } catch (error) {
+          console.error(error);
+
+          message.textContent =
+            error.message ||
+            "Unable to record moderation action.";
+
+          message.className =
+            "message error";
+        }
+
+        submitButton.disabled = false;
+      }
+    );
+
+    function formatActionName(value) {
+      return value
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, letter =>
+          letter.toUpperCase()
+        );
+    }
+
+    loadActionTypes();
+  </script>
+
+</body>
+</html>
