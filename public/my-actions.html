@@ -3,220 +3,1210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chronoverse • My Actions</title>
+
+  <title>Marvel Chronoverse • My Actions</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .summary-grid {
+      margin-top: 14px;
     }
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
-    }
+    .summary-card {
+      min-height: 100px;
 
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 45px 25px;
-    }
-
-    .back {
-      display: inline-block;
-      margin-bottom: 28px;
-      color: #9292a7;
-      text-decoration: none;
-    }
-
-    .back:hover {
-      color: #ffffff;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 28px;
-    }
-
-    .actions-list {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .action {
-      padding: 20px 22px;
-      border-bottom: 1px solid #252535;
-    }
-
-    .action:last-child {
-      border-bottom: none;
-    }
-
-    .action-top {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+
       gap: 15px;
-      margin-bottom: 10px;
     }
 
-    .type {
-      font-weight: 700;
-      text-transform: capitalize;
+    .summary-icon {
+      width: 44px;
+      height: 44px;
+
+      flex-shrink: 0;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 7px;
+
+      color: var(--red-light);
+
+      background:
+        rgba(122, 34, 39, .25);
+
+      border:
+        1px solid rgba(176, 69, 73, .25);
+
+      font-size: 20px;
     }
 
-    .date {
-      color: #77778b;
+    .summary-number {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 25px;
+    }
+
+    .summary-label {
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    .actions-panel {
+      margin-top: 14px;
+    }
+
+    .actions-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      margin-bottom: 15px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 6px;
+
+      flex-wrap: wrap;
+    }
+
+    .filter-button {
+      padding:
+        7px
+        11px;
+
+      border-radius: 5px;
+
+      border:
+        1px solid rgba(158, 63, 66, .28);
+
+      background:
+        rgba(255,255,255,.02);
+
+      color: var(--muted);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 8px;
+
+      letter-spacing: .5px;
+    }
+
+    .filter-button:hover {
+      color: white;
+
+      border-color:
+        rgba(208, 100, 104, .5);
+    }
+
+    .filter-button.active {
+      color: white;
+
+      background:
+        rgba(126, 34, 39, .5);
+
+      border-color:
+        rgba(208, 100, 104, .55);
+    }
+
+    .action-list {
+      display: flex;
+      flex-direction: column;
+
+      gap: 9px;
+    }
+
+    .action-card {
+      padding: 15px;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(115px, .65fr)
+        minmax(130px, .8fr)
+        minmax(0, 1.5fr)
+        auto;
+
+      gap: 15px;
+
+      align-items: center;
+
+      border-radius: 7px;
+
+      border:
+        1px solid rgba(158, 63, 66, .28);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34, 17, 19, .55),
+          rgba(7, 7, 8, .98)
+        );
+
+      transition: .18s ease;
+    }
+
+    .action-card:hover {
+      transform:
+        translateY(-1px);
+
+      border-color:
+        rgba(208, 100, 104, .48);
+    }
+
+    .action-type {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 11px;
+
+      color: #e2d4cb;
+    }
+
+    .action-date {
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 8px;
+    }
+
+    .action-target-label,
+    .action-reason-label {
+      margin-bottom: 5px;
+
+      color: #715e55;
+
+      font-size: 7px;
+
+      letter-spacing: 1px;
+
+      text-transform: uppercase;
+    }
+
+    .action-target {
+      font-size: 10px;
+    }
+
+    .action-reason {
+      color: #aa9d96;
+
+      font-size: 9px;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+    }
+
+    .action-side {
+      min-width: 105px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      gap: 8px;
+    }
+
+    .points {
+      color: var(--gold-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 9px;
+    }
+
+    .evidence-button {
+      border: 0;
+
+      padding: 0;
+
+      background: none;
+
+      color: var(--red-light);
+
+      font-size: 8px;
+
+      text-decoration: underline;
+
+      text-underline-offset: 3px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+
+      z-index: 100;
+
+      display: none;
+      place-items: center;
+
+      padding: 25px;
+
+      background:
+        rgba(0, 0, 0, .86);
+
+      backdrop-filter:
+        blur(7px);
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-box {
+      width: min(
+        850px,
+        100%
+      );
+
+      max-height: 90vh;
+
+      overflow: auto;
+
+      border-radius: 9px;
+
+      border:
+        1px solid var(--border);
+
+      background:
+        #090708;
+
+      padding: 14px;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
       font-size: 13px;
     }
 
-    .target {
-      margin-bottom: 6px;
-      color: #d5d5df;
+    .modal-close {
+      width: 32px;
+      height: 32px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 5px;
+
+      border:
+        1px solid rgba(158,63,66,.35);
+
+      color: white;
+
+      background:
+        rgba(122,34,39,.3);
     }
 
-    .reason {
-      color: #9292a7;
-      font-size: 14px;
-      line-height: 1.5;
+    .modal-image {
+      display: block;
+
+      width: 100%;
+      height: auto;
+
+      max-height: 70vh;
+
+      object-fit: contain;
+
+      border-radius: 6px;
     }
 
-    .empty,
-    .error,
-    .loading {
-      padding: 45px;
-      text-align: center;
-      color: #9292a7;
+    @media (max-width: 950px) {
+      .action-card {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+
+      .action-side {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .actions-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .action-card {
+        grid-template-columns: 1fr;
+      }
+
+      .action-reason {
+        white-space: normal;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="page">
+<div class="app">
 
-    <a href="/dashboard.html" class="back">
-      ← Back to Dashboard
-    </a>
+  <aside class="sidebar">
 
-    <h1>My Actions</h1>
+    <div class="brand">
 
-    <p class="subtitle">
-      Your recorded moderation history.
-    </p>
+      <div class="brand-marvel">
+        MARVEL
+      </div>
 
-    <section class="actions-list" id="actions-list">
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
 
-      <div class="loading">
-        Loading your actions...
+      <div class="brand-divider"></div>
+
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
+
+    </div>
+
+    <nav class="nav">
+
+      <a
+        class="nav-link"
+        href="/dashboard.html"
+      >
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/log-action.html"
+      >
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/my-actions.html"
+      >
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a
+        class="nav-link"
+        href="/leaderboard.html"
+      >
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/announcements.html"
+      >
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a
+        class="nav-link"
+        href="/schedule.html"
+      >
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a
+        class="nav-link"
+        href="/inactivity.html"
+      >
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a
+        class="nav-link"
+        href="/requests.html"
+      >
+        <span class="nav-icon">♙</span>
+        Requests
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+
+        <h1>
+          My Actions
+        </h1>
+
+        <p>
+          Your Chronoverse moderation history.
+        </p>
+
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+
+          <div
+            id="user-name"
+            class="user-name"
+          >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-hero.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+
+          <div class="hero-title">
+            Your
+            <span class="red-text">
+              Record
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            MODERATION ARCHIVE
+          </div>
+
+          <div class="hero-quote">
+            “Every action shapes the timeline.”
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SUMMARY -->
+
+    <section
+      class="grid grid-4 summary-grid"
+    >
+
+      <article class="card summary-card">
+
+        <div class="summary-icon">
+          ⚖
+        </div>
+
+        <div>
+
+          <div
+            id="total-count"
+            class="summary-number"
+          >
+            0
+          </div>
+
+          <div class="summary-label">
+            Total Actions
+          </div>
+
+        </div>
+
+      </article>
+
+      <article class="card summary-card">
+
+        <div class="summary-icon">
+          ✓
+        </div>
+
+        <div>
+
+          <div
+            id="approved-count"
+            class="summary-number"
+          >
+            0
+          </div>
+
+          <div class="summary-label">
+            Verified
+          </div>
+
+        </div>
+
+      </article>
+
+      <article class="card summary-card">
+
+        <div class="summary-icon">
+          ◷
+        </div>
+
+        <div>
+
+          <div
+            id="pending-count"
+            class="summary-number"
+          >
+            0
+          </div>
+
+          <div class="summary-label">
+            Pending
+          </div>
+
+        </div>
+
+      </article>
+
+      <article class="card summary-card">
+
+        <div class="summary-icon">
+          ✦
+        </div>
+
+        <div>
+
+          <div
+            id="points-count"
+            class="summary-number"
+          >
+            0
+          </div>
+
+          <div class="summary-label">
+            Points Earned
+          </div>
+
+        </div>
+
+      </article>
+
+    </section>
+
+    <!-- ACTIONS -->
+
+    <section class="panel actions-panel">
+
+      <div class="actions-header">
+
+        <div>
+
+          <div class="panel-title">
+            Action History
+          </div>
+
+          <div class="panel-description">
+            Track verification status and evidence.
+          </div>
+
+        </div>
+
+        <div class="filter-group">
+
+          <button
+            class="filter-button active"
+            data-filter="all"
+          >
+            ALL
+          </button>
+
+          <button
+            class="filter-button"
+            data-filter="pending"
+          >
+            PENDING
+          </button>
+
+          <button
+            class="filter-button"
+            data-filter="approved"
+          >
+            VERIFIED
+          </button>
+
+          <button
+            class="filter-button"
+            data-filter="denied"
+          >
+            DENIED
+          </button>
+
+        </div>
+
+      </div>
+
+      <div
+        id="actions-list"
+        class="action-list"
+      >
+
+        <div class="empty">
+          Loading your actions...
+        </div>
+
       </div>
 
     </section>
 
   </main>
 
-  <script>
-    async function loadActions() {
-      const container = document.getElementById("actions-list");
+</div>
 
-      const moderatorId = localStorage.getItem("discord_user_id");
+<!-- EVIDENCE MODAL -->
 
-      if (!moderatorId) {
-        container.innerHTML = `
-          <div class="error">
-            You must be logged in to view your actions.
-          </div>
-        `;
-        return;
-      }
+<div
+  id="evidence-modal"
+  class="modal"
+>
 
-      try {
-        const response = await fetch(
-          `/api/actions/my-actions?moderator_id=${encodeURIComponent(moderatorId)}`
-        );
+  <div class="modal-box">
 
-        if (!response.ok) {
-          throw new Error("Failed to load actions");
-        }
+    <div class="modal-top">
 
-        const data = await response.json();
-        const actions = data.actions || [];
+      <div class="modal-title">
+        Evidence
+      </div>
 
-        if (actions.length === 0) {
-          container.innerHTML = `
-            <div class="empty">
-              You have no recorded moderation actions yet.
-            </div>
+      <button
+        id="modal-close"
+        class="modal-close"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <img
+      id="modal-image"
+      class="modal-image"
+      alt="Moderation evidence"
+    >
+
+  </div>
+
+</div>
+
+<script>
+  let allActions = [];
+  let currentFilter = "all";
+
+  const actionsList =
+    document.getElementById(
+      "actions-list"
+    );
+
+  const modal =
+    document.getElementById(
+      "evidence-modal"
+    );
+
+  const modalImage =
+    document.getElementById(
+      "modal-image"
+    );
+
+  async function getJson(url) {
+    const response =
+      await fetch(url);
+
+    if (response.status === 401) {
+      window.location.replace("/");
+      throw new Error(
+        "Not authenticated"
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
+
+    return data;
+  }
+
+  async function start() {
+    try {
+
+      const [
+        meData,
+        actionData
+      ] = await Promise.all([
+        getJson("/api/auth/me"),
+        getJson("/api/actions/my-actions")
+      ]);
+
+      updateUser(
+        meData.user
+      );
+
+      allActions =
+        actionData.actions || [];
+
+      updateSummary();
+
+      renderActions();
+
+    } catch (error) {
+
+      console.error(error);
+
+      actionsList.innerHTML = `
+        <div class="empty">
+          Unable to load your moderation actions.
+        </div>
+      `;
+    }
+  }
+
+  function updateUser(user) {
+
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (user.avatar) {
+
+      avatar.src =
+        user.avatar;
+
+    } else {
+
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function updateSummary() {
+
+    const approved =
+      allActions.filter(
+        action =>
+          action.verification_status ===
+          "approved"
+      ).length;
+
+    const pending =
+      allActions.filter(
+        action =>
+          action.verification_status ===
+          "pending"
+      ).length;
+
+    document.getElementById(
+      "total-count"
+    ).textContent =
+      allActions.length;
+
+    document.getElementById(
+      "approved-count"
+    ).textContent =
+      approved;
+
+    document.getElementById(
+      "pending-count"
+    ).textContent =
+      pending;
+
+    document.getElementById(
+      "points-count"
+    ).textContent =
+      approved * 5;
+  }
+
+  function renderActions() {
+
+    const actions =
+      currentFilter === "all"
+        ? allActions
+        : allActions.filter(
+            action =>
+              action.verification_status ===
+              currentFilter
+          );
+
+    if (!actions.length) {
+
+      actionsList.innerHTML = `
+        <div class="empty">
+          No ${currentFilter === "all"
+            ? ""
+            : escapeHtml(currentFilter)
+          } moderation actions.
+        </div>
+      `;
+
+      return;
+    }
+
+    actionsList.innerHTML =
+      actions
+        .map(action => {
+
+          const target =
+            action.target_user_name ||
+            action.target_user_id ||
+            "Not provided";
+
+          const reason =
+            action.reason ||
+            "No reason provided.";
+
+          const evidence =
+            action.evidence_url
+              ? `
+                <button
+                  class="evidence-button"
+                  type="button"
+                  data-evidence="${escapeAttribute(
+                    action.evidence_url
+                  )}"
+                >
+                  VIEW EVIDENCE
+                </button>
+              `
+              : `
+                <span class="muted">
+                  No evidence
+                </span>
+              `;
+
+          const points =
+            action.verification_status ===
+            "approved"
+              ? "+5 POINTS"
+              : "0 POINTS";
+
+          return `
+            <article class="action-card">
+
+              <div>
+
+                <div class="action-type">
+                  ${escapeHtml(
+                    formatAction(
+                      action.action_type
+                    )
+                  )}
+                </div>
+
+                <div class="action-date">
+                  ${escapeHtml(
+                    formatDate(
+                      action.created_at
+                    )
+                  )}
+                </div>
+
+              </div>
+
+              <div>
+
+                <div class="action-target-label">
+                  Target
+                </div>
+
+                <div class="action-target">
+                  ${escapeHtml(target)}
+                </div>
+
+              </div>
+
+              <div>
+
+                <div class="action-reason-label">
+                  Reason
+                </div>
+
+                <div
+                  class="action-reason"
+                  title="${escapeAttribute(reason)}"
+                >
+                  ${escapeHtml(reason)}
+                </div>
+
+              </div>
+
+              <div class="action-side">
+
+                ${statusBadge(
+                  action.verification_status
+                )}
+
+                <div class="points">
+                  ${points}
+                </div>
+
+                ${evidence}
+
+              </div>
+
+            </article>
           `;
-          return;
+        })
+        .join("");
+
+    attachEvidenceButtons();
+  }
+
+  function statusBadge(status) {
+
+    if (status === "approved") {
+
+      return `
+        <span class="badge badge-approved">
+          VERIFIED
+        </span>
+      `;
+    }
+
+    if (status === "denied") {
+
+      return `
+        <span class="badge badge-denied">
+          DENIED
+        </span>
+      `;
+    }
+
+    return `
+      <span class="badge badge-pending">
+        PENDING
+      </span>
+    `;
+  }
+
+  function attachEvidenceButtons() {
+
+    document
+      .querySelectorAll(
+        "[data-evidence]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            modalImage.src =
+              button.dataset.evidence;
+
+            modal.classList.add(
+              "open"
+            );
+          }
+        );
+      });
+  }
+
+  document
+    .querySelectorAll(
+      ".filter-button"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          currentFilter =
+            button.dataset.filter;
+
+          document
+            .querySelectorAll(
+              ".filter-button"
+            )
+            .forEach(item =>
+              item.classList.remove(
+                "active"
+              )
+            );
+
+          button.classList.add(
+            "active"
+          );
+
+          renderActions();
         }
+      );
+    });
 
-        container.innerHTML = actions.map(action => `
-          <div class="action">
+  document
+    .getElementById(
+      "modal-close"
+    )
+    .addEventListener(
+      "click",
+      closeModal
+    );
 
-            <div class="action-top">
-              <span class="type">
-                ${escapeHtml(action.action_type)}
-              </span>
+  modal.addEventListener(
+    "click",
+    event => {
 
-              <span class="date">
-                ${formatDate(action.created_at)}
-              </span>
-            </div>
-
-            <div class="target">
-              Target:
-              ${escapeHtml(
-                action.target_user_name ||
-                action.target_user_id ||
-                "Unknown user"
-              )}
-            </div>
-
-            <div class="reason">
-              ${escapeHtml(action.reason || "No reason provided.")}
-            </div>
-
-          </div>
-        `).join("");
-
-      } catch (error) {
-        console.error(error);
-
-        container.innerHTML = `
-          <div class="error">
-            Unable to load your moderation actions.
-          </div>
-        `;
+      if (event.target === modal) {
+        closeModal();
       }
     }
+  );
 
-    function formatDate(value) {
-      if (!value) return "Unknown date";
+  document.addEventListener(
+    "keydown",
+    event => {
 
-      return new Date(value).toLocaleString();
+      if (
+        event.key === "Escape"
+      ) {
+        closeModal();
+      }
+    }
+  );
+
+  function closeModal() {
+
+    modal.classList.remove(
+      "open"
+    );
+
+    modalImage.src = "";
+  }
+
+  function formatAction(value) {
+
+    return String(value || "")
+      .replaceAll("_", " ")
+      .replace(
+        /\b\w/g,
+        letter =>
+          letter.toUpperCase()
+      );
+  }
+
+  function formatDate(value) {
+
+    if (!value) {
+      return "Unknown date";
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    return new Date(
+      value
+    ).toLocaleString(
+      undefined,
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+  }
 
-    loadActions();
-  </script>
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function escapeAttribute(value) {
+
+    return escapeHtml(value);
+  }
+
+  start();
+</script>
 
 </body>
 </html>
