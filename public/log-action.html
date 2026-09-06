@@ -1,272 +1,538 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse • Log Action</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Log Action
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    .log-layout {
+      display: grid;
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
-    }
+      grid-template-columns:
+        minmax(0, 1.3fr)
+        minmax(280px, .7fr);
 
-    .page {
-      max-width: 850px;
-      margin: 0 auto;
-      padding: 45px 25px;
-    }
+      gap: 14px;
 
-    .back {
-      display: inline-block;
-      margin-bottom: 28px;
-      color: #9292a7;
-      text-decoration: none;
-    }
-
-    .back:hover {
-      color: #ffffff;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 28px;
-    }
-
-    .form-card {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
-      padding: 25px;
-    }
-
-    .field {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      background: #0b0b12;
-      border: 1px solid #2c2c3d;
-      border-radius: 8px;
-      color: #ffffff;
-      font: inherit;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #5b5b74;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .evidence-box {
-      padding: 18px;
-      background: #0b0b12;
-      border: 1px dashed #39394d;
-      border-radius: 10px;
-    }
-
-    .evidence-box input {
-      border: 0;
-      padding: 0;
-      background: transparent;
-    }
-
-    .hint {
-      margin-top: 8px;
-      color: #77778b;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .preview {
-      display: none;
       margin-top: 14px;
     }
 
-    .preview img {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 10px;
-      border: 1px solid #252535;
+    .form-panel {
+      min-width: 0;
     }
 
-    .submit {
+    .evidence-box {
+      padding: 16px;
+
+      border:
+        1px dashed rgba(198, 154, 101, .35);
+
+      border-radius: 7px;
+
+      background:
+        rgba(255,255,255,.015);
+    }
+
+    .evidence-preview {
+      display: none;
+
+      margin-top: 13px;
+
+      border-radius: 7px;
+
+      overflow: hidden;
+
+      border:
+        1px solid rgba(158, 63, 66, .34);
+    }
+
+    .evidence-preview img {
+      display: block;
+
       width: 100%;
-      border: none;
-      border-radius: 8px;
-      padding: 13px 16px;
-      background: #ffffff;
-      color: #11111b;
-      font-weight: 700;
-      cursor: pointer;
+
+      max-height: 330px;
+
+      object-fit: cover;
     }
 
-    .submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .helper {
+      margin-top: 7px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+
+      line-height: 1.5;
+    }
+
+    .submit-row {
+      display: flex;
+
+      gap: 10px;
+
+      margin-top: 18px;
+    }
+
+    .submit-row .btn {
+      flex: 1;
+    }
+
+    .info-stack {
+      display: flex;
+      flex-direction: column;
+
+      gap: 12px;
+    }
+
+    .info-card {
+      padding: 16px;
+
+      border:
+        1px solid rgba(158,63,66,.3);
+
+      border-radius: 7px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(43,20,22,.6),
+          rgba(8,8,9,.98)
+        );
+    }
+
+    .info-icon {
+      color: var(--red-light);
+
+      font-size: 19px;
+
+      margin-bottom: 9px;
+    }
+
+    .info-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 12px;
+    }
+
+    .info-text {
+      margin-top: 6px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+
+      line-height: 1.6;
     }
 
     .message {
-      margin-top: 18px;
+      margin-top: 14px;
+
       text-align: center;
-      color: #9292a7;
+
+      font-size: 10px;
+
+      color: var(--muted);
     }
 
-    .success {
-      color: #b9ffcf;
+    .message.success {
+      color: var(--success);
     }
 
-    .error {
-      color: #ffbcbc;
+    .message.error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 900px) {
+      .log-layout {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="page">
+  <div class="app">
 
-    <a href="/dashboard.html" class="back">
-      ← Back to Dashboard
-    </a>
+    <aside class="sidebar">
 
-    <h1>Log Moderation Action</h1>
+      <div class="brand">
 
-    <p class="subtitle">
-      Submit an action for staff verification.
-    </p>
+        <div class="brand-marvel">
+          MARVEL
+        </div>
 
-    <form
-      class="form-card"
-      id="action-form"
-      enctype="multipart/form-data"
-    >
+        <div class="brand-name">
+          CHRONOVERSE
+        </div>
 
-      <div class="field">
-        <label for="action-type">
-          Action Type
-        </label>
+        <div class="brand-divider"></div>
 
-        <select id="action-type" required>
-          <option value="">
-            Select an action
-          </option>
-        </select>
+        <div class="brand-subtitle">
+          MODERATOR PANEL
+        </div>
+
       </div>
 
-      <div class="field">
-        <label for="target-id">
-          Target Discord User ID
-        </label>
+      <nav class="nav">
 
-        <input
-          id="target-id"
-          type="text"
-          placeholder="Discord user ID"
+        <a
+          class="nav-link"
+          href="/dashboard.html"
         >
-      </div>
+          <span class="nav-icon">⌂</span>
+          Dashboard
+        </a>
 
-      <div class="field">
-        <label for="target-name">
-          Target Username
-        </label>
-
-        <input
-          id="target-name"
-          type="text"
-          placeholder="Username"
+        <a
+          class="nav-link active"
+          href="/log-action.html"
         >
+          <span class="nav-icon">⚖</span>
+          Log Action
+        </a>
+
+        <a
+          class="nav-link"
+          href="/my-actions.html"
+        >
+          <span class="nav-icon">▤</span>
+          My Actions
+        </a>
+
+        <a
+          class="nav-link"
+          href="/leaderboard.html"
+        >
+          <span class="nav-icon">♛</span>
+          Leaderboard
+        </a>
+
+        <a
+          class="nav-link"
+          href="/announcements.html"
+        >
+          <span class="nav-icon">◢</span>
+          Announcements
+        </a>
+
+        <a
+          class="nav-link"
+          href="/schedule.html"
+        >
+          <span class="nav-icon">▦</span>
+          Schedule
+        </a>
+
+        <a
+          class="nav-link"
+          href="/inactivity.html"
+        >
+          <span class="nav-icon">◷</span>
+          Inactivity
+        </a>
+
+        <a
+          class="nav-link"
+          href="/requests.html"
+        >
+          <span class="nav-icon">♙</span>
+          Requests
+        </a>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        ─ ✦ ─
+        <br>
+        ERS TEMPORA
+        <br>
+        VINCIT OMNIA
       </div>
 
-      <div class="field">
-        <label for="reason">
-          Reason
-        </label>
+    </aside>
 
-        <textarea
-          id="reason"
-          placeholder="Explain why the action was taken..."
-        ></textarea>
-      </div>
+    <main class="content">
 
-      <div class="field">
-        <label for="evidence">
-          Evidence / Screenshot
-        </label>
+      <header class="topbar">
 
-        <div class="evidence-box">
+        <div class="page-heading">
+          <h1>
+            Log Moderation Action
+          </h1>
 
-          <input
-            id="evidence"
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif"
+          <p>
+            Submit an action for staff verification.
+          </p>
+        </div>
+
+        <div class="user-box">
+
+          <img
+            id="user-avatar"
+            class="user-avatar"
+            alt="Discord Avatar"
           >
 
-          <div class="hint">
-            Optional. PNG, JPG, WEBP or GIF. Maximum 4 MB.
-          </div>
-
-          <div
-            class="preview"
-            id="preview"
-          >
-            <img
-              id="preview-image"
-              alt="Evidence preview"
+          <div>
+            <div
+              id="user-name"
+              class="user-name"
             >
+              Loading...
+            </div>
+
+            <div class="user-role">
+              CHRONOVERSE STAFF
+            </div>
           </div>
 
         </div>
-      </div>
 
-      <button
-        id="submit-button"
-        class="submit"
-        type="submit"
-      >
-        Submit for Verification
-      </button>
+      </header>
 
-      <div
-        id="message"
-        class="message"
-      ></div>
+      <section class="hero">
 
-    </form>
+        <img
+          class="hero-background"
+          src="/chronoverse-hero.png"
+          alt=""
+        >
 
-  </main>
+        <div class="hero-shade"></div>
+
+        <div class="hero-content">
+
+          <div>
+
+            <div class="hero-title">
+              Record an
+              <span class="red-text">
+                Action
+              </span>
+            </div>
+
+            <div class="hero-subtitle">
+              VERIFICATION REQUIRED
+            </div>
+
+            <div class="hero-quote">
+              “Accountability protects the Chronoverse.”
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="log-layout">
+
+        <article class="panel form-panel">
+
+          <div class="panel-title">
+            Moderation Report
+          </div>
+
+          <div class="panel-description">
+            Fill out the details below. Verified actions award 5 points.
+          </div>
+
+          <form
+            id="action-form"
+            enctype="multipart/form-data"
+            class="mt"
+          >
+
+            <div class="field">
+              <label for="action-type">
+                Action Type
+              </label>
+
+              <select
+                id="action-type"
+                required
+              >
+                <option value="">
+                  Select an action
+                </option>
+              </select>
+            </div>
+
+            <div class="grid grid-2">
+
+              <div class="field">
+                <label for="target-id">
+                  Target Discord User ID
+                </label>
+
+                <input
+                  id="target-id"
+                  type="text"
+                  placeholder="123456789012345678"
+                >
+              </div>
+
+              <div class="field">
+                <label for="target-name">
+                  Target Username
+                </label>
+
+                <input
+                  id="target-name"
+                  type="text"
+                  placeholder="username"
+                >
+              </div>
+
+            </div>
+
+            <div class="field">
+              <label for="reason">
+                Reason
+              </label>
+
+              <textarea
+                id="reason"
+                placeholder="Explain why this action was taken..."
+              ></textarea>
+            </div>
+
+            <div class="field">
+
+              <label for="evidence">
+                Evidence / Screenshot
+              </label>
+
+              <div class="evidence-box">
+
+                <input
+                  id="evidence"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                >
+
+                <div class="helper">
+                  Optional. PNG, JPG, WEBP or GIF. Maximum 4 MB.
+                </div>
+
+                <div
+                  class="evidence-preview"
+                  id="evidence-preview"
+                >
+                  <img
+                    id="evidence-image"
+                    alt="Evidence preview"
+                  >
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="submit-row">
+
+              <button
+                type="button"
+                class="btn"
+                onclick="location.href='/dashboard.html'"
+              >
+                Cancel
+              </button>
+
+              <button
+                id="submit-button"
+                type="submit"
+                class="btn btn-gold"
+              >
+                Submit for Verification
+              </button>
+
+            </div>
+
+            <div
+              id="message"
+              class="message"
+            ></div>
+
+          </form>
+
+        </article>
+
+        <aside class="info-stack">
+
+          <div class="info-card">
+
+            <div class="info-icon">
+              ✦
+            </div>
+
+            <div class="info-title">
+              Verification
+            </div>
+
+            <div class="info-text">
+              Your action is sent to Discord with Verify and Deny controls for Chronarch Overseer and Executive Division.
+            </div>
+
+          </div>
+
+          <div class="info-card">
+
+            <div class="info-icon">
+              ♛
+            </div>
+
+            <div class="info-title">
+              Leaderboard Points
+            </div>
+
+            <div class="info-text">
+              Approved actions award 5 points. Pending or denied actions award 0.
+            </div>
+
+          </div>
+
+          <div class="info-card">
+
+            <div class="info-icon">
+              ▣
+            </div>
+
+            <div class="info-title">
+              Evidence
+            </div>
+
+            <div class="info-text">
+              Uploaded screenshots are attached to the moderation record and displayed in the Discord verification embed.
+            </div>
+
+          </div>
+
+        </aside>
+
+      </section>
+
+    </main>
+
+  </div>
 
   <script>
     const form =
@@ -275,14 +541,14 @@
     const actionType =
       document.getElementById("action-type");
 
-    const evidenceInput =
+    const evidence =
       document.getElementById("evidence");
 
-    const preview =
-      document.getElementById("preview");
+    const evidencePreview =
+      document.getElementById("evidence-preview");
 
-    const previewImage =
-      document.getElementById("preview-image");
+    const evidenceImage =
+      document.getElementById("evidence-image");
 
     const submitButton =
       document.getElementById("submit-button");
@@ -290,49 +556,76 @@
     const message =
       document.getElementById("message");
 
-    async function requireLogin() {
-      try {
-        const response =
-          await fetch("/api/auth/me");
+    async function getJson(url) {
+      const response =
+        await fetch(url);
 
-        if (!response.ok) {
-          window.location.replace("/");
-          return false;
-        }
-
-        return true;
-
-      } catch (error) {
-        console.error(error);
+      if (response.status === 401) {
         window.location.replace("/");
-        return false;
+        throw new Error("Not authenticated");
+      }
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Request failed"
+        );
+      }
+
+      return data;
+    }
+
+    async function loadUser() {
+      const data =
+        await getJson("/api/auth/me");
+
+      document.getElementById(
+        "user-name"
+      ).textContent =
+        data.user.username;
+
+      const avatar =
+        document.getElementById(
+          "user-avatar"
+        );
+
+      if (data.user.avatar) {
+        avatar.src =
+          data.user.avatar;
+      } else {
+        avatar.style.display =
+          "none";
       }
     }
 
     async function loadActionTypes() {
       try {
-        const response =
-          await fetch("/api/actions/types");
-
         const data =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Unable to load action types"
+          await getJson(
+            "/api/actions/types"
           );
-        }
 
-        for (const type of data.action_types || []) {
+        for (
+          const type of
+          data.action_types || []
+        ) {
           const option =
-            document.createElement("option");
+            document.createElement(
+              "option"
+            );
 
-          option.value = type;
+          option.value =
+            type;
+
           option.textContent =
-            formatActionName(type);
+            formatAction(type);
 
-          actionType.appendChild(option);
+          actionType.appendChild(
+            option
+          );
         }
 
       } catch (error) {
@@ -346,30 +639,30 @@
       }
     }
 
-    evidenceInput.addEventListener(
+    evidence.addEventListener(
       "change",
       () => {
-        const file =
-          evidenceInput.files[0];
-
-        preview.style.display =
+        evidencePreview.style.display =
           "none";
 
-        previewImage.src = "";
+        evidenceImage.src = "";
+
+        const file =
+          evidence.files[0];
 
         if (!file) {
           return;
         }
 
-        const allowedTypes = [
+        const allowed = [
           "image/png",
           "image/jpeg",
           "image/webp",
           "image/gif"
         ];
 
-        if (!allowedTypes.includes(file.type)) {
-          evidenceInput.value = "";
+        if (!allowed.includes(file.type)) {
+          evidence.value = "";
 
           message.textContent =
             "Evidence must be PNG, JPG, WEBP or GIF.";
@@ -380,8 +673,11 @@
           return;
         }
 
-        if (file.size > 4 * 1024 * 1024) {
-          evidenceInput.value = "";
+        if (
+          file.size >
+          4 * 1024 * 1024
+        ) {
+          evidence.value = "";
 
           message.textContent =
             "Evidence must be smaller than 4 MB.";
@@ -392,14 +688,15 @@
           return;
         }
 
-        previewImage.src =
+        evidenceImage.src =
           URL.createObjectURL(file);
 
-        preview.style.display =
+        evidencePreview.style.display =
           "block";
 
         message.textContent = "";
-        message.className = "message";
+        message.className =
+          "message";
       }
     );
 
@@ -408,24 +705,25 @@
       async event => {
         event.preventDefault();
 
-        submitButton.disabled = true;
+        submitButton.disabled =
+          true;
 
         message.textContent =
-          "Submitting...";
+          "Submitting action...";
 
         message.className =
           "message";
 
         try {
-          const formData =
+          const payload =
             new FormData();
 
-          formData.append(
+          payload.append(
             "action_type",
             actionType.value
           );
 
-          formData.append(
+          payload.append(
             "target_user_id",
             document
               .getElementById("target-id")
@@ -433,7 +731,7 @@
               .trim()
           );
 
-          formData.append(
+          payload.append(
             "target_user_name",
             document
               .getElementById("target-name")
@@ -441,7 +739,7 @@
               .trim()
           );
 
-          formData.append(
+          payload.append(
             "reason",
             document
               .getElementById("reason")
@@ -449,13 +747,13 @@
               .trim()
           );
 
-          const evidence =
-            evidenceInput.files[0];
+          const file =
+            evidence.files[0];
 
-          if (evidence) {
-            formData.append(
+          if (file) {
+            payload.append(
               "evidence",
-              evidence
+              file
             );
           }
 
@@ -464,14 +762,16 @@
               "/api/actions/log",
               {
                 method: "POST",
-                body: formData
+                body: payload
               }
             );
 
           const data =
             await response.json();
 
-          if (response.status === 401) {
+          if (
+            response.status === 401
+          ) {
             window.location.replace("/");
             return;
           }
@@ -485,13 +785,13 @@
 
           form.reset();
 
-          preview.style.display =
+          evidencePreview.style.display =
             "none";
 
-          previewImage.src = "";
+          evidenceImage.src = "";
 
           message.textContent =
-            "Action submitted. It is waiting for verification.";
+            "Action submitted successfully. Awaiting verification.";
 
           message.className =
             "message success";
@@ -507,12 +807,13 @@
             "message error";
         }
 
-        submitButton.disabled = false;
+        submitButton.disabled =
+          false;
       }
     );
 
-    function formatActionName(value) {
-      return value
+    function formatAction(value) {
+      return String(value)
         .replaceAll("_", " ")
         .replace(
           /\b\w/g,
@@ -522,14 +823,15 @@
     }
 
     async function start() {
-      const loggedIn =
-        await requireLogin();
+      try {
+        await Promise.all([
+          loadUser(),
+          loadActionTypes()
+        ]);
 
-      if (!loggedIn) {
-        return;
+      } catch (error) {
+        console.error(error);
       }
-
-      await loadActionTypes();
     }
 
     start();
@@ -537,9 +839,3 @@
 
 </body>
 </html>
-```
-
-
-</body>
-</html>
-```
