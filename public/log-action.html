@@ -79,9 +79,47 @@
       outline: none;
     }
 
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #5b5b74;
+    }
+
     textarea {
       min-height: 120px;
       resize: vertical;
+    }
+
+    .evidence-box {
+      padding: 18px;
+      background: #0b0b12;
+      border: 1px dashed #39394d;
+      border-radius: 10px;
+    }
+
+    .evidence-box input {
+      border: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: #77778b;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .preview {
+      display: none;
+      margin-top: 14px;
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+      border: 1px solid #252535;
     }
 
     .submit {
@@ -130,7 +168,11 @@
       Submit an action for staff verification.
     </p>
 
-    <form class="form-card" id="action-form">
+    <form
+      class="form-card"
+      id="action-form"
+      enctype="multipart/form-data"
+    >
 
       <div class="field">
         <label for="action-type">
@@ -179,6 +221,36 @@
         ></textarea>
       </div>
 
+      <div class="field">
+        <label for="evidence">
+          Evidence / Screenshot
+        </label>
+
+        <div class="evidence-box">
+
+          <input
+            id="evidence"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+          >
+
+          <div class="hint">
+            Optional. PNG, JPG, WEBP or GIF. Maximum 4 MB.
+          </div>
+
+          <div
+            class="preview"
+            id="preview"
+          >
+            <img
+              id="preview-image"
+              alt="Evidence preview"
+            >
+          </div>
+
+        </div>
+      </div>
+
       <button
         id="submit-button"
         class="submit"
@@ -203,6 +275,15 @@
     const actionType =
       document.getElementById("action-type");
 
+    const evidenceInput =
+      document.getElementById("evidence");
+
+    const preview =
+      document.getElementById("preview");
+
+    const previewImage =
+      document.getElementById("preview-image");
+
     const submitButton =
       document.getElementById("submit-button");
 
@@ -210,15 +291,22 @@
       document.getElementById("message");
 
     async function requireLogin() {
-      const response =
-        await fetch("/api/auth/me");
+      try {
+        const response =
+          await fetch("/api/auth/me");
 
-      if (!response.ok) {
+        if (!response.ok) {
+          window.location.replace("/");
+          return false;
+        }
+
+        return true;
+
+      } catch (error) {
+        console.error(error);
         window.location.replace("/");
         return false;
       }
-
-      return true;
     }
 
     async function loadActionTypes() {
@@ -241,7 +329,6 @@
             document.createElement("option");
 
           option.value = type;
-
           option.textContent =
             formatActionName(type);
 
@@ -259,6 +346,63 @@
       }
     }
 
+    evidenceInput.addEventListener(
+      "change",
+      () => {
+        const file =
+          evidenceInput.files[0];
+
+        preview.style.display =
+          "none";
+
+        previewImage.src = "";
+
+        if (!file) {
+          return;
+        }
+
+        const allowedTypes = [
+          "image/png",
+          "image/jpeg",
+          "image/webp",
+          "image/gif"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          evidenceInput.value = "";
+
+          message.textContent =
+            "Evidence must be PNG, JPG, WEBP or GIF.";
+
+          message.className =
+            "message error";
+
+          return;
+        }
+
+        if (file.size > 4 * 1024 * 1024) {
+          evidenceInput.value = "";
+
+          message.textContent =
+            "Evidence must be smaller than 4 MB.";
+
+          message.className =
+            "message error";
+
+          return;
+        }
+
+        previewImage.src =
+          URL.createObjectURL(file);
+
+        preview.style.display =
+          "block";
+
+        message.textContent = "";
+        message.className = "message";
+      }
+    );
+
     form.addEventListener(
       "submit",
       async event => {
@@ -273,38 +417,56 @@
           "message";
 
         try {
+          const formData =
+            new FormData();
+
+          formData.append(
+            "action_type",
+            actionType.value
+          );
+
+          formData.append(
+            "target_user_id",
+            document
+              .getElementById("target-id")
+              .value
+              .trim()
+          );
+
+          formData.append(
+            "target_user_name",
+            document
+              .getElementById("target-name")
+              .value
+              .trim()
+          );
+
+          formData.append(
+            "reason",
+            document
+              .getElementById("reason")
+              .value
+              .trim()
+          );
+
+          const evidence =
+            evidenceInput.files[0];
+
+          if (evidence) {
+            formData.append(
+              "evidence",
+              evidence
+            );
+          }
+
           const response =
-            await fetch("/api/actions/log", {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                action_type:
-                  actionType.value,
-
-                target_user_id:
-                  document
-                    .getElementById("target-id")
-                    .value
-                    .trim() || null,
-
-                target_user_name:
-                  document
-                    .getElementById("target-name")
-                    .value
-                    .trim() || null,
-
-                reason:
-                  document
-                    .getElementById("reason")
-                    .value
-                    .trim() || null
-              })
-            });
+            await fetch(
+              "/api/actions/log",
+              {
+                method: "POST",
+                body: formData
+              }
+            );
 
           const data =
             await response.json();
@@ -322,6 +484,11 @@
           }
 
           form.reset();
+
+          preview.style.display =
+            "none";
+
+          previewImage.src = "";
 
           message.textContent =
             "Action submitted. It is waiting for verification.";
@@ -347,8 +514,10 @@
     function formatActionName(value) {
       return value
         .replaceAll("_", " ")
-        .replace(/\b\w/g, letter =>
-          letter.toUpperCase()
+        .replace(
+          /\b\w/g,
+          letter =>
+            letter.toUpperCase()
         );
     }
 
@@ -365,6 +534,11 @@
 
     start();
   </script>
+
+</body>
+</html>
+```
+
 
 </body>
 </html>
