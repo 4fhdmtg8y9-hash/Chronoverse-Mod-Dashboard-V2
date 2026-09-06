@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Chronoverse • Leaderboard</title>
 
   <style>
@@ -57,7 +58,9 @@
       display: grid;
       grid-template-columns: 70px 1fr 150px;
       align-items: center;
+
       padding: 18px 22px;
+
       border-bottom: 1px solid #252535;
     }
 
@@ -79,7 +82,7 @@
       font-weight: 600;
     }
 
-    .actions {
+    .points {
       text-align: right;
       font-weight: 700;
     }
@@ -105,13 +108,19 @@
 
   <main class="page">
 
-    <a class="back" href="/dashboard.html">
+    <a
+      class="back"
+      href="/dashboard.html"
+    >
       ← Back to Dashboard
     </a>
 
-    <h1>Moderator Leaderboard</h1>
+    <h1>
+      Moderator Leaderboard
+    </h1>
+
     <p class="subtitle">
-      Moderator activity based on recorded actions.
+      Chronoverse staff rankings based on moderation points.
     </p>
 
     <section class="leaderboard">
@@ -119,13 +128,17 @@
       <div class="row header-row">
         <div>Rank</div>
         <div>Moderator</div>
-        <div style="text-align:right;">Actions</div>
+        <div style="text-align:right;">
+          Points
+        </div>
       </div>
 
       <div id="leaderboard">
+
         <div class="loading">
           Loading leaderboard...
         </div>
+
       </div>
 
     </section>
@@ -134,40 +147,61 @@
 
   <script>
     async function loadLeaderboard() {
-      const container = document.getElementById("leaderboard");
+      const container =
+        document.getElementById("leaderboard");
 
       try {
-        const response = await fetch("/api/leaderboard");
+        const response =
+          await fetch("/api/leaderboard");
 
         if (!response.ok) {
-          throw new Error("Request failed");
+          throw new Error(
+            "Unable to load leaderboard"
+          );
         }
 
-        const data = await response.json();
-        const leaderboard = data.leaderboard || [];
+        const data =
+          await response.json();
 
-        if (leaderboard.length === 0) {
+        const leaderboard =
+          data.leaderboard || [];
+
+        if (!leaderboard.length) {
           container.innerHTML = `
             <div class="empty">
-              No moderation actions have been recorded yet.
+              No moderation points have been recorded yet.
             </div>
           `;
+
           return;
         }
 
-        container.innerHTML = leaderboard.map((moderator, index) => `
-          <div class="row">
-            <div class="rank">#${index + 1}</div>
+        container.innerHTML =
+          leaderboard
+            .map(
+              (moderator, index) => `
+                <div class="row">
 
-            <div class="name">
-              ${escapeHtml(moderator.moderator_name)}
-            </div>
+                  <div class="rank">
+                    #${index + 1}
+                  </div>
 
-            <div class="actions">
-              ${moderator.total_actions}
-            </div>
-          </div>
-        `).join("");
+                  <div class="name">
+                    ${escapeHtml(
+                      moderator.moderator_name
+                    )}
+                  </div>
+
+                  <div class="points">
+                    ${Number(
+                      moderator.points || 0
+                    )} pts
+                  </div>
+
+                </div>
+              `
+            )
+            .join("");
 
       } catch (error) {
         console.error(error);
