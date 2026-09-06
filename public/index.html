@@ -1,0 +1,148 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chronoverse Moderator Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, #1a1a2b 0%, #0b0b12 45%);
+      color: #ffffff;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+
+      background: #11111b;
+      border: 1px solid #29293a;
+      border-radius: 18px;
+
+      padding: 38px;
+
+      text-align: center;
+
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    .logo {
+      width: 70px;
+      height: 70px;
+
+      margin: 0 auto 22px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 18px;
+
+      background: #1d1d2b;
+
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #9292a7;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    .discord-button {
+      width: 100%;
+
+      padding: 14px 18px;
+
+      border: none;
+      border-radius: 10px;
+
+      background: #5865f2;
+      color: #ffffff;
+
+      font-size: 15px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
+
+    .discord-button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .note {
+      margin-top: 20px;
+
+      color: #707083;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-card">
+
+    <div class="logo">
+      C
+    </div>
+
+    <h1>
+      Chronoverse
+    </h1>
+
+    <p class="subtitle">
+      Sign in with Discord to access the moderator dashboard.
+    </p>
+
+    <button
+      class="discord-button"
+      onclick="loginWithDiscord()"
+    >
+      Continue with Discord
+    </button>
+
+    <p class="note">
+      Access is restricted to authorized Chronoverse staff roles.
+    </p>
+
+  </main>
+
+  <script>
+    function loginWithDiscord() {
+      window.location.href = "/api/auth/login";
+    }
+  </script>
+
+</body>
+</html>
+```
