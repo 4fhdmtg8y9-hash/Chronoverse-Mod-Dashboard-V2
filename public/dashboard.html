@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Chronoverse Moderator Dashboard</title>
 
   <style>
@@ -259,6 +258,12 @@
       </button>
 
       <button
+        onclick="window.location.href='/schedule.html'"
+      >
+        Schedule
+      </button>
+
+      <button
         onclick="window.location.href='/leaderboard.html'"
       >
         Leaderboard
@@ -419,22 +424,13 @@
     if (avatar) {
       avatarElement.src = avatar;
     } else {
-      avatarElement.style.display =
-        "none";
+      avatarElement.style.display = "none";
     }
 
     function logout() {
-      localStorage.removeItem(
-        "discord_user_id"
-      );
-
-      localStorage.removeItem(
-        "discord_username"
-      );
-
-      localStorage.removeItem(
-        "discord_avatar"
-      );
+      localStorage.removeItem("discord_user_id");
+      localStorage.removeItem("discord_username");
+      localStorage.removeItem("discord_avatar");
 
       window.location.replace("/");
     }
