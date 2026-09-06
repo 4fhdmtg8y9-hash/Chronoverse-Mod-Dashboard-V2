@@ -8,7 +8,9 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Marvel Chronoverse • Requests</title>
+  <title>
+    Marvel Chronoverse • Inactivity Logs
+  </title>
 
   <link
     rel="stylesheet"
@@ -16,11 +18,11 @@
   >
 
   <style>
-    .requests-wrap {
+    .logs-wrap {
       margin-top: 14px;
     }
 
-    .request-tabs {
+    .log-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
@@ -29,51 +31,39 @@
 
     .tab-button {
       padding: 8px 13px;
-
       border-radius: 6px;
-
       border:
         1px solid rgba(158, 63, 66, .28);
-
       background:
         rgba(255, 255, 255, .02);
-
       color: var(--muted);
-
       font-family:
         Cinzel,
         Georgia,
         serif;
-
       font-size: 8px;
-
       cursor: pointer;
     }
 
     .tab-button.active {
       color: white;
-
       background:
         rgba(126, 34, 39, .5);
-
       border-color:
         rgba(208, 100, 104, .55);
     }
 
-    .request-list {
+    .log-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .request-card {
+    .log-card {
       padding: 17px;
-
       border-radius: 8px;
-
       border:
         1px solid rgba(158, 63, 66, .28);
-
       background:
         linear-gradient(
           135deg,
@@ -82,120 +72,83 @@
         );
     }
 
-    .request-top {
+    .log-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-
       gap: 15px;
     }
 
-    .request-name {
+    .log-user {
       font-family:
         Cinzel,
         Georgia,
         serif;
-
       font-size: 12px;
     }
 
-    .request-type {
-      margin-top: 5px;
-
-      color: var(--red-light);
-
-      font-size: 8px;
-
-      letter-spacing: 1px;
-
-      text-transform: uppercase;
-    }
-
-    .request-date {
+    .log-date {
       color: var(--muted);
-
       font-size: 8px;
-
       text-align: right;
     }
 
-    .request-label {
+    .log-label {
       margin-top: 13px;
       margin-bottom: 5px;
-
       color: #715e55;
-
       font-size: 7px;
-
       letter-spacing: 1px;
-
       text-transform: uppercase;
     }
 
-    .request-content {
+    .log-reason {
       color: #b5a8a1;
-
       font-size: 10px;
-
       line-height: 1.6;
-
       white-space: pre-wrap;
     }
 
-    .request-footer {
+    .log-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       gap: 12px;
-
       margin-top: 15px;
     }
 
-    .request-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .request-actions .btn {
-      min-width: 90px;
-    }
-
-    .reviewed-by {
+    .review-meta {
       color: var(--muted);
-
       font-size: 8px;
+      line-height: 1.6;
     }
 
-    .status-approved {
-      color: #9ec9a3;
+    .access-denied {
+      padding: 50px 20px;
+      text-align: center;
     }
 
-    .status-denied {
-      color: #d58989;
+    .access-denied h2 {
+      font-size: 22px;
+      color: var(--red-light);
     }
 
-    .status-pending {
-      color: var(--gold-light);
+    .access-denied p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.7;
     }
 
     @media (max-width: 700px) {
-      .request-top,
-      .request-footer {
+      .log-top,
+      .log-footer {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .request-date {
+      .log-date {
         text-align: left;
-      }
-
-      .request-actions {
-        width: 100%;
-      }
-
-      .request-actions .btn {
-        flex: 1;
       }
     }
   </style>
@@ -227,58 +180,37 @@
 
     <nav class="nav">
 
-      <a
-        class="nav-link"
-        href="/dashboard.html"
-      >
+      <a class="nav-link" href="/dashboard.html">
         <span class="nav-icon">⌂</span>
         Dashboard
       </a>
 
-      <a
-        class="nav-link"
-        href="/log-action.html"
-      >
+      <a class="nav-link" href="/log-action.html">
         <span class="nav-icon">⚖</span>
         Log Action
       </a>
 
-      <a
-        class="nav-link"
-        href="/my-actions.html"
-      >
+      <a class="nav-link" href="/my-actions.html">
         <span class="nav-icon">▤</span>
         My Actions
       </a>
 
-      <a
-        class="nav-link"
-        href="/leaderboard.html"
-      >
+      <a class="nav-link" href="/leaderboard.html">
         <span class="nav-icon">♛</span>
         Leaderboard
       </a>
 
-      <a
-        class="nav-link"
-        href="/announcements.html"
-      >
+      <a class="nav-link" href="/announcements.html">
         <span class="nav-icon">◢</span>
         Announcements
       </a>
 
-      <a
-        class="nav-link"
-        href="/schedule.html"
-      >
+      <a class="nav-link" href="/schedule.html">
         <span class="nav-icon">▦</span>
         Schedule
       </a>
 
-      <a
-        class="nav-link"
-        href="/inactivity.html"
-      >
+      <a class="nav-link" href="/inactivity.html">
         <span class="nav-icon">◷</span>
         Inactivity
       </a>
@@ -287,8 +219,8 @@
         class="nav-link active"
         href="/requests.html"
       >
-        <span class="nav-icon">♙</span>
-        Requests
+        <span class="nav-icon">◫</span>
+        Inactivity Logs
       </a>
 
     </nav>
@@ -310,11 +242,11 @@
       <div class="page-heading">
 
         <h1>
-          Staff Requests
+          Inactivity Logs
         </h1>
 
         <p>
-          Review requests submitted across the Chronoverse.
+          Reviewed staff inactivity records.
         </p>
 
       </div>
@@ -346,8 +278,6 @@
 
     </header>
 
-    <!-- HERO -->
-
     <section class="hero">
 
       <img
@@ -363,18 +293,18 @@
         <div>
 
           <div class="hero-title">
-            Command
+            Inactivity
             <span class="red-text">
-              Review
+              Archive
             </span>
           </div>
 
           <div class="hero-subtitle">
-            STAFF AUTHORIZATION CENTRE
+            SENIOR STAFF RECORDS
           </div>
 
           <div class="hero-quote">
-            “Every decision changes the timeline.”
+            “Every absence leaves a record in the timeline.”
           </div>
 
         </div>
@@ -383,25 +313,26 @@
 
     </section>
 
-    <!-- REQUESTS -->
-
-    <section class="panel requests-wrap">
+    <section
+      id="logs-panel"
+      class="panel logs-wrap"
+    >
 
       <div class="panel-title">
-        Request Centre
+        Reviewed Notices
       </div>
 
       <div class="panel-description">
-        Review pending, approved and denied staff requests.
+        Visible only to Founder, Chronarch Overseer and Executive Division.
       </div>
 
-      <div class="request-tabs">
+      <div class="log-tabs">
 
         <button
           class="tab-button active"
-          data-filter="pending"
+          data-filter="all"
         >
-          PENDING
+          ALL
         </button>
 
         <button
@@ -418,22 +349,15 @@
           DENIED
         </button>
 
-        <button
-          class="tab-button"
-          data-filter="all"
-        >
-          ALL
-        </button>
-
       </div>
 
       <div
-        id="request-list"
-        class="request-list"
+        id="log-list"
+        class="log-list"
       >
 
         <div class="empty">
-          Loading requests...
+          Loading inactivity logs...
         </div>
 
       </div>
@@ -445,12 +369,17 @@
 </div>
 
 <script>
-  let allRequests = [];
-  let currentFilter = "pending";
+  let currentFilter = "all";
+  let allLogs = [];
 
-  const requestList =
+  const logList =
     document.getElementById(
-      "request-list"
+      "log-list"
+    );
+
+  const logsPanel =
+    document.getElementById(
+      "logs-panel"
     );
 
   async function getJson(
@@ -465,7 +394,6 @@
 
     if (response.status === 401) {
       window.location.replace("/");
-
       throw new Error(
         "Not authenticated"
       );
@@ -478,6 +406,15 @@
         await response.json();
     } catch {
       data = {};
+    }
+
+    if (
+      response.status === 403
+    ) {
+      throw new Error(
+        data.error ||
+        "Access denied"
+      );
     }
 
     if (!response.ok) {
@@ -502,9 +439,28 @@
         me.user
       );
 
-      await loadRequests();
+      await loadLogs();
 
     } catch (error) {
+
+      if (
+        error.message
+          .toLowerCase()
+          .includes(
+            "permission"
+          ) ||
+        error.message
+          .toLowerCase()
+          .includes(
+            "access"
+          )
+      ) {
+        renderAccessDenied(
+          error.message
+        );
+
+        return;
+      }
 
       console.error(
         error
@@ -512,7 +468,7 @@
     }
   }
 
-  async function loadRequests() {
+  async function loadLogs() {
     try {
 
       const data =
@@ -520,239 +476,231 @@
           "/api/requests/list"
         );
 
-      allRequests =
-        data.requests || [];
+      allLogs =
+        data.logs || [];
 
-      renderRequests();
+      renderLogs();
 
     } catch (error) {
+
+      if (
+        error.message
+          .toLowerCase()
+          .includes(
+            "permission"
+          ) ||
+        error.message
+          .toLowerCase()
+          .includes(
+            "access"
+          )
+      ) {
+        renderAccessDenied(
+          error.message
+        );
+
+        return;
+      }
 
       console.error(
         error
       );
 
-      requestList.innerHTML = `
+      logList.innerHTML = `
         <div class="empty">
-          Unable to load requests.
+          Unable to load inactivity logs.
         </div>
       `;
     }
   }
 
-  function renderRequests() {
+  function renderLogs() {
 
-    const requests =
+    const logs =
       currentFilter === "all"
-        ? allRequests
-        : allRequests.filter(
-            request =>
-              request.status ===
+        ? allLogs
+        : allLogs.filter(
+            log =>
+              log.status ===
               currentFilter
           );
 
-    if (!requests.length) {
+    if (!logs.length) {
 
-      requestList.innerHTML = `
+      logList.innerHTML = `
         <div class="empty">
-          No ${escapeHtml(
-            currentFilter === "all"
-              ? ""
-              : currentFilter
-          )} requests.
+          No inactivity logs found.
         </div>
       `;
 
       return;
     }
 
-    requestList.innerHTML =
-      requests
-        .map(request => {
+    logList.innerHTML =
+      logs
+        .map(log => `
+          <article class="log-card">
 
-          const status =
-            request.status ||
-            "pending";
+            <div class="log-top">
 
-          const requester =
-            request.username ||
-            request.requester_name ||
-            request.moderator_name ||
-            "Unknown Staff Member";
+              <div>
 
-          const type =
-            request.request_type ||
-            request.type ||
-            "Staff Request";
-
-          const reason =
-            request.reason ||
-            request.content ||
-            request.description ||
-            "No details provided.";
-
-          const reviewer =
-            request.reviewed_by_name ||
-            request.reviewer_name ||
-            "";
-
-          return `
-            <article class="request-card">
-
-              <div class="request-top">
-
-                <div>
-
-                  <div class="request-name">
-                    ${escapeHtml(
-                      requester
-                    )}
-                  </div>
-
-                  <div class="request-type">
-                    ${escapeHtml(
-                      formatText(type)
-                    )}
-                  </div>
-
+                <div class="log-user">
+                  ${escapeHtml(
+                    log.username ||
+                    "Unknown Staff Member"
+                  )}
                 </div>
 
-                <div class="request-date">
+                <div class="log-label">
+                  Staff ID
+                </div>
+
+                <div class="review-meta">
                   ${escapeHtml(
-                    formatDate(
-                      request.created_at
-                    )
+                    log.user_id ||
+                    "Unknown"
                   )}
                 </div>
 
               </div>
 
-              <div class="request-label">
-                Request Details
-              </div>
-
-              <div class="request-content">
-                ${escapeHtml(
-                  reason
+              <div class="log-date">
+                Submitted:
+                ${formatDate(
+                  log.created_at
                 )}
               </div>
 
-              <div class="request-footer">
+            </div>
 
-                <div>
+            <div class="log-label">
+              Reason
+            </div>
 
-                  ${statusBadge(
-                    status
-                  )}
+            <div class="log-reason">
+              ${escapeHtml(
+                log.reason ||
+                "No reason provided."
+              )}
+            </div>
 
-                  ${
-                    reviewer
-                      ? `
-                        <div class="reviewed-by">
-                          Reviewed by
-                          ${escapeHtml(
-                            reviewer
-                          )}
-                        </div>
-                      `
-                      : ""
-                  }
+            <div class="log-footer">
 
-                </div>
+              <div>
 
+                ${statusBadge(
+                  log.status
+                )}
+
+              </div>
+
+              <div class="review-meta">
+
+                Reviewed by:
                 ${
-                  status === "pending"
-                    ? `
-                      <div class="request-actions">
+                  log.reviewed_by
+                    ? `<@${escapeHtml(
+                        log.reviewed_by
+                      )}>`
+                    : "Unknown"
+                }
 
-                        <button
-                          class="btn"
-                          type="button"
-                          onclick="reviewRequest(
-                            ${JSON.stringify(
-                              request.id
-                            )},
-                            'denied'
-                          )"
-                        >
-                          Deny
-                        </button>
+                <br>
 
-                        <button
-                          class="btn btn-gold"
-                          type="button"
-                          onclick="reviewRequest(
-                            ${JSON.stringify(
-                              request.id
-                            )},
-                            'approved'
-                          )"
-                        >
-                          Approve
-                        </button>
-
-                      </div>
-                    `
-                    : ""
+                Reviewed:
+                ${
+                  formatDate(
+                    log.reviewed_at
+                  )
                 }
 
               </div>
 
-            </article>
-          `;
-        })
+            </div>
+
+          </article>
+        `)
         .join("");
   }
 
-  async function reviewRequest(
-    requestId,
-    status
+  function renderAccessDenied(
+    message
   ) {
+    logsPanel.innerHTML = `
+      <div class="access-denied">
 
-    if (
-      requestId === undefined ||
-      requestId === null
-    ) {
-      alert(
-        "This request does not have an ID."
-      );
+        <h2>
+          ACCESS DENIED
+        </h2>
 
-      return;
+        <p>
+          ${escapeHtml(
+            message ||
+            "You do not have permission to view inactivity logs."
+          )}
+        </p>
+
+        <p>
+          This archive is restricted to Founder,
+          Chronarch Overseer and Executive Division.
+        </p>
+
+      </div>
+    `;
+  }
+
+  function statusBadge(status) {
+
+    if (status === "approved") {
+      return `
+        <span class="badge badge-approved">
+          APPROVED
+        </span>
+      `;
     }
 
-    try {
+    return `
+      <span class="badge badge-denied">
+        DENIED
+      </span>
+    `;
+  }
 
-      await getJson(
-        "/api/requests/review",
-        {
-          method: "POST",
+  function updateUser(user) {
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
 
-          body: JSON.stringify({
-            request_id:
-              requestId,
-
-            status:
-              status
-          })
-        }
+    const role =
+      document.querySelector(
+        ".user-role"
       );
 
-      await loadRequests();
+    if (
+      role &&
+      user.rank
+    ) {
+      role.textContent =
+        user.rank;
+    }
 
-    } catch (error) {
-
-      console.error(
-        error
+    const avatar =
+      document.getElementById(
+        "user-avatar"
       );
 
-      alert(
-        error.message ||
-        "Unable to review request."
-      );
+    if (user.avatar) {
+
+      avatar.src =
+        user.avatar;
+
+    } else {
+
+      avatar.style.display =
+        "none";
     }
   }
 
@@ -783,77 +731,10 @@
             "active"
           );
 
-          renderRequests();
+          renderLogs();
         }
       );
     });
-
-  function updateUser(user) {
-
-    document.getElementById(
-      "user-name"
-    ).textContent =
-      user.username;
-
-    const avatar =
-      document.getElementById(
-        "user-avatar"
-      );
-
-    if (user.avatar) {
-
-      avatar.src =
-        user.avatar;
-
-    } else {
-
-      avatar.style.display =
-        "none";
-    }
-  }
-
-  function statusBadge(status) {
-
-    if (status === "approved") {
-
-      return `
-        <span class="badge badge-approved">
-          APPROVED
-        </span>
-      `;
-    }
-
-    if (status === "denied") {
-
-      return `
-        <span class="badge badge-denied">
-          DENIED
-        </span>
-      `;
-    }
-
-    return `
-      <span class="badge badge-pending">
-        PENDING
-      </span>
-    `;
-  }
-
-  function formatText(value) {
-
-    return String(
-      value || ""
-    )
-      .replaceAll(
-        "_",
-        " "
-      )
-      .replace(
-        /\b\w/g,
-        letter =>
-          letter.toUpperCase()
-      );
-  }
 
   function formatDate(value) {
 
