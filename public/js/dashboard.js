@@ -1,48 +1,14 @@
-```js
-const userId =
-  localStorage.getItem("discord_user_id");
-
-const username =
-  localStorage.getItem("discord_username");
-
-if (!userId || !username) {
-  window.location.replace("/");
-}
-
-async function loadDashboard() {
-  try {
-    const [
-      myActions,
-      requests,
-      leaderboard
-    ] = await Promise.all([
-      fetchJson(
-        `/api/actions/my-actions?moderator_id=${encodeURIComponent(userId)}`
-      ),
-      fetchJson("/api/requests/list"),
-      fetchJson("/api/leaderboard")
-    ]);
-
-    updateMyActions(myActions.actions || []);
-    updatePendingRequests(requests.requests || []);
-    updateRank(leaderboard.leaderboard || []);
-    updateRecentActivity(leaderboard.leaderboard || []);
-
-  } catch (error) {
-    console.error("Dashboard load failed:", error);
-
-    document.getElementById(
-      "activity"
-    ).textContent =
-      "Unable to load dashboard data.";
-  }
-}
-
 async function fetchJson(url) {
-  const response = await fetch(url);
+  const response =
+    await fetch(url);
 
   const data =
     await response.json();
+
+  if (response.status === 401) {
+    window.location.replace("/");
+    throw new Error("Not authenticated");
+  }
 
   if (!response.ok) {
     throw new Error(
@@ -54,77 +20,110 @@ async function fetchJson(url) {
   return data;
 }
 
-function updateMyActions(actions) {
-  const element =
-    document.getElementById("my-actions");
+async function loadDashboard() {
+  try {
+    const [
+      me,
+      myActions,
+      requests,
+      leaderboard
+    ] = await Promise.all([
+      fetchJson("/api/auth/me"),
+      fetchJson("/api/actions/my-actions"),
+      fetchJson("/api/requests/list"),
+      fetchJson("/api/leaderboard")
+    ]);
 
-  element.textContent =
-    actions.length;
-}
+    const user =
+      me.user;
 
-function updatePendingRequests(requests) {
-  const pending =
-    requests.filter(
-      request =>
-        request.status === "pending"
-    );
+    const actions =
+      myActions.actions || [];
 
-  const element =
+    const requestList =
+      requests.requests || [];
+
+    const rankings =
+      leaderboard.leaderboard || [];
+
+    document.getElementById(
+      "my-actions"
+    ).textContent =
+      actions.length;
+
     document.getElementById(
       "pending-requests"
+    ).textContent =
+      requestList.filter(
+        request =>
+          request.status === "pending"
+      ).length;
+
+    const rankIndex =
+      rankings.findIndex(
+        moderator =>
+          moderator.moderator_id ===
+          user.id
+      );
+
+    document.getElementById(
+      "my-rank"
+    ).textContent =
+      rankIndex === -1
+        ? "—"
+        : `#${rankIndex + 1}`;
+
+    renderLeaderboard(rankings);
+
+  } catch (error) {
+    console.error(
+      "Dashboard load failed:",
+      error
     );
 
-  element.textContent =
-    pending.length;
-}
+    const activity =
+      document.getElementById(
+        "activity"
+      );
 
-function updateRank(leaderboard) {
-  const element =
-    document.getElementById("my-rank");
-
-  const index =
-    leaderboard.findIndex(
-      moderator =>
-        moderator.moderator_id === userId
-    );
-
-  if (index === -1) {
-    element.textContent = "—";
-    return;
+    if (activity) {
+      activity.textContent =
+        "Unable to load dashboard data.";
+    }
   }
-
-  element.textContent =
-    `#${index + 1}`;
 }
 
-function updateRecentActivity(leaderboard) {
+function renderLeaderboard(
+  leaderboard
+) {
   const activity =
-    document.getElementById("activity");
+    document.getElementById(
+      "activity"
+    );
 
   if (!leaderboard.length) {
     activity.textContent =
-      "No moderation activity yet.";
+      "No verified moderation activity yet.";
 
     return;
   }
 
-  activity.classList.remove("empty");
+  activity.classList.remove(
+    "empty"
+  );
 
   activity.innerHTML =
     leaderboard
       .slice(0, 5)
       .map(
         (moderator, index) => `
-          <div
-            style="
-              display:flex;
-              align-items:center;
-              justify-content:space-between;
-              gap:15px;
-              padding:13px 0;
-              border-bottom:1px solid #252535;
-            "
-          >
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:15px;
+            padding:13px 0;
+            border-bottom:1px solid #252535;
+          ">
             <span>
               #${index + 1}
               ${escapeHtml(
@@ -134,8 +133,8 @@ function updateRecentActivity(leaderboard) {
 
             <strong>
               ${Number(
-                moderator.total_actions
-              )} actions
+                moderator.points || 0
+              )} pts
             </strong>
           </div>
         `
@@ -153,4 +152,3 @@ function escapeHtml(value) {
 }
 
 loadDashboard();
-```
