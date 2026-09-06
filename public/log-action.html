@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,12 +79,6 @@
       outline: none;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #5b5b74;
-    }
-
     textarea {
       min-height: 120px;
       resize: vertical;
@@ -132,7 +127,7 @@
     <h1>Log Moderation Action</h1>
 
     <p class="subtitle">
-      Record a moderation action for the Chronoverse staff system.
+      Submit an action for staff verification.
     </p>
 
     <form class="form-card" id="action-form">
@@ -157,7 +152,7 @@
         <input
           id="target-id"
           type="text"
-          placeholder="Example: 123456789012345678"
+          placeholder="Discord user ID"
         >
       </div>
 
@@ -169,7 +164,7 @@
         <input
           id="target-name"
           type="text"
-          placeholder="Example: username"
+          placeholder="Username"
         >
       </div>
 
@@ -180,21 +175,21 @@
 
         <textarea
           id="reason"
-          placeholder="Explain why this action was taken..."
+          placeholder="Explain why the action was taken..."
         ></textarea>
       </div>
 
       <button
-        class="submit"
         id="submit-button"
+        class="submit"
         type="submit"
       >
-        Submit Action
+        Submit for Verification
       </button>
 
       <div
-        class="message"
         id="message"
+        class="message"
       ></div>
 
     </form>
@@ -214,22 +209,39 @@
     const message =
       document.getElementById("message");
 
+    async function requireLogin() {
+      const response =
+        await fetch("/api/auth/me");
+
+      if (!response.ok) {
+        window.location.replace("/");
+        return false;
+      }
+
+      return true;
+    }
+
     async function loadActionTypes() {
       try {
         const response =
           await fetch("/api/actions/types");
 
-        if (!response.ok) {
-          throw new Error("Unable to load action types");
-        }
+        const data =
+          await response.json();
 
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Unable to load action types"
+          );
+        }
 
         for (const type of data.action_types || []) {
           const option =
             document.createElement("option");
 
           option.value = type;
+
           option.textContent =
             formatActionName(type);
 
@@ -252,25 +264,13 @@
       async event => {
         event.preventDefault();
 
-        const moderatorId =
-          localStorage.getItem("discord_user_id");
-
-        const moderatorName =
-          localStorage.getItem("discord_username");
-
-        if (!moderatorId || !moderatorName) {
-          message.textContent =
-            "You must be logged in before logging an action.";
-
-          message.className =
-            "message error";
-
-          return;
-        }
-
         submitButton.disabled = true;
-        message.textContent = "Submitting...";
-        message.className = "message";
+
+        message.textContent =
+          "Submitting...";
+
+        message.className =
+          "message";
 
         try {
           const response =
@@ -278,13 +278,13 @@
               method: "POST",
 
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                  "application/json"
               },
 
               body: JSON.stringify({
-                moderator_id: moderatorId,
-                moderator_name: moderatorName,
-                action_type: actionType.value,
+                action_type:
+                  actionType.value,
 
                 target_user_id:
                   document
@@ -309,17 +309,22 @@
           const data =
             await response.json();
 
+          if (response.status === 401) {
+            window.location.replace("/");
+            return;
+          }
+
           if (!response.ok) {
             throw new Error(
               data.error ||
-              "Unable to record action"
+              "Unable to submit action"
             );
           }
 
           form.reset();
 
           message.textContent =
-            "Moderation action recorded successfully.";
+            "Action submitted. It is waiting for verification.";
 
           message.className =
             "message success";
@@ -329,7 +334,7 @@
 
           message.textContent =
             error.message ||
-            "Unable to record moderation action.";
+            "Unable to submit moderation action.";
 
           message.className =
             "message error";
@@ -347,8 +352,20 @@
         );
     }
 
-    loadActionTypes();
+    async function start() {
+      const loggedIn =
+        await requireLogin();
+
+      if (!loggedIn) {
+        return;
+      }
+
+      await loadActionTypes();
+    }
+
+    start();
   </script>
 
 </body>
 </html>
+```
