@@ -1,6 +1,6 @@
-import db from "../../lib/database.js";
+import supabase from "../../lib/database.js";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -28,35 +28,50 @@ export default function handler(req, res) {
     });
   }
 
-  const request = db.prepare(`
-    SELECT id
-    FROM requests
-    WHERE id = ?
-  `).get(request_id);
+  try {
+    const { data: request, error: findError } = await supabase
+      .from("requests")
+      .select("id")
+      .eq("id", request_id)
+      .single();
 
-  if (!request) {
-    return res.status(404).json({
+    if (findError || !request) {
+      return res.status(404).json({
+        success: false,
+        error: "Request not found"
+      });
+    }
+
+    const { error: updateError } = await supabase
+      .from("requests")
+      .update({
+        status,
+        reviewed_by,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq("id", request_id);
+
+    if (updateError) {
+      console.error(updateError);
+
+      return res.status(500).json({
+        success: false,
+        error: "Failed to review request"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      request_id,
+      status
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
       success: false,
-      error: "Request not found"
+      error: "Database error"
     });
   }
-
-  db.prepare(`
-    UPDATE requests
-    SET
-      status = ?,
-      reviewed_by = ?,
-      reviewed_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).run(
-    status,
-    reviewed_by,
-    request_id
-  );
-
-  return res.status(200).json({
-    success: true,
-    request_id,
-    status
-  });
 }
