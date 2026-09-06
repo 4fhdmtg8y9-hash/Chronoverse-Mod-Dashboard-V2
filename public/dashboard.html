@@ -4,199 +4,1246 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse Moderator Dashboard</title>
+  <title>Marvel Chronoverse • Moderator Panel</title>
 
   <style>
+    :root {
+      --bg: #070707;
+      --panel: rgba(12, 10, 11, 0.96);
+      --panel-soft: rgba(23, 14, 15, 0.88);
+
+      --red: #b94f53;
+      --red-bright: #d86b6d;
+      --red-dark: #5b2024;
+
+      --gold: #c9a06b;
+      --gold-soft: #8d6e49;
+
+      --text: #f5f0ea;
+      --muted: #8e8580;
+
+      --border: rgba(177, 78, 79, 0.48);
+      --border-gold: rgba(194, 150, 91, 0.42);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
+
+      background:
+        radial-gradient(
+          circle at 70% 10%,
+          rgba(115, 37, 38, 0.17),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 20% 85%,
+          rgba(92, 45, 24, 0.13),
+          transparent 34%
+        ),
+        #060606;
+
+      color: var(--text);
+
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
     }
+
+    body::before {
+      content: "";
+
+      position: fixed;
+      inset: 0;
+
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(178, 71, 71, 0.035) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          rgba(178, 71, 71, 0.02) 1px,
+          transparent 1px
+        );
+
+      background-size: 80px 80px;
+
+      opacity: 0.35;
+
+      z-index: -1;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       PAGE SHELL
+    ========================= */
+
+    .shell {
+      min-height: 100vh;
+
+      border:
+        1px solid rgba(188, 126, 76, 0.22);
+
+      display: grid;
+
+      grid-template-columns:
+        230px
+        minmax(0, 1fr);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
 
     .sidebar {
-      position: fixed;
-      inset: 0 auto 0 0;
-      width: 240px;
-      height: 100vh;
-      padding: 25px 18px;
-      background: #11111b;
-      border-right: 1px solid #252535;
+      min-height: 100vh;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(15, 10, 10, 0.98),
+          rgba(5, 5, 6, 0.98)
+        );
+
+      border-right:
+        1px solid var(--border-gold);
+
+      padding:
+        26px
+        15px;
+
       display: flex;
       flex-direction: column;
+
+      position: sticky;
+      top: 0;
+
+      height: 100vh;
     }
 
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 35px;
+    .brand {
+      text-align: center;
+
+      padding:
+        5px
+        8px
+        24px;
+
+      border-bottom:
+        1px solid rgba(193, 151, 94, 0.22);
+
+      margin-bottom: 22px;
+    }
+
+    .brand-small {
+      color: var(--gold);
+
+      font-family:
+        Georgia,
+        serif;
+
+      letter-spacing: 2px;
+
+      font-size: 13px;
+    }
+
+    .brand-main {
+      margin-top: 3px;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 25px;
+
+      letter-spacing: 1px;
+
+      color: #e6c092;
+
+      text-shadow:
+        0 0 24px rgba(189, 126, 80, 0.23);
+    }
+
+    .brand-line {
+      width: 70%;
+      height: 1px;
+
+      margin:
+        11px
+        auto;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+    }
+
+    .brand-sub {
+      color: #9d8467;
+
+      letter-spacing: 4px;
+
+      font-size: 9px;
     }
 
     .nav {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+
+      gap: 7px;
     }
 
-    .nav button {
+    .nav-item {
       width: 100%;
-      padding: 12px 14px;
+
       border: 0;
-      border-radius: 8px;
+
+      color: #b5aba5;
+
       background: transparent;
-      color: #aaaabd;
+
+      padding:
+        12px
+        12px;
+
+      border-radius: 7px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 11px;
+
       text-align: left;
-      cursor: pointer;
-      font-size: 14px;
+
+      transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
     }
 
-    .nav button:hover,
-    .nav button.active {
-      background: #1d1d2b;
-      color: #ffffff;
+    .nav-item:hover {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(120, 34, 37, 0.45),
+          rgba(56, 20, 22, 0.14)
+        );
+
+      color: #fff;
+
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      color: white;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(128, 38, 42, 0.92),
+          rgba(62, 21, 24, 0.3)
+        );
+
+      border-left:
+        2px solid var(--red-bright);
+
+      box-shadow:
+        0 0 18px rgba(144, 48, 51, 0.13);
+    }
+
+    .nav-icon {
+      width: 28px;
+      height: 28px;
+
+      border-radius: 6px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        rgba(255, 255, 255, 0.035);
+
+      font-size: 15px;
+    }
+
+    .latin {
+      margin-top: auto;
+
+      text-align: center;
+
+      padding-top: 35px;
+
+      color: #6f6055;
+    }
+
+    .latin-symbol {
+      color: var(--gold);
+
+      margin-bottom: 18px;
+    }
+
+    .latin-text {
+      font-family:
+        Georgia,
+        serif;
+
+      letter-spacing: 4px;
+
+      line-height: 2.15;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      min-width: 0;
+
+      padding:
+        0
+        20px
+        28px;
+    }
+
+    /* =========================
+       TOPBAR / BANNER
+    ========================= */
+
+    .topbar {
+      min-height: 105px;
+
+      border-bottom:
+        1px solid var(--border-gold);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding:
+        0
+        10px;
+
+      position: relative;
+
+      overflow: hidden;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(30, 16, 16, 0.95),
+          rgba(10, 9, 10, 0.62)
+        );
+    }
+
+    .topbar::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        url("/assets/chronoverse-top-banner.jpg");
+
+      background-size: cover;
+      background-position: center;
+
+      opacity: 0.28;
+
+      filter:
+        saturate(0.65)
+        sepia(0.15);
+
+      pointer-events: none;
+    }
+
+    .topbar > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-quote {
+      margin-left: auto;
+
+      color: #7d716b;
+
+      text-transform: uppercase;
+
+      letter-spacing: 5px;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 11px;
+
+      text-align: center;
+
+      line-height: 1.9;
     }
 
     .profile {
-      margin-top: auto;
-      padding-top: 20px;
-      border-top: 1px solid #252535;
-    }
-
-    .profile-main {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+
+      gap: 12px;
+
+      min-width: 190px;
+
+      justify-content: flex-end;
     }
 
-    .avatar {
-      width: 38px;
-      height: 38px;
+    .profile-avatar {
+      width: 42px;
+      height: 42px;
+
       border-radius: 50%;
+
       object-fit: cover;
-      background: #252535;
+
+      border:
+        1px solid rgba(199, 139, 93, 0.5);
+
+      background: #151214;
     }
 
     .profile-name {
-      font-size: 14px;
-      font-weight: 700;
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 16px;
     }
 
-    .profile-label {
-      color: #77778b;
+    .profile-role {
+      margin-top: 3px;
+
+      color: #8f827b;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      margin-top: 14px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 10px;
+
+      overflow: hidden;
+
+      position: relative;
+
+      min-height: 135px;
+
+      padding:
+        25px
+        28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      background:
+        radial-gradient(
+          circle at 82% 50%,
+          rgba(126, 51, 51, 0.24),
+          transparent 26%
+        ),
+        linear-gradient(
+          110deg,
+          #090909 12%,
+          #0c090a 56%,
+          #171011 100%
+        );
+    }
+
+    .hero::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        url("/assets/chronoverse-hero.jpg");
+
+      background-size: cover;
+      background-position: center;
+
+      opacity: 0.23;
+
+      mix-blend-mode: screen;
+
+      pointer-events: none;
+    }
+
+    .hero-left,
+    .hero-right {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-family:
+        Georgia,
+        serif;
+
+      font-weight: 400;
+
+      font-size: 31px;
+    }
+
+    .hero-name {
+      color: var(--red-bright);
+    }
+
+    .hero-role {
+      margin-top: 7px;
+
+      color: #a89890;
+
+      font-family:
+        Georgia,
+        serif;
+
+      letter-spacing: 5px;
+
       font-size: 11px;
-      margin-top: 2px;
     }
 
-    .logout {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #303043;
+    .hero-quote {
+      margin-top: 16px;
+
+      color: #756b67;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-style: italic;
+
+      letter-spacing: 2px;
+
+      font-size: 11px;
+    }
+
+    .hero-right {
+      text-align: right;
+    }
+
+    .hero-date {
+      color: #8f837c;
+
+      letter-spacing: 1px;
+
+      font-size: 11px;
+    }
+
+    .hero-time {
+      margin-top: 9px;
+
+      color: var(--red-bright);
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 23px;
+
+      letter-spacing: 2px;
+    }
+
+    /* =========================
+       STAT CARDS
+    ========================= */
+
+    .stats {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 12px;
+
+      margin-top: 13px;
+    }
+
+    .stat {
+      min-height: 120px;
+
+      padding:
+        18px
+        20px;
+
+      border:
+        1px solid var(--border);
+
       border-radius: 8px;
-      background: transparent;
-      color: #aaaabd;
-      cursor: pointer;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(25, 13, 14, 0.94),
+          rgba(8, 8, 9, 0.98)
+        );
+
+      display: flex;
+      align-items: center;
+
+      gap: 18px;
+
+      box-shadow:
+        inset 0 0 32px rgba(131, 43, 45, 0.05);
     }
 
-    .main {
-      margin-left: 240px;
-      padding: 35px;
+    .stat-icon {
+      font-size: 31px;
+
+      color: var(--red-bright);
+
+      filter:
+        drop-shadow(
+          0 0 10px
+          rgba(190, 75, 76, 0.22)
+        );
     }
 
-    .header {
+    .stat-value {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 27px;
+
+      line-height: 1;
+    }
+
+    .stat-label {
+      color: #9a8f89;
+
+      font-size: 12px;
+
+      margin-top: 6px;
+    }
+
+    .stat-change {
+      margin-top: 8px;
+
+      color: #6bad7b;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       CINEMATIC STRIP
+    ========================= */
+
+    .cinematic-strip {
+      margin-top: 13px;
+
+      min-height: 125px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 8px;
+
+      overflow: hidden;
+
+      position: relative;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(70, 14, 18, 0.85),
+          rgba(26, 10, 12, 0.78)
+        );
+    }
+
+    .cinematic-strip::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        url("/assets/chronoverse-banner.jpg");
+
+      background-size: cover;
+      background-position: center;
+
+      opacity: 0.52;
+
+      filter:
+        saturate(0.65)
+        contrast(1.08);
+    }
+
+    .cinematic-overlay {
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(55, 10, 13, 0.6),
+          rgba(0, 0, 0, 0.15),
+          rgba(20, 5, 6, 0.68)
+        );
+    }
+
+    .cinematic-text {
+      position: relative;
+      z-index: 1;
+
+      min-height: 125px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding:
+        20px
+        60px;
+    }
+
+    .quote-large {
+      max-width: 270px;
+
+      color: #c8b8ac;
+
+      font-family:
+        Georgia,
+        serif;
+
+      letter-spacing: 5px;
+
+      line-height: 1.55;
+
+      text-align: center;
+
+      font-size: 16px;
+    }
+
+    .banner-brand {
+      text-align: right;
+
+      color: #d6a5a0;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 17px;
+
+      letter-spacing: 1px;
+    }
+
+    /* =========================
+       LOWER GRID
+    ========================= */
+
+    .dashboard-grid {
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(280px, 0.8fr);
+
+      gap: 12px;
+
+      margin-top: 13px;
+    }
+
+    .panel {
+      border:
+        1px solid var(--border);
+
+      border-radius: 8px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(14, 12, 13, 0.98),
+          rgba(8, 8, 9, 0.98)
+        );
+
+      padding: 17px;
+
+      min-width: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 21px;
+    }
+
+    .panel-subtitle {
+      margin-top: 4px;
+
+      color: #756d68;
+
+      font-size: 11px;
+    }
+
+    .panel-link {
+      color: var(--red-bright);
+
+      text-decoration: none;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 11px;
+    }
+
+    /* =========================
+       QUICK ACTIONS
+    ========================= */
+
+    .quick-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 10px;
+    }
+
+    .quick-card {
+      min-height: 96px;
+
+      border:
+        1px solid rgba(151, 66, 67, 0.4);
+
+      border-radius: 7px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(46, 24, 25, 0.65),
+          rgba(11, 9, 10, 0.96)
+        );
+
+      color: white;
+
+      padding: 13px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      transition:
+        transform 0.18s ease,
+        border 0.18s ease,
+        background 0.18s ease;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-2px);
+
+      border-color:
+        rgba(205, 97, 98, 0.65);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(65, 28, 31, 0.8),
+          rgba(12, 10, 11, 0.98)
+        );
+    }
+
+    .quick-icon {
+      font-size: 20px;
+
+      color: #d79582;
+
+      margin-bottom: 8px;
+    }
+
+    .quick-title {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 14px;
+    }
+
+    .quick-desc {
+      margin-top: 5px;
+
+      color: #7f7671;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       SCHEDULE
+    ========================= */
+
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .schedule-item {
+      display: grid;
+
+      grid-template-columns:
+        34px
+        1fr;
+
+      gap: 10px;
+
+      padding:
+        10px
+        0;
+
+      border-bottom:
+        1px solid rgba(255, 255, 255, 0.055);
+    }
+
+    .schedule-item:last-child {
+      border-bottom: 0;
+    }
+
+    .schedule-icon {
+      width: 32px;
+      height: 32px;
+
+      border-radius: 6px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        rgba(112, 29, 32, 0.36);
+
+      color: var(--red-bright);
+    }
+
+    .schedule-name {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 13px;
+    }
+
+    .schedule-time {
+      margin-top: 3px;
+
+      color: #736d68;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       BOTTOM GRID
+    ========================= */
+
+    .bottom-grid {
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(300px, 1fr);
+
+      gap: 12px;
+
+      margin-top: 13px;
+    }
+
+    .log-row {
+      display: grid;
+
+      grid-template-columns:
+        32px
+        100px
+        minmax(0, 1fr)
+        auto;
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding:
+        10px
+        0;
+
+      border-bottom:
+        1px solid rgba(255, 255, 255, 0.055);
+    }
+
+    .log-row:last-child {
+      border-bottom: 0;
+    }
+
+    .log-avatar {
+      width: 28px;
+      height: 28px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      background: #211719;
+    }
+
+    .log-user {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 13px;
+    }
+
+    .log-desc {
+      color: #887e78;
+
+      font-size: 10px;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+    }
+
+    .status {
+      border-radius: 999px;
+
+      padding:
+        4px
+        9px;
+
+      font-size: 9px;
+    }
+
+    .status.approved {
+      color: #87c398;
+
+      border:
+        1px solid rgba(74, 137, 91, 0.55);
+
+      background:
+        rgba(43, 91, 55, 0.15);
+    }
+
+    .status.denied {
+      color: #e17373;
+
+      border:
+        1px solid rgba(171, 59, 60, 0.55);
+
+      background:
+        rgba(120, 39, 41, 0.15);
+    }
+
+    .announcement-row {
+      display: grid;
+
+      grid-template-columns:
+        38px
+        1fr;
+
+      gap: 10px;
+
+      padding:
+        11px
+        0;
+
+      border-bottom:
+        1px solid rgba(255, 255, 255, 0.055);
+    }
+
+    .announcement-row:last-child {
+      border-bottom: 0;
+    }
+
+    .announcement-icon {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 6px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        rgba(108, 30, 33, 0.42);
+
+      color: #df7b7d;
+    }
+
+    .announcement-title {
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 13px;
+    }
+
+    .announcement-date {
+      margin-top: 4px;
+
+      color: #756d68;
+
+      font-size: 10px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer {
+      margin-top: 20px;
+
+      padding:
+        19px
+        8px
+        0;
+
+      border-top:
+        1px solid var(--border-gold);
+
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 30px;
+
+      color: #6c5f57;
+
+      letter-spacing: 3px;
+
+      font-size: 8px;
     }
 
-    .header h1 {
-      font-size: 28px;
-      margin-bottom: 7px;
-    }
+    /* =========================
+       RESPONSIVE
+    ========================= */
 
-    .header p {
-      color: #9292a7;
-    }
-
-    .quick-action {
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 10px;
-      background: #ffffff;
-      color: #11111b;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-bottom: 25px;
-    }
-
-    .card,
-    .section {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 12px;
-    }
-
-    .card {
-      padding: 22px;
-    }
-
-    .card-title {
-      color: #9292a7;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .card-value {
-      font-size: 28px;
-      font-weight: 700;
-    }
-
-    .section {
-      padding: 25px;
-    }
-
-    .section h2 {
-      margin-bottom: 18px;
-      font-size: 18px;
-    }
-
-    .empty {
-      padding: 35px;
-      text-align: center;
-      color: #77778b;
-    }
-
-    @media (max-width: 800px) {
-      .sidebar {
-        width: 190px;
+    @media (max-width: 1100px) {
+      .stats {
+        grid-template-columns:
+          repeat(2, 1fr);
       }
 
-      .main {
-        margin-left: 190px;
-        padding: 20px;
+      .dashboard-grid,
+      .bottom-grid {
+        grid-template-columns: 1fr;
       }
+    }
 
-      .cards {
+    @media (max-width: 780px) {
+      .shell {
         grid-template-columns: 1fr;
       }
 
-      .header {
+      .sidebar {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+        min-height: auto;
+      }
+
+      .latin {
+        display: none;
+      }
+
+      .nav {
+        display: grid;
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .main {
+        padding:
+          0
+          12px
+          20px;
+      }
+
+      .topbar {
+        min-height: 85px;
+      }
+
+      .top-quote {
+        display: none;
+      }
+
+      .hero {
         flex-direction: column;
         align-items: flex-start;
+
+        gap: 20px;
+      }
+
+      .hero-right {
+        text-align: left;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .cinematic-text {
+        padding: 20px;
+      }
+
+      .banner-brand {
+        display: none;
       }
     }
   </style>
@@ -204,137 +1251,687 @@
 
 <body>
 
-  <aside class="sidebar">
+  <div class="shell">
 
-    <div class="logo">Chronoverse</div>
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
-    <nav class="nav">
-      <button class="active" onclick="location.href='/dashboard.html'">
-        Overview
-      </button>
+    <aside class="sidebar">
 
-      <button onclick="location.href='/log-action.html'">
-        Log Action
-      </button>
+      <div class="brand">
 
-      <button onclick="location.href='/my-actions.html'">
-        My Actions
-      </button>
+        <div class="brand-small">
+          MARVEL
+        </div>
 
-      <button onclick="location.href='/requests.html'">
-        Requests
-      </button>
+        <div class="brand-main">
+          CHRONOVERSE
+        </div>
 
-      <button onclick="location.href='/inactivity.html'">
-        Inactivity
-      </button>
+        <div class="brand-line"></div>
 
-      <button onclick="location.href='/announcements.html'">
-        Announcements
-      </button>
-
-      <button onclick="location.href='/schedule.html'">
-        Schedule
-      </button>
-
-      <button onclick="location.href='/leaderboard.html'">
-        Leaderboard
-      </button>
-    </nav>
-
-    <div class="profile">
-
-      <div class="profile-main">
-
-        <img
-          id="profile-avatar"
-          class="avatar"
-          alt="Discord avatar"
-        >
-
-        <div>
-          <div
-            id="profile-name"
-            class="profile-name"
-          >
-            Loading...
-          </div>
-
-          <div class="profile-label">
-            Chronoverse Staff
-          </div>
+        <div class="brand-sub">
+          MODERATOR PANEL
         </div>
 
       </div>
 
-      <button
-        class="logout"
-        onclick="logout()"
-      >
-        Log Out
-      </button>
+      <nav class="nav">
 
-    </div>
+        <button
+          class="nav-item active"
+          onclick="location.href='/dashboard.html'"
+        >
+          <span class="nav-icon">⌂</span>
+          Dashboard
+        </button>
 
-  </aside>
+        <button
+          class="nav-item"
+          onclick="location.href='/log-action.html'"
+        >
+          <span class="nav-icon">⚖</span>
+          Log Action
+        </button>
 
-  <main class="main">
+        <button
+          class="nav-item"
+          onclick="location.href='/my-actions.html'"
+        >
+          <span class="nav-icon">▣</span>
+          My Actions
+        </button>
 
-    <header class="header">
+        <button
+          class="nav-item"
+          onclick="location.href='/leaderboard.html'"
+        >
+          <span class="nav-icon">♛</span>
+          Leaderboard
+        </button>
 
-      <div>
-        <h1 id="welcome-title">
-          Moderator Dashboard
-        </h1>
+        <button
+          class="nav-item"
+          onclick="location.href='/announcements.html'"
+        >
+          <span class="nav-icon">◢</span>
+          Announcements
+        </button>
 
-        <p>
-          Welcome to the Chronoverse moderation centre.
-        </p>
+        <button
+          class="nav-item"
+          onclick="location.href='/schedule.html'"
+        >
+          <span class="nav-icon">▦</span>
+          Schedule
+        </button>
+
+        <button
+          class="nav-item"
+          onclick="location.href='/inactivity.html'"
+        >
+          <span class="nav-icon">◷</span>
+          Inactivity
+        </button>
+
+        <button
+          class="nav-item"
+          onclick="location.href='/requests.html'"
+        >
+          <span class="nav-icon">♙</span>
+          Requests
+        </button>
+
+      </nav>
+
+      <div class="latin">
+
+        <div class="latin-symbol">
+          ─ ✦ ─
+        </div>
+
+        <div class="latin-text">
+          ERS<br>
+          TEMPORA<br>
+          VINCIT<br>
+          OMNIA
+        </div>
+
       </div>
 
-      <button
-        class="quick-action"
-        onclick="location.href='/log-action.html'"
-      >
-        + Log Action
-      </button>
+    </aside>
 
-    </header>
+    <!-- =========================
+         MAIN
+    ========================== -->
 
-    <section class="cards">
+    <main class="main">
 
-      <div class="card">
-        <div class="card-title">Your Actions</div>
-        <div class="card-value" id="my-actions">0</div>
-      </div>
+      <!-- TOP BAR -->
 
-      <div class="card">
-        <div class="card-title">Pending Requests</div>
-        <div class="card-value" id="pending-requests">0</div>
-      </div>
+      <header class="topbar">
 
-      <div class="card">
-        <div class="card-title">Your Rank</div>
-        <div class="card-value" id="my-rank">—</div>
-      </div>
+        <div></div>
 
-    </section>
+        <div class="top-quote">
+          “DIFFERENT WORLDS<br>
+          SAME PURPOSE”
+        </div>
 
-    <section class="section">
-      <h2>Recent Activity</h2>
+        <div class="profile">
 
-      <div
-        id="activity"
-        class="empty"
-      >
-        Loading activity...
-      </div>
-    </section>
+          <img
+            id="profile-avatar"
+            class="profile-avatar"
+            alt="Discord avatar"
+          >
 
-  </main>
+          <div>
+
+            <div
+              id="profile-name"
+              class="profile-name"
+            >
+              Loading...
+            </div>
+
+            <div class="profile-role">
+              Chronoverse Staff
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- HERO -->
+
+      <section class="hero">
+
+        <div class="hero-left">
+
+          <h1>
+            Welcome back,
+            <span
+              class="hero-name"
+              id="welcome-name"
+            >
+              Moderator
+            </span>
+          </h1>
+
+          <div
+            class="hero-role"
+            id="role-display"
+          >
+            CHRONOVERSE STAFF
+          </div>
+
+          <div class="hero-quote">
+            “A GREATER TOMORROW, TOGETHER.”
+          </div>
+
+        </div>
+
+        <div class="hero-right">
+
+          <div
+            class="hero-date"
+            id="current-date"
+          >
+            —
+          </div>
+
+          <div
+            class="hero-time"
+            id="current-time"
+          >
+            —
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- STATS -->
+
+      <section class="stats">
+
+        <article class="stat">
+
+          <div class="stat-icon">
+            ⚖
+          </div>
+
+          <div>
+            <div
+              class="stat-value"
+              id="my-actions"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Total Actions
+            </div>
+
+            <div class="stat-change">
+              Staff activity
+            </div>
+          </div>
+
+        </article>
+
+        <article class="stat">
+
+          <div class="stat-icon">
+            ☆
+          </div>
+
+          <div>
+            <div
+              class="stat-value"
+              id="my-points"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Points
+            </div>
+
+            <div class="stat-change">
+              5 per verified action
+            </div>
+          </div>
+
+        </article>
+
+        <article class="stat">
+
+          <div class="stat-icon">
+            ♙
+          </div>
+
+          <div>
+            <div
+              class="stat-value"
+              id="my-rank"
+            >
+              —
+            </div>
+
+            <div class="stat-label">
+              Leaderboard Rank
+            </div>
+
+            <div class="stat-change">
+              Verified actions only
+            </div>
+          </div>
+
+        </article>
+
+        <article class="stat">
+
+          <div class="stat-icon">
+            ◷
+          </div>
+
+          <div>
+            <div
+              class="stat-value"
+              id="pending-requests"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Pending Requests
+            </div>
+
+            <div class="stat-change">
+              Awaiting review
+            </div>
+          </div>
+
+        </article>
+
+      </section>
+
+      <!-- CINEMATIC AVENGERS BANNER -->
+
+      <section class="cinematic-strip">
+
+        <div class="cinematic-overlay"></div>
+
+        <div class="cinematic-text">
+
+          <div class="quote-large">
+            “DISCIPLINE<br>
+            CREATES<br>
+            STRONGER<br>
+            WORLDS”
+          </div>
+
+          <div class="banner-brand">
+            MARVEL<br>
+            CHRONOVERSE
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- QUICK ACTIONS + SCHEDULE -->
+
+      <section class="dashboard-grid">
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <div class="panel-title">
+                Quick Actions
+              </div>
+
+              <div class="panel-subtitle">
+                Everything you need, one click away.
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="quick-grid">
+
+            <button
+              class="quick-card"
+              onclick="location.href='/log-action.html'"
+            >
+              <div class="quick-icon">
+                ⚖
+              </div>
+
+              <div class="quick-title">
+                Log Action
+              </div>
+
+              <div class="quick-desc">
+                Record a moderation action
+              </div>
+            </button>
+
+            <button
+              class="quick-card"
+              onclick="location.href='/my-actions.html'"
+            >
+              <div class="quick-icon">
+                ▤
+              </div>
+
+              <div class="quick-title">
+                View My Actions
+              </div>
+
+              <div class="quick-desc">
+                Check logs and status
+              </div>
+            </button>
+
+            <button
+              class="quick-card"
+              onclick="location.href='/leaderboard.html'"
+            >
+              <div class="quick-icon">
+                ♛
+              </div>
+
+              <div class="quick-title">
+                Leaderboard
+              </div>
+
+              <div class="quick-desc">
+                See top moderators
+              </div>
+            </button>
+
+            <button
+              class="quick-card"
+              onclick="location.href='/announcements.html'"
+            >
+              <div class="quick-icon">
+                ◢
+              </div>
+
+              <div class="quick-title">
+                Announcements
+              </div>
+
+              <div class="quick-desc">
+                Staff information
+              </div>
+            </button>
+
+            <button
+              class="quick-card"
+              onclick="location.href='/schedule.html'"
+            >
+              <div class="quick-icon">
+                ▦
+              </div>
+
+              <div class="quick-title">
+                Schedule
+              </div>
+
+              <div class="quick-desc">
+                View upcoming events
+              </div>
+            </button>
+
+            <button
+              class="quick-card"
+              onclick="location.href='/inactivity.html'"
+            >
+              <div class="quick-icon">
+                ◷
+              </div>
+
+              <div class="quick-title">
+                Inactivity
+              </div>
+
+              <div class="quick-desc">
+                View inactivity notices
+              </div>
+            </button>
+
+          </div>
+
+        </article>
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div class="panel-title">
+              Upcoming Schedule
+            </div>
+
+            <a
+              href="/schedule.html"
+              class="panel-link"
+            >
+              View all
+            </a>
+
+          </div>
+
+          <div class="schedule-list">
+
+            <div class="schedule-item">
+
+              <div class="schedule-icon">
+                ♙
+              </div>
+
+              <div>
+
+                <div class="schedule-name">
+                  Staff Schedule
+                </div>
+
+                <div class="schedule-time">
+                  View scheduled staff events
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="schedule-item">
+
+              <div class="schedule-icon">
+                ✦
+              </div>
+
+              <div>
+
+                <div class="schedule-name">
+                  Community Events
+                </div>
+
+                <div class="schedule-time">
+                  Upcoming Chronoverse events
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="schedule-item">
+
+              <div class="schedule-icon">
+                ▤
+              </div>
+
+              <div>
+
+                <div class="schedule-name">
+                  Application Reviews
+                </div>
+
+                <div class="schedule-time">
+                  Staff review periods
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </section>
+
+      <!-- RECENT LOGS + ANNOUNCEMENTS -->
+
+      <section class="bottom-grid">
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div class="panel-title">
+              Recent Activity
+            </div>
+
+            <a
+              href="/my-actions.html"
+              class="panel-link"
+            >
+              View all
+            </a>
+
+          </div>
+
+          <div id="activity">
+
+            <div class="log-row">
+
+              <div></div>
+
+              <div class="log-user">
+                Loading...
+              </div>
+
+              <div class="log-desc">
+                Loading moderation activity
+              </div>
+
+              <span class="status approved">
+                —
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div class="panel-title">
+              Latest Announcements
+            </div>
+
+            <a
+              href="/announcements.html"
+              class="panel-link"
+            >
+              View all
+            </a>
+
+          </div>
+
+          <div>
+
+            <div class="announcement-row">
+
+              <div class="announcement-icon">
+                ◢
+              </div>
+
+              <div>
+
+                <div class="announcement-title">
+                  Staff Announcements
+                </div>
+
+                <div class="announcement-date">
+                  View the latest Chronoverse updates
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="announcement-row">
+
+              <div class="announcement-icon">
+                ✦
+              </div>
+
+              <div>
+
+                <div class="announcement-title">
+                  Community Updates
+                </div>
+
+                <div class="announcement-date">
+                  Important staff information
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </section>
+
+      <footer class="footer">
+
+        <span>
+          MARVEL CHRONOVERSE — MODERATOR PANEL
+        </span>
+
+        <span>
+          PEOPLE / PURPOSE / POSSIBILITIES
+        </span>
+
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- =========================
+       AUTH / PROFILE
+  ========================== -->
 
   <script>
-    async function loadCurrentUser() {
+    async function loadUser() {
       try {
         const response =
           await fetch("/api/auth/me");
@@ -356,9 +1953,9 @@
           user.username;
 
         document.getElementById(
-          "welcome-title"
+          "welcome-name"
         ).textContent =
-          `Welcome, ${user.username}`;
+          user.username;
 
         const avatar =
           document.getElementById(
@@ -366,34 +1963,62 @@
           );
 
         if (user.avatar) {
-          avatar.src = user.avatar;
+          avatar.src =
+            user.avatar;
         } else {
-          avatar.style.display = "none";
+          avatar.style.display =
+            "none";
         }
 
       } catch (error) {
         console.error(error);
+
         window.location.replace("/");
       }
     }
 
-    async function logout() {
-      try {
-        await fetch(
-          "/api/auth/logout",
+    function updateClock() {
+      const now =
+        new Date();
+
+      document.getElementById(
+        "current-date"
+      ).textContent =
+        now
+          .toLocaleDateString(
+            undefined,
+            {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+              year: "numeric"
+            }
+          )
+          .toUpperCase();
+
+      document.getElementById(
+        "current-time"
+      ).textContent =
+        now.toLocaleTimeString(
+          undefined,
           {
-            method: "POST"
+            hour: "2-digit",
+            minute: "2-digit"
           }
         );
-      } catch (error) {
-        console.error(error);
-      }
-
-      window.location.replace("/");
     }
 
-    loadCurrentUser();
+    loadUser();
+
+    updateClock();
+
+    setInterval(
+      updateClock,
+      30000
+    );
   </script>
+
+  <!-- EXISTING DASHBOARD DATA -->
 
   <script src="/js/dashboard.js"></script>
 
