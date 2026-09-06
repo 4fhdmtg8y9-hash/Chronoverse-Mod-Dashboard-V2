@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronoverse • Requests</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b0b12;
+      color: #ffffff;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 45px 25px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #9292a7;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9292a7;
+      margin-bottom: 28px;
+    }
+
+    .requests {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .request {
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .request-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+
+    .type {
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .status {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #9292a7;
+    }
+
+    .username {
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .reason {
+      color: #9292a7;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .approve {
+      background: #ffffff;
+      color: #11111b;
+    }
+
+    .deny {
+      background: #252535;
+      color: #ffffff;
+    }
+
+    .loading,
+    .empty,
+    .error {
+      padding: 40px;
+      text-align: center;
+      color: #9292a7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <a href="/dashboard.html" class="back">
+      ← Back to Dashboard
+    </a>
+
+    <h1>Requests</h1>
+
+    <p class="subtitle">
+      Review pending moderator requests.
+    </p>
+
+    <section class="requests" id="requests">
+      <div class="loading">
+        Loading requests...
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const reviewerId =
+      localStorage.getItem("discord_user_id");
+
+    async function loadRequests() {
+      const container =
+        document.getElementById("requests");
+
+      try {
+        const response =
+          await fetch("/api/requests/list");
+
+        if (!response.ok) {
+          throw new Error("Failed to load requests");
+        }
+
+        const data = await response.json();
+
+        const requests =
+          (data.requests || []).filter(
+            request => request.status === "pending"
+          );
+
+        if (!requests.length) {
+          container.innerHTML = `
+            <div class="empty">
+              No pending requests.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML =
+          requests.map(request => `
+            <article class="request">
+
+              <div class="request-top">
+                <span class="type">
+                  ${escapeHtml(request.type)}
+                </span>
+
+                <span class="status">
+                  ${escapeHtml(request.status)}
+                </span>
+              </div>
+
+              <div class="username">
+                ${escapeHtml(request.username)}
+              </div>
+
+              <div class="reason">
+                ${escapeHtml(
+                  request.reason ||
+                  "No reason provided."
+                )}
+              </div>
+
+              <div class="buttons">
+                <button
+                  class="approve"
+                  onclick="reviewRequest(
+                    ${request.id},
+                    'approved'
+                  )"
+                >
+                  Approve
+                </button>
+
+                <button
+                  class="deny"
+                  onclick="reviewRequest(
+                    ${request.id},
+                    'denied'
+                  )"
+                >
+                  Deny
+                </button>
+              </div>
+
+            </article>
+          `).join("");
+
+      } catch (error) {
+        console.error(error);
+
+        container.innerHTML = `
+          <div class="error">
+            Unable to load requests.
+          </div>
+        `;
+      }
+    }
+
+    async function reviewRequest(
+      requestId,
+      status
+    ) {
+      if (!reviewerId) {
+        alert("You must be logged in.");
+        return;
+      }
+
+      try {
+        const response =
+          await fetch("/api/requests/review", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              request_id: requestId,
+              status,
+              reviewed_by: reviewerId
+            })
+          });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || "Review failed"
+          );
+        }
+
+        await loadRequests();
+
+      } catch (error) {
+        console.error(error);
+        alert("Unable to review request.");
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    loadRequests();
+  </script>
+
+</body>
+</html>
