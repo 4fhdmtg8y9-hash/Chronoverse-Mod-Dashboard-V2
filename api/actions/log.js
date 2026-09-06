@@ -17,7 +17,11 @@ export default async function handler(req, res) {
     reason
   } = req.body || {};
 
-  if (!moderator_id || !moderator_name || !action_type) {
+  if (
+    !moderator_id ||
+    !moderator_name ||
+    !action_type
+  ) {
     return res.status(400).json({
       success: false,
       error: "Missing required fields"
@@ -31,11 +35,24 @@ export default async function handler(req, res) {
         moderator_id,
         moderator_name,
         action_type,
-        target_user_id: target_user_id || null,
-        target_user_name: target_user_name || null,
-        reason: reason || null
+        target_user_id:
+          target_user_id || null,
+        target_user_name:
+          target_user_name || null,
+        reason:
+          reason || null,
+        verification_status: "pending"
       })
-      .select("id")
+      .select(`
+        id,
+        moderator_id,
+        moderator_name,
+        action_type,
+        target_user_id,
+        target_user_name,
+        reason,
+        verification_status
+      `)
       .single();
 
     if (error) {
@@ -49,7 +66,9 @@ export default async function handler(req, res) {
 
     return res.status(201).json({
       success: true,
-      action_id: data.id
+      message:
+        "Action submitted for verification.",
+      action: data
     });
 
   } catch (error) {
