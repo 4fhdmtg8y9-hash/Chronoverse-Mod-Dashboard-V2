@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chronoverse • Announcements</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b0b12;
+      color: #ffffff;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 45px 25px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #9292a7;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9292a7;
+      margin-bottom: 28px;
+    }
+
+    .composer {
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 28px;
+    }
+
+    .composer h2 {
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #2c2c3d;
+      background: #0b0b12;
+      color: #ffffff;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .post-button {
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #11111b;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 14px;
+      text-align: center;
+      color: #9292a7;
+    }
+
+    .error {
+      color: #ffbcbc;
+    }
+
+    .success {
+      color: #b9ffcf;
+    }
+
+    .announcement-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .announcement {
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .announcement h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .announcement-content {
+      color: #d2d2dc;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-bottom: 16px;
+    }
+
+    .meta {
+      color: #77778b;
+      font-size: 12px;
+    }
+
+    .empty,
+    .loading {
+      padding: 40px;
+      text-align: center;
+      color: #9292a7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <a href="/dashboard.html" class="back">
+      ← Back to Dashboard
+    </a>
+
+    <h1>Announcements</h1>
+
+    <p class="subtitle">
+      Staff announcements for the Chronoverse moderation team.
+    </p>
+
+    <section class="composer" id="composer">
+
+      <h2>Post Announcement</h2>
+
+      <form id="announcement-form">
+
+        <div class="field">
+          <label for="title">
+            Title
+          </label>
+
+          <input
+            id="title"
+            type="text"
+            maxlength="100"
+            required
+            placeholder="Announcement title"
+          >
+        </div>
+
+        <div class="field">
+          <label for="content">
+            Message
+          </label>
+
+          <textarea
+            id="content"
+            maxlength="2000"
+            required
+            placeholder="Write your announcement..."
+          ></textarea>
+        </div>
+
+        <button class="post-button" type="submit">
+          Post Announcement
+        </button>
+
+        <div class="message" id="message"></div>
+
+      </form>
+
+    </section>
+
+    <section
+      class="announcement-list"
+      id="announcement-list"
+    >
+      <div class="loading">
+        Loading announcements...
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const userId =
+      localStorage.getItem("discord_user_id");
+
+    const username =
+      localStorage.getItem("discord_username");
+
+    if (!userId || !username) {
+      window.location.replace("/");
+    }
+
+    const form =
+      document.getElementById("announcement-form");
+
+    const message =
+      document.getElementById("message");
+
+    async function loadAnnouncements() {
+      const container =
+        document.getElementById("announcement-list");
+
+      try {
+        const response =
+          await fetch("/api/announcements/list");
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Unable to load announcements"
+          );
+        }
+
+        const announcements =
+          data.announcements || [];
+
+        if (!announcements.length) {
+          container.innerHTML = `
+            <div class="empty">
+              No announcements yet.
+            </div>
+          `;
+
+          return;
+        }
+
+        container.innerHTML =
+          announcements.map(item => `
+            <article class="announcement">
+
+              <h3>
+                ${escapeHtml(item.title)}
+              </h3>
+
+              <div class="announcement-content">
+                ${escapeHtml(item.content)}
+              </div>
+
+              <div class="meta">
+                Posted by
+                ${escapeHtml(item.author_name)}
+                •
+                ${formatDate(item.created_at)}
+              </div>
+
+            </article>
+          `).join("");
+
+      } catch (error) {
+        console.error(error);
+
+        container.innerHTML = `
+          <div class="empty">
+            Unable to load announcements.
+          </div>
+        `;
+      }
+    }
+
+    form.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        message.textContent =
+          "Posting...";
+
+        message.className =
+          "message";
+
+        try {
+          const response =
+            await fetch(
+              "/api/announcements/create",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  author_id: userId,
+                  author_name: username,
+                  title:
+                    document
+                      .getElementById("title")
+                      .value
+                      .trim(),
+
+                  content:
+                    document
+                      .getElementById("content")
+                      .value
+                      .trim()
+                })
+              }
+            );
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.error ||
+              "Unable to post announcement"
+            );
+          }
+
+          form.reset();
+
+          message.textContent =
+            "Announcement posted.";
+
+          message.className =
+            "message success";
+
+          await loadAnnouncements();
+
+        } catch (error) {
+          console.error(error);
+
+          message.textContent =
+            error.message;
+
+          message.className =
+            "message error";
+        }
+      }
+    );
+
+    function formatDate(value) {
+      if (!value) {
+        return "Unknown date";
+      }
+
+      return new Date(
+        value
+      ).toLocaleString();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    loadAnnouncements();
+  </script>
+
+</body>
+</html>
