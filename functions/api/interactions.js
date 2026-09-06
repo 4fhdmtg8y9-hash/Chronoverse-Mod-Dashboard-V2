@@ -34,11 +34,9 @@ function hexToBytes(hex) {
   return bytes;
 }
 
-async function updateDiscordMessage(
+async function patchDiscordMessage(
   interaction,
-  action,
-  status,
-  reviewerId,
+  payload,
   botToken
 ) {
   const channelId =
@@ -56,11 +54,8 @@ async function updateDiscordMessage(
       "Missing Discord message information"
     );
 
-    return;
+    return false;
   }
-
-  const approved =
-    status === "approved";
 
   const response =
     await fetch(
@@ -76,107 +71,8 @@ async function updateDiscordMessage(
             "application/json"
         },
 
-        body: JSON.stringify({
-          content: "",
-
-          embeds: [
-            {
-              title:
-                approved
-                  ? "✅ Moderation Action Verified"
-                  : "❌ Moderation Action Denied",
-
-              description:
-                approved
-                  ? "This moderation action has been approved."
-                  : "This moderation action has been denied.",
-
-              fields: [
-                {
-                  name: "Moderator",
-
-                  value:
-                    `${action.moderator_name}\n<@${action.moderator_id}>`,
-
-                  inline: true
-                },
-
-                {
-                  name: "Action",
-
-                  value:
-                    String(
-                      action.action_type
-                    ).replaceAll(
-                      "_",
-                      " "
-                    ),
-
-                  inline: true
-                },
-
-                {
-                  name: "Target",
-
-                  value:
-                    action.target_user_name ||
-                    action.target_user_id ||
-                    "Not provided"
-                },
-
-                {
-                  name: "Reason",
-
-                  value:
-                    action.reason ||
-                    "No reason provided."
-                },
-
-                {
-                  name: "Status",
-
-                  value:
-                    approved
-                      ? "✅ Verified • +5 points"
-                      : "❌ Denied • 0 points",
-
-                  inline: true
-                },
-
-                {
-                  name: "Reviewed By",
-
-                  value:
-                    `<@${reviewerId}>`,
-
-                  inline: true
-                }
-              ],
-
-              image:
-                action.evidence_url
-                  ? {
-                      url:
-                        action.evidence_url
-                    }
-                  : undefined,
-
-              footer: {
-                text:
-                  approved
-                    ? "5 leaderboard points awarded."
-                    : "No leaderboard points awarded."
-              },
-
-              timestamp:
-                new Date()
-                  .toISOString()
-            }
-          ],
-
-          // Removes Verify / Deny buttons
-          components: []
-        })
+        body:
+          JSON.stringify(payload)
       }
     );
 
@@ -186,7 +82,412 @@ async function updateDiscordMessage(
       response.status,
       await response.text()
     );
+
+    return false;
   }
+
+  return true;
+}
+
+async function handleModerationAction(
+  interaction,
+  command,
+  actionId,
+  reviewerId,
+  env
+) {
+  const supabase =
+    getSupabase(env);
+
+  const {
+    data: action,
+    error: actionError
+  } = await supabase
+    .from("mod_actions")
+    .select("*")
+    .eq("id", actionId)
+    .single();
+
+  if (
+    actionError ||
+    !action
+  ) {
+    console.error(
+      actionError
+    );
+
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          "Moderation action not found.",
+        flags: 64
+      }
+    });
+  }
+
+  if (
+    action.verification_status !==
+    "pending"
+  ) {
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          `This action is already ${action.verification_status}.`,
+        flags: 64
+      }
+    });
+  }
+
+  const status =
+    command === "verify_action"
+      ? "approved"
+      : "denied";
+
+  const {
+    error: updateError
+  } = await supabase
+    .from("mod_actions")
+    .update({
+      verification_status:
+        status,
+
+      verified_by:
+        reviewerId,
+
+      verified_at:
+        new Date()
+          .toISOString()
+    })
+    .eq("id", actionId)
+    .eq(
+      "verification_status",
+      "pending"
+    );
+
+  if (updateError) {
+    console.error(
+      updateError
+    );
+
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          "Unable to update moderation action.",
+        flags: 64
+      }
+    });
+  }
+
+  const approved =
+    status === "approved";
+
+  await patchDiscordMessage(
+    interaction,
+    {
+      content: "",
+
+      embeds: [
+        {
+          title:
+            approved
+              ? "✅ Moderation Action Verified"
+              : "❌ Moderation Action Denied",
+
+          description:
+            approved
+              ? "This moderation action has been approved."
+              : "This moderation action has been denied.",
+
+          fields: [
+            {
+              name:
+                "Moderator",
+
+              value:
+                `${action.moderator_name}\n<@${action.moderator_id}>`,
+
+              inline:
+                true
+            },
+
+            {
+              name:
+                "Action",
+
+              value:
+                String(
+                  action.action_type
+                ).replaceAll(
+                  "_",
+                  " "
+                ),
+
+              inline:
+                true
+            },
+
+            {
+              name:
+                "Target",
+
+              value:
+                action.target_user_name ||
+                action.target_user_id ||
+                "Not provided"
+            },
+
+            {
+              name:
+                "Reason",
+
+              value:
+                action.reason ||
+                "No reason provided."
+            },
+
+            {
+              name:
+                "Status",
+
+              value:
+                approved
+                  ? "✅ Verified • +5 points"
+                  : "❌ Denied • 0 points",
+
+              inline:
+                true
+            },
+
+            {
+              name:
+                "Reviewed By",
+
+              value:
+                `<@${reviewerId}>`,
+
+              inline:
+                true
+            }
+          ],
+
+          image:
+            action.evidence_url
+              ? {
+                  url:
+                    action.evidence_url
+                }
+              : undefined,
+
+          footer: {
+            text:
+              approved
+                ? "5 leaderboard points awarded."
+                : "No leaderboard points awarded."
+          },
+
+          timestamp:
+            new Date()
+              .toISOString()
+        }
+      ],
+
+      components: []
+    },
+    env.DISCORD_BOT_TOKEN
+  );
+
+  return Response.json({
+    type: 6
+  });
+}
+
+async function handleInactivity(
+  interaction,
+  command,
+  noticeId,
+  reviewerId,
+  env
+) {
+  const supabase =
+    getSupabase(env);
+
+  const {
+    data: notice,
+    error: noticeError
+  } = await supabase
+    .from("inactivity_notices")
+    .select("*")
+    .eq("id", noticeId)
+    .single();
+
+  if (
+    noticeError ||
+    !notice
+  ) {
+    console.error(
+      noticeError
+    );
+
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          "Inactivity notice not found.",
+        flags: 64
+      }
+    });
+  }
+
+  if (
+    notice.status !== "pending"
+  ) {
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          `This inactivity notice is already ${notice.status}.`,
+        flags: 64
+      }
+    });
+  }
+
+  const status =
+    command ===
+    "approve_inactivity"
+      ? "approved"
+      : "denied";
+
+  const {
+    error: updateError
+  } = await supabase
+    .from("inactivity_notices")
+    .update({
+      status,
+
+      reviewed_by:
+        reviewerId,
+
+      reviewed_at:
+        new Date()
+          .toISOString()
+    })
+    .eq("id", noticeId)
+    .eq(
+      "status",
+      "pending"
+    );
+
+  if (updateError) {
+    console.error(
+      updateError
+    );
+
+    return Response.json({
+      type: 4,
+
+      data: {
+        content:
+          "Unable to update inactivity notice.",
+        flags: 64
+      }
+    });
+  }
+
+  const approved =
+    status === "approved";
+
+  await patchDiscordMessage(
+    interaction,
+    {
+      content: "",
+
+      embeds: [
+        {
+          title:
+            approved
+              ? "✅ Inactivity Notice Approved"
+              : "❌ Inactivity Notice Denied",
+
+          description:
+            approved
+              ? "This inactivity notice has been approved."
+              : "This inactivity notice has been denied.",
+
+          color:
+            approved
+              ? 5763719
+              : 15548997,
+
+          fields: [
+            {
+              name:
+                "Staff Member",
+
+              value:
+                `${notice.username}\n<@${notice.user_id}>`,
+
+              inline:
+                true
+            },
+
+            {
+              name:
+                "Status",
+
+              value:
+                approved
+                  ? "✅ Approved"
+                  : "❌ Denied",
+
+              inline:
+                true
+            },
+
+            {
+              name:
+                "Reason",
+
+              value:
+                notice.reason ||
+                "No reason provided."
+            },
+
+            {
+              name:
+                "Reviewed By",
+
+              value:
+                `<@${reviewerId}>`
+            }
+          ],
+
+          footer: {
+            text:
+              "Marvel Chronoverse • Inactivity System"
+          },
+
+          timestamp:
+            new Date()
+              .toISOString()
+        }
+      ],
+
+      components: []
+    },
+    env.DISCORD_BOT_TOKEN
+  );
+
+  return Response.json({
+    type: 6
+  });
 }
 
 export async function onRequestPost(
@@ -323,7 +624,7 @@ export async function onRequestPost(
 
         data: {
           content:
-            "Only Chronarch Overseer or Executive Division can review moderation actions.",
+            "Only Chronarch Overseer or Executive Division can review this request.",
           flags: 64
         }
       });
@@ -335,145 +636,68 @@ export async function onRequestPost(
 
     const [
       command,
-      actionId
+      recordId
     ] =
       customId.split(":");
 
+    if (!recordId) {
+      return Response.json({
+        type: 4,
+
+        data: {
+          content:
+            "Invalid interaction.",
+          flags: 64
+        }
+      });
+    }
+
+    // ======================================
+    // MODERATION ACTIONS
+    // ======================================
+
     if (
-      !actionId ||
-      ![
+      [
         "verify_action",
         "deny_action"
       ].includes(command)
     ) {
-      return Response.json({
-        type: 4,
-
-        data: {
-          content:
-            "Unknown moderation action.",
-          flags: 64
-        }
-      });
+      return handleModerationAction(
+        interaction,
+        command,
+        recordId,
+        reviewerId,
+        env
+      );
     }
 
-    const supabase =
-      getSupabase(env);
-
-    const {
-      data: action,
-      error: actionError
-    } = await supabase
-      .from("mod_actions")
-      .select("*")
-      .eq(
-        "id",
-        actionId
-      )
-      .single();
+    // ======================================
+    // INACTIVITY NOTICES
+    // ======================================
 
     if (
-      actionError ||
-      !action
+      [
+        "approve_inactivity",
+        "deny_inactivity"
+      ].includes(command)
     ) {
-      console.error(
-        actionError
+      return handleInactivity(
+        interaction,
+        command,
+        recordId,
+        reviewerId,
+        env
       );
-
-      return Response.json({
-        type: 4,
-
-        data: {
-          content:
-            "Moderation action not found.",
-          flags: 64
-        }
-      });
     }
-
-    if (
-      action.verification_status !==
-      "pending"
-    ) {
-      return Response.json({
-        type: 4,
-
-        data: {
-          content:
-            `This action is already ${action.verification_status}.`,
-          flags: 64
-        }
-      });
-    }
-
-    const status =
-      command ===
-      "verify_action"
-        ? "approved"
-        : "denied";
-
-    const {
-      error: updateError
-    } = await supabase
-      .from("mod_actions")
-      .update({
-        verification_status:
-          status,
-
-        verified_by:
-          reviewerId,
-
-        verified_at:
-          new Date()
-            .toISOString()
-      })
-      .eq(
-        "id",
-        actionId
-      )
-      .eq(
-        "verification_status",
-        "pending"
-      );
-
-    if (updateError) {
-      console.error(
-        updateError
-      );
-
-      return Response.json({
-        type: 4,
-
-        data: {
-          content:
-            "Unable to update moderation action.",
-          flags: 64
-        }
-      });
-    }
-
-    /*
-      Instead of relying on Discord's
-      interaction message-update response,
-      directly PATCH the original Discord
-      message using the bot.
-    */
-
-    await updateDiscordMessage(
-      interaction,
-      action,
-      status,
-      reviewerId,
-      env.DISCORD_BOT_TOKEN
-    );
-
-    /*
-      Tell Discord that the button
-      interaction was handled.
-    */
 
     return Response.json({
-      type: 6
+      type: 4,
+
+      data: {
+        content:
+          "Unknown interaction.",
+        flags: 64
+      }
     });
 
   } catch (error) {
