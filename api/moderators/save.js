@@ -1,6 +1,6 @@
-import db from "../../lib/database.js";
+import supabase from "../../lib/database.js";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -21,31 +21,42 @@ export default function handler(req, res) {
     });
   }
 
-  const existing = db.prepare(`
-    SELECT id
-    FROM moderators
-    WHERE id = ?
-  `).get(id);
+  try {
+    const { data, error } = await supabase
+      .from("moderators")
+      .upsert(
+        {
+          id,
+          username,
+          avatar: avatar || null
+        },
+        {
+          onConflict: "id"
+        }
+      )
+      .select("id, username, avatar")
+      .single();
 
-  if (existing) {
-    db.prepare(`
-      UPDATE moderators
-      SET username = ?, avatar = ?
-      WHERE id = ?
-    `).run(username, avatar || null, id);
-  } else {
-    db.prepare(`
-      INSERT INTO moderators (id, username, avatar)
-      VALUES (?, ?, ?)
-    `).run(id, username, avatar || null);
-  }
+    if (error) {
+      console.error(error);
 
-  return res.status(200).json({
-    success: true,
-    moderator: {
-      id,
-      username,
-      avatar: avatar || null
+      return res.status(500).json({
+        success: false,
+        error: "Failed to save moderator"
+      });
     }
-  });
+
+    return res.status(200).json({
+      success: true,
+      moderator: data
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Database error"
+    });
+  }
 }
