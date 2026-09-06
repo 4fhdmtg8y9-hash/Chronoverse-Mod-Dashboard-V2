@@ -1,3 +1,46 @@
+const STAFF_ROLES = [
+  {
+    id: "1538324425546666114",
+    name: "FOUNDER",
+    priority: 1
+  },
+  {
+    id: "1538505102644740167",
+    name: "CHRONARCH OVERSEER",
+    priority: 2
+  },
+  {
+    id: "1543383003445723159",
+    name: "EXECUTIVE DIVISION",
+    priority: 3
+  },
+  {
+    id: "1538626569831055390",
+    name: "NEXUS DIRECTOR",
+    priority: 4
+  },
+  {
+    id: "1538626890649174170",
+    name: "ADMINISTRATOR",
+    priority: 5
+  },
+  {
+    id: "1538534696483426365",
+    name: "LEAD MODERATOR",
+    priority: 6
+  },
+  {
+    id: "1538569564340879420",
+    name: "SENIOR MODERATOR",
+    priority: 7
+  },
+  {
+    id: "1538569917471916083",
+    name: "MODERATOR",
+    priority: 8
+  }
+];
+
 function base64urlDecode(value) {
   value = value
     .replace(/-/g, "+")
@@ -7,15 +50,12 @@ function base64urlDecode(value) {
     value += "=";
   }
 
-  const decoded =
-    atob(value);
+  const decoded = atob(value);
 
-  const bytes =
-    Uint8Array.from(
-      decoded,
-      char =>
-        char.charCodeAt(0)
-    );
+  const bytes = Uint8Array.from(
+    decoded,
+    char => char.charCodeAt(0)
+  );
 
   return new TextDecoder().decode(bytes);
 }
@@ -24,11 +64,10 @@ function getCookie(request, name) {
   const cookieHeader =
     request.headers.get("cookie") || "";
 
-  const cookies =
-    cookieHeader
-      .split(";")
-      .map(cookie => cookie.trim())
-      .filter(Boolean);
+  const cookies = cookieHeader
+    .split(";")
+    .map(cookie => cookie.trim())
+    .filter(Boolean);
 
   for (const cookie of cookies) {
     const index =
@@ -87,8 +126,7 @@ async function verifySignature(
   const signatureBytes =
     Uint8Array.from(
       binary,
-      char =>
-        char.charCodeAt(0)
+      char => char.charCodeAt(0)
     );
 
   return crypto.subtle.verify(
@@ -97,6 +135,75 @@ async function verifySignature(
     signatureBytes,
     encoder.encode(payload)
   );
+}
+
+async function getStaffRank(
+  userId,
+  env
+) {
+  const {
+    DISCORD_BOT_TOKEN,
+    DISCORD_GUILD_ID
+  } = env;
+
+  if (
+    !DISCORD_BOT_TOKEN ||
+    !DISCORD_GUILD_ID
+  ) {
+    return "CHRONOVERSE STAFF";
+  }
+
+  try {
+    const response =
+      await fetch(
+        `https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/members/${userId}`,
+        {
+          headers: {
+            Authorization:
+              `Bot ${DISCORD_BOT_TOKEN}`
+          }
+        }
+      );
+
+    if (!response.ok) {
+      console.error(
+        "Unable to fetch Discord member:",
+        response.status
+      );
+
+      return "CHRONOVERSE STAFF";
+    }
+
+    const member =
+      await response.json();
+
+    const memberRoles =
+      member.roles || [];
+
+    const matches =
+      STAFF_ROLES
+        .filter(role =>
+          memberRoles.includes(role.id)
+        )
+        .sort(
+          (a, b) =>
+            a.priority - b.priority
+        );
+
+    if (!matches.length) {
+      return "CHRONOVERSE STAFF";
+    }
+
+    return matches[0].name;
+
+  } catch (error) {
+    console.error(
+      "Rank lookup failed:",
+      error
+    );
+
+    return "CHRONOVERSE STAFF";
+  }
 }
 
 export async function onRequestGet(context) {
@@ -109,7 +216,8 @@ export async function onRequestGet(context) {
       {
         success: false,
         authenticated: false,
-        error: "Session configuration missing"
+        error:
+          "Session configuration missing"
       },
       {
         status: 500
@@ -186,14 +294,27 @@ export async function onRequestGet(context) {
       );
     }
 
+    const rank =
+      await getStaffRank(
+        user.id,
+        context.env
+      );
+
     return Response.json({
       success: true,
       authenticated: true,
+
       user: {
-        id: user.id,
-        username: user.username,
+        id:
+          user.id,
+
+        username:
+          user.username,
+
         avatar:
-          user.avatar || ""
+          user.avatar || "",
+
+        rank
       }
     });
 
