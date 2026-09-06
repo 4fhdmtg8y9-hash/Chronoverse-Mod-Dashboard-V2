@@ -1,3 +1,9 @@
+const INACTIVITY_LOG_RANKS = [
+  "FOUNDER",
+  "CHRONARCH OVERSEER",
+  "EXECUTIVE DIVISION"
+];
+
 async function logoutChronoverse() {
   try {
     await fetch(
@@ -16,16 +22,47 @@ async function logoutChronoverse() {
   window.location.replace("/");
 }
 
-async function updateChronoverseRank() {
+function updateRankDisplay(user) {
   const roleElement =
     document.querySelector(
       ".user-role"
     );
 
-  if (!roleElement) {
-    return;
+  if (
+    roleElement &&
+    user?.rank
+  ) {
+    roleElement.textContent =
+      user.rank;
   }
+}
 
+function updateRestrictedNavigation(user) {
+  const rank =
+    user?.rank || "";
+
+  const canViewLogs =
+    INACTIVITY_LOG_RANKS.includes(
+      rank
+    );
+
+  const links =
+    document.querySelectorAll(
+      'a[href="/requests.html"]'
+    );
+
+  links.forEach(link => {
+    if (!canViewLogs) {
+      link.style.display =
+        "none";
+    } else {
+      link.style.display =
+        "";
+    }
+  });
+}
+
+async function loadChronoverseUser() {
   try {
     const response =
       await fetch(
@@ -39,17 +76,21 @@ async function updateChronoverseRank() {
     const data =
       await response.json();
 
-    if (
-      data.user &&
-      data.user.rank
-    ) {
-      roleElement.textContent =
-        data.user.rank;
+    if (!data.user) {
+      return;
     }
+
+    updateRankDisplay(
+      data.user
+    );
+
+    updateRestrictedNavigation(
+      data.user
+    );
 
   } catch (error) {
     console.error(
-      "Rank loading error:",
+      "User loading error:",
       error
     );
   }
@@ -186,6 +227,6 @@ document.addEventListener(
   "DOMContentLoaded",
   () => {
     addLogoutButton();
-    updateChronoverseRank();
+    loadChronoverseUser();
   }
 );
