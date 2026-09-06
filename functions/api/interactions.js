@@ -5,11 +5,11 @@ import {
 } from "../_lib/supabase.js";
 
 const REVIEW_ROLE_IDS = [
-  "1538505102644740167",
-  "1543383003445723159"
+  "1538505102644740167", // Chronarch Overseer
+  "1543383003445723159"  // Executive Division
 ];
 
-function hexToUint8Array(hex) {
+function hexToBytes(hex) {
   if (!hex || hex.length % 2 !== 0) {
     return null;
   }
@@ -34,7 +34,164 @@ function hexToUint8Array(hex) {
   return bytes;
 }
 
-export async function onRequestPost(context) {
+async function updateDiscordMessage(
+  interaction,
+  action,
+  status,
+  reviewerId,
+  botToken
+) {
+  const channelId =
+    interaction.channel_id;
+
+  const messageId =
+    interaction.message?.id;
+
+  if (
+    !channelId ||
+    !messageId ||
+    !botToken
+  ) {
+    console.error(
+      "Missing Discord message information"
+    );
+
+    return;
+  }
+
+  const approved =
+    status === "approved";
+
+  const response =
+    await fetch(
+      `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`,
+      {
+        method: "PATCH",
+
+        headers: {
+          Authorization:
+            `Bot ${botToken}`,
+
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          content: "",
+
+          embeds: [
+            {
+              title:
+                approved
+                  ? "✅ Moderation Action Verified"
+                  : "❌ Moderation Action Denied",
+
+              description:
+                approved
+                  ? "This moderation action has been approved."
+                  : "This moderation action has been denied.",
+
+              fields: [
+                {
+                  name: "Moderator",
+
+                  value:
+                    `${action.moderator_name}\n<@${action.moderator_id}>`,
+
+                  inline: true
+                },
+
+                {
+                  name: "Action",
+
+                  value:
+                    String(
+                      action.action_type
+                    ).replaceAll(
+                      "_",
+                      " "
+                    ),
+
+                  inline: true
+                },
+
+                {
+                  name: "Target",
+
+                  value:
+                    action.target_user_name ||
+                    action.target_user_id ||
+                    "Not provided"
+                },
+
+                {
+                  name: "Reason",
+
+                  value:
+                    action.reason ||
+                    "No reason provided."
+                },
+
+                {
+                  name: "Status",
+
+                  value:
+                    approved
+                      ? "✅ Verified • +5 points"
+                      : "❌ Denied • 0 points",
+
+                  inline: true
+                },
+
+                {
+                  name: "Reviewed By",
+
+                  value:
+                    `<@${reviewerId}>`,
+
+                  inline: true
+                }
+              ],
+
+              image:
+                action.evidence_url
+                  ? {
+                      url:
+                        action.evidence_url
+                    }
+                  : undefined,
+
+              footer: {
+                text:
+                  approved
+                    ? "5 leaderboard points awarded."
+                    : "No leaderboard points awarded."
+              },
+
+              timestamp:
+                new Date()
+                  .toISOString()
+            }
+          ],
+
+          // Removes Verify / Deny buttons
+          components: []
+        })
+      }
+    );
+
+  if (!response.ok) {
+    console.error(
+      "Discord message update failed:",
+      response.status,
+      await response.text()
+    );
+  }
+}
+
+export async function onRequestPost(
+  context
+) {
   const {
     request,
     env
@@ -50,16 +207,13 @@ export async function onRequestPost(context) {
       "x-signature-timestamp"
     );
 
-  const publicKey =
-    env.DISCORD_PUBLIC_KEY;
-
   if (
     !signature ||
     !timestamp ||
-    !publicKey
+    !env.DISCORD_PUBLIC_KEY
   ) {
     return new Response(
-      "Missing Discord signature",
+      "Missing signature",
       {
         status: 401
       }
@@ -71,17 +225,19 @@ export async function onRequestPost(context) {
 
   try {
     const signatureBytes =
-      hexToUint8Array(signature);
+      hexToBytes(signature);
 
     const publicKeyBytes =
-      hexToUint8Array(publicKey);
+      hexToBytes(
+        env.DISCORD_PUBLIC_KEY
+      );
 
     if (
       !signatureBytes ||
       !publicKeyBytes
     ) {
       return new Response(
-        "Invalid Discord signature",
+        "Invalid signature",
         {
           status: 401
         }
@@ -103,7 +259,7 @@ export async function onRequestPost(context) {
 
     if (!valid) {
       return new Response(
-        "Invalid Discord signature",
+        "Invalid signature",
         {
           status: 401
         }
@@ -113,14 +269,13 @@ export async function onRequestPost(context) {
     const interaction =
       JSON.parse(rawBody);
 
-    // Discord verification PING
+    // Discord endpoint verification
     if (interaction.type === 1) {
       return Response.json({
         type: 1
       });
     }
 
-    // Discord button/component interaction
     if (interaction.type !== 3) {
       return Response.json({
         type: 4,
@@ -132,9 +287,6 @@ export async function onRequestPost(context) {
         }
       });
     }
-
-    const customId =
-      interaction.data?.custom_id;
 
     const reviewerId =
       interaction.member
@@ -157,12 +309,15 @@ export async function onRequestPost(context) {
       });
     }
 
-    const permitted =
-      reviewerRoles.some(role =>
-        REVIEW_ROLE_IDS.includes(role)
+    const allowed =
+      reviewerRoles.some(
+        role =>
+          REVIEW_ROLE_IDS.includes(
+            role
+          )
       );
 
-    if (!permitted) {
+    if (!allowed) {
       return Response.json({
         type: 4,
 
@@ -174,12 +329,15 @@ export async function onRequestPost(context) {
       });
     }
 
+    const customId =
+      interaction.data
+        ?.custom_id || "";
+
     const [
       command,
       actionId
     ] =
-      String(customId || "")
-        .split(":");
+      customId.split(":");
 
     if (
       !actionId ||
@@ -208,7 +366,10 @@ export async function onRequestPost(context) {
     } = await supabase
       .from("mod_actions")
       .select("*")
-      .eq("id", actionId)
+      .eq(
+        "id",
+        actionId
+      )
       .single();
 
     if (
@@ -224,7 +385,7 @@ export async function onRequestPost(context) {
 
         data: {
           content:
-            "This moderation action could not be found.",
+            "Moderation action not found.",
           flags: 64
         }
       });
@@ -246,7 +407,8 @@ export async function onRequestPost(context) {
     }
 
     const status =
-      command === "verify_action"
+      command ===
+      "verify_action"
         ? "approved"
         : "denied";
 
@@ -265,7 +427,10 @@ export async function onRequestPost(context) {
           new Date()
             .toISOString()
       })
-      .eq("id", actionId)
+      .eq(
+        "id",
+        actionId
+      )
       .eq(
         "verification_status",
         "pending"
@@ -281,126 +446,39 @@ export async function onRequestPost(context) {
 
         data: {
           content:
-            "Unable to update this moderation action.",
+            "Unable to update moderation action.",
           flags: 64
         }
       });
     }
 
-    const approved =
-      status === "approved";
+    /*
+      Instead of relying on Discord's
+      interaction message-update response,
+      directly PATCH the original Discord
+      message using the bot.
+    */
+
+    await updateDiscordMessage(
+      interaction,
+      action,
+      status,
+      reviewerId,
+      env.DISCORD_BOT_TOKEN
+    );
+
+    /*
+      Tell Discord that the button
+      interaction was handled.
+    */
 
     return Response.json({
-      type: 7,
-
-      data: {
-        content: "",
-
-        embeds: [
-          {
-            title:
-              approved
-                ? "✅ Moderation Action Verified"
-                : "❌ Moderation Action Denied",
-
-            description:
-              approved
-                ? "This action has been approved and leaderboard points have been awarded."
-                : "This action has been denied. No leaderboard points were awarded.",
-
-            fields: [
-              {
-                name:
-                  "Moderator",
-
-                value:
-                  `${action.moderator_name}\n<@${action.moderator_id}>`,
-
-                inline: true
-              },
-
-              {
-                name:
-                  "Action",
-
-                value:
-                  String(
-                    action.action_type
-                  ).replaceAll(
-                    "_",
-                    " "
-                  ),
-
-                inline: true
-              },
-
-              {
-                name:
-                  "Target",
-
-                value:
-                  action.target_user_name ||
-                  action.target_user_id ||
-                  "Not provided",
-
-                inline: false
-              },
-
-              {
-                name:
-                  "Reason",
-
-                value:
-                  action.reason ||
-                  "No reason provided.",
-
-                inline: false
-              },
-
-              {
-                name:
-                  "Status",
-
-                value:
-                  approved
-                    ? "✅ Verified • +5 points"
-                    : "❌ Denied • 0 points",
-
-                inline: true
-              },
-
-              {
-                name:
-                  "Reviewed By",
-
-                value:
-                  `<@${reviewerId}>`,
-
-                inline: true
-              }
-            ],
-
-            image:
-              action.evidence_url
-                ? {
-                    url:
-                      action.evidence_url
-                  }
-                : undefined,
-
-            timestamp:
-              new Date()
-                .toISOString()
-          }
-        ],
-
-        components: []
-      }
+      type: 6
     });
 
   } catch (error) {
     console.error(
-      "Interaction error:",
+      "Interaction failure:",
       error
     );
 
