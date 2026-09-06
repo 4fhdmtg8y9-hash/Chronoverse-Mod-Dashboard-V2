@@ -1,24 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
+const REVIEW_ROLE_IDS = [
+  "1538505102644740167",
+  "1543383003445723159"
+];
+
 function getCookie(req, name) {
-  const cookieHeader =
-    req.headers.get("cookie") || "";
+  const header = req.headers.get("cookie") || "";
 
-  const cookies = cookieHeader
-    .split(";")
-    .map(cookie => cookie.trim())
-    .filter(Boolean);
-
-  for (const cookie of cookies) {
+  for (const part of header.split(";")) {
+    const cookie = part.trim();
     const index = cookie.indexOf("=");
 
     if (index === -1) continue;
 
-    const key = cookie.slice(0, index);
-    const value = cookie.slice(index + 1);
-
-    if (key === name) {
-      return value;
+    if (cookie.slice(0, index) === name) {
+      return cookie.slice(index + 1);
     }
   }
 
@@ -26,20 +23,17 @@ function getCookie(req, name) {
 }
 
 function getSession(req) {
-  const session =
-    getCookie(
-      req,
-      "chronoverse_session"
-    );
+  const value = getCookie(
+    req,
+    "chronoverse_session"
+  );
 
-  if (!session) {
-    return null;
-  }
+  if (!value) return null;
 
   try {
     return JSON.parse(
       Buffer.from(
-        session,
+        value,
         "base64url"
       ).toString("utf8")
     );
@@ -55,14 +49,11 @@ export default async function handler(req) {
         success: false,
         error: "Method not allowed"
       },
-      {
-        status: 405
-      }
+      { status: 405 }
     );
   }
 
-  const session =
-    getSession(req);
+  const session = getSession(req);
 
   if (!session) {
     return Response.json(
@@ -70,89 +61,154 @@ export default async function handler(req) {
         success: false,
         error: "You must be logged in"
       },
-      {
-        status: 401
-      }
+      { status: 401 }
     );
   }
 
-  const supabaseUrl =
-    process.env.SUPABASE_URL;
-
-  const supabaseKey =
-    process.env.SUPABASE_SECRET_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    return Response.json(
-      {
-        success: false,
-        error:
-          "Supabase is not configured."
-      },
-      {
-        status: 500
-      }
-    );
-  }
-
-  const supabase =
-    createClient(
-      supabaseUrl,
-      supabaseKey
-    );
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SECRET_KEY
+  );
 
   try {
-    const body =
-      await req.json();
+    const form = await req.formData();
 
-    const {
-      action_type,
-      target_user_id,
-      target_user_name,
-      reason
-    } = body;
+    const actionType =
+      form.get("action_type");
 
-    if (!action_type) {
+    const targetUserId =
+      form.get("target_user_id");
+
+    const targetUserName =
+      form.get("target_user_name");
+
+    const reason =
+      form.get("reason");
+
+    const evidence =
+      form.get("evidence");
+
+    if (!actionType) {
       return Response.json(
         {
           success: false,
-          error:
-            "Action type is required"
+          error: "Action type is required"
         },
-        {
-          status: 400
-        }
+        { status: 400 }
       );
     }
 
-    const {
-      data: action,
-      error
-    } = await supabase
-      .from("mod_actions")
-      .insert({
-        moderator_id:
-          session.id,
+    let evidenceUrl = null;
 
-        moderator_name:
-          session.username,
+    if (
+      evidence &&
+      typeof evidence === "object" &&
+      evidence.size > 0
+    ) {
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif"
+      ];
 
-        action_type,
+      if (!allowedTypes.includes(evidence.type)) {
+        return Response.json(
+          {
+            success: false,
+            error:
+              "Evidence must be PNG, JPG, WEBP or GIF."
+          },
+          { status: 400 }
+        );
+      }
 
-        target_user_id:
-          target_user_id || null,
+      if (evidence.size > 4 * 1024 * 1024) {
+        return Response.json(
+          {
+            success: false,
+            error:
+              "Evidence must be smaller than 4 MB."
+          },
+          { status: 400 }
+        );
+      }
 
-        target_user_name:
-          target_user_name || null,
+      const extension =
+        evidence.name
+          .split(".")
+          .pop()
+          ?.replace(/[^a-zA-Z0-9]/g, "")
+          || "png";
 
-        reason:
-          reason || null,
+      const path =
+        `${session.id}/${Date.now()}.${extension}`;
 
-        verification_status:
-          "pending"
-      })
-      .select("*")
-      .single();
+      const buffer =
+        Buffer.from(
+          await evidence.arrayBuffer()
+        );
+
+      const { error: uploadError } =
+        await supabase.storage
+          .from("evidence")
+          .upload(path, buffer, {
+            contentType: evidence.type,
+            upsert: false
+          });
+
+      if (uploadError) {
+        console.error(uploadError);
+
+        return Response.json(
+          {
+            success: false,
+            error:
+              "Unable to upload evidence"
+          },
+          { status: 500 }
+        );
+      }
+
+      const { data: publicData } =
+        supabase.storage
+          .from("evidence")
+          .getPublicUrl(path);
+
+      evidenceUrl =
+        publicData.publicUrl;
+    }
+
+    const { data: action, error } =
+      await supabase
+        .from("mod_actions")
+        .insert({
+          moderator_id:
+            session.id,
+
+          moderator_name:
+            session.username,
+
+          action_type:
+            String(actionType),
+
+          target_user_id:
+            targetUserId || null,
+
+          target_user_name:
+            targetUserName || null,
+
+          reason:
+            reason || null,
+
+          evidence_url:
+            evidenceUrl,
+
+          verification_status:
+            "pending"
+        })
+        .select("*")
+        .single();
 
     if (error) {
       console.error(error);
@@ -163,151 +219,158 @@ export default async function handler(req) {
           error:
             "Failed to save moderation action"
         },
-        {
-          status: 500
-        }
+        { status: 500 }
       );
     }
 
-    const botToken =
-      process.env.DISCORD_BOT_TOKEN;
+    const discordResponse =
+      await fetch(
+        `https://discord.com/api/v10/channels/${process.env.DISCORD_REQUEST_CHANNEL_ID}/messages`,
+        {
+          method: "POST",
 
-    const channelId =
-      process.env.DISCORD_REQUEST_CHANNEL_ID;
+          headers: {
+            Authorization:
+              `Bot ${process.env.DISCORD_BOT_TOKEN}`,
 
-    if (botToken && channelId) {
-      const discordResponse =
-        await fetch(
-          `https://discord.com/api/v10/channels/${channelId}/messages`,
-          {
-            method: "POST",
+            "Content-Type":
+              "application/json"
+          },
 
-            headers: {
-              Authorization:
-                `Bot ${botToken}`,
+          body: JSON.stringify({
+            content:
+              `<@&${REVIEW_ROLE_IDS[0]}> <@&${REVIEW_ROLE_IDS[1]}>`,
 
-              "Content-Type":
-                "application/json"
+            allowed_mentions: {
+              parse: [],
+              roles: REVIEW_ROLE_IDS
             },
 
-            body: JSON.stringify({
-              embeds: [
-                {
-                  title:
-                    "Moderation Action Verification",
+            embeds: [
+              {
+                title:
+                  "Moderation Action Verification",
 
-                  fields: [
-                    {
-                      name: "Moderator",
-                      value:
-                        `${session.username}\n<@${session.id}>`,
-                      inline: true
-                    },
+                description:
+                  "A moderation action is awaiting review.",
 
-                    {
-                      name: "Action",
-                      value:
-                        String(action_type)
-                          .replaceAll(
-                            "_",
-                            " "
-                          ),
-                      inline: true
-                    },
-
-                    {
-                      name: "Target",
-                      value:
-                        target_user_name ||
-                        target_user_id ||
-                        "Not provided"
-                    },
-
-                    {
-                      name: "Reason",
-                      value:
-                        reason ||
-                        "No reason provided."
-                    },
-
-                    {
-                      name: "Status",
-                      value:
-                        "⏳ Pending Verification"
-                    }
-                  ],
-
-                  footer: {
-                    text:
-                      "Verified actions award 5 points."
+                fields: [
+                  {
+                    name: "Moderator",
+                    value:
+                      `${session.username}\n<@${session.id}>`,
+                    inline: true
                   },
 
-                  timestamp:
-                    new Date()
-                      .toISOString()
-                }
-              ],
+                  {
+                    name: "Action",
+                    value:
+                      String(actionType)
+                        .replaceAll("_", " "),
+                    inline: true
+                  },
 
-              components: [
-                {
-                  type: 1,
+                  {
+                    name: "Target",
+                    value:
+                      targetUserName ||
+                      targetUserId ||
+                      "Not provided"
+                  },
 
-                  components: [
-                    {
-                      type: 2,
-                      style: 3,
-                      label: "Verify",
-                      custom_id:
-                        `verify_action:${action.id}`
-                    },
+                  {
+                    name: "Reason",
+                    value:
+                      reason ||
+                      "No reason provided."
+                  },
 
-                    {
-                      type: 2,
-                      style: 4,
-                      label: "Deny",
-                      custom_id:
-                        `deny_action:${action.id}`
-                    }
-                  ]
-                }
-              ]
-            })
-          }
-        );
+                  {
+                    name: "Status",
+                    value:
+                      "⏳ Pending Verification"
+                  }
+                ],
 
-      if (discordResponse.ok) {
-        const discordMessage =
-          await discordResponse.json();
+                image:
+                  evidenceUrl
+                    ? {
+                        url: evidenceUrl
+                      }
+                    : undefined,
 
-        await supabase
-          .from("mod_actions")
-          .update({
-            discord_message_id:
-              discordMessage.id
+                footer: {
+                  text:
+                    "Verified actions award 5 points."
+                },
+
+                timestamp:
+                  new Date().toISOString()
+              }
+            ],
+
+            components: [
+              {
+                type: 1,
+
+                components: [
+                  {
+                    type: 2,
+                    style: 3,
+                    label: "Verify",
+                    custom_id:
+                      `verify_action:${action.id}`
+                  },
+
+                  {
+                    type: 2,
+                    style: 4,
+                    label: "Deny",
+                    custom_id:
+                      `deny_action:${action.id}`
+                  }
+                ]
+              }
+            ]
           })
-          .eq(
-            "id",
-            action.id
-          );
-      } else {
-        console.error(
-          "Discord message failed:",
-          await discordResponse.text()
-        );
-      }
+        }
+      );
+
+    if (!discordResponse.ok) {
+      console.error(
+        await discordResponse.text()
+      );
+
+      return Response.json(
+        {
+          success: true,
+          warning:
+            "Action saved, but Discord message failed.",
+          action_id: action.id
+        },
+        { status: 201 }
+      );
     }
+
+    const discordMessage =
+      await discordResponse.json();
+
+    await supabase
+      .from("mod_actions")
+      .update({
+        discord_message_id:
+          discordMessage.id
+      })
+      .eq("id", action.id);
 
     return Response.json(
       {
         success: true,
-        action_id:
-          action.id,
+        action_id: action.id,
         message:
           "Action submitted for verification."
       },
-      {
-        status: 201
-      }
+      { status: 201 }
     );
 
   } catch (error) {
@@ -319,9 +382,7 @@ export default async function handler(req) {
         error:
           "Unable to submit moderation action"
       },
-      {
-        status: 500
-      }
+      { status: 500 }
     );
   }
 }
