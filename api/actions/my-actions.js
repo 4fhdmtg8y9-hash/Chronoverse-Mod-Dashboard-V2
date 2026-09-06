@@ -1,4 +1,5 @@
 import supabase from "../../lib/database.js";
+import { getSession } from "../../lib/session.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -8,28 +9,40 @@ export default async function handler(req, res) {
     });
   }
 
-  const { moderator_id } = req.query;
+  const session =
+    getSession(req);
 
-  if (!moderator_id) {
-    return res.status(400).json({
+  if (!session) {
+    return res.status(401).json({
       success: false,
-      error: "Moderator ID is required"
+      error: "You must be logged in"
     });
   }
 
   try {
-    const { data, error } = await supabase
-      .from("mod_actions")
-      .select(`
-        id,
-        action_type,
-        target_user_id,
-        target_user_name,
-        reason,
-        created_at
-      `)
-      .eq("moderator_id", moderator_id)
-      .order("created_at", { ascending: false });
+    const { data, error } =
+      await supabase
+        .from("mod_actions")
+        .select(`
+          id,
+          action_type,
+          target_user_id,
+          target_user_name,
+          reason,
+          verification_status,
+          verified_at,
+          created_at
+        `)
+        .eq(
+          "moderator_id",
+          session.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
     if (error) {
       console.error(error);
