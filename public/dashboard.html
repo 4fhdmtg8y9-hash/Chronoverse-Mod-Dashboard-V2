@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -438,8 +438,6 @@
 
   <div class="app">
 
-    <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
       <div class="brand">
@@ -538,11 +536,7 @@
 
     </aside>
 
-    <!-- CONTENT -->
-
     <main class="content">
-
-      <!-- TOPBAR -->
 
       <header class="topbar">
 
@@ -581,13 +575,11 @@
 
       </header>
 
-      <!-- HERO -->
-
       <section class="hero dashboard-hero">
 
         <img
           class="hero-background"
-          src="/assets/chronoverse-hero.jpg"
+          src="/chronoverse-hero.png"
           alt=""
         >
 
@@ -639,11 +631,7 @@
 
       </section>
 
-      <!-- STATS -->
-
-      <section
-        class="grid grid-4 dashboard-stats"
-      >
+      <section class="grid grid-4 dashboard-stats">
 
         <article class="card stat-card">
 
@@ -731,12 +719,10 @@
 
       </section>
 
-      <!-- AVENGERS STRIP -->
-
       <section class="cinematic-banner">
 
         <img
-          src="/assets/chronoverse-banner.jpg"
+          src="/chronoverse-banner.png"
           alt=""
         >
 
@@ -758,8 +744,6 @@
         </div>
 
       </section>
-
-      <!-- QUICK ACTIONS / SCHEDULE -->
 
       <section class="dashboard-main-grid">
 
@@ -918,8 +902,6 @@
 
       </section>
 
-      <!-- ACTIVITY / ANNOUNCEMENTS -->
-
       <section class="dashboard-bottom-grid">
 
         <article class="panel">
@@ -1045,6 +1027,7 @@
           meData.user;
 
         updateUser();
+
         updateStats(
           actionsData.actions || [],
           leaderboardData.leaderboard || [],
