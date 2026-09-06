@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronoverse Moderator Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b0b12;
+      color: #ffffff;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 240px;
+      height: 100vh;
+      padding: 25px 18px;
+      background: #11111b;
+      border-right: 1px solid #252535;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 35px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      padding: 12px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #aaaabd;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: #1d1d2b;
+      color: #ffffff;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 35px;
+    }
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 7px;
+    }
+
+    .header p {
+      color: #9292a7;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      padding: 22px;
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 12px;
+    }
+
+    .card-title {
+      color: #9292a7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .section {
+      padding: 25px;
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 12px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .empty {
+      padding: 35px;
+      text-align: center;
+      color: #77778b;
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        width: 190px;
+      }
+
+      .main {
+        margin-left: 190px;
+        padding: 20px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">Chronoverse</div>
+
+    <nav class="nav">
+      <button class="active">Overview</button>
+      <button>My Actions</button>
+      <button>Requests</button>
+      <button>Inactivity</button>
+      <button>Leaderboard</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+    <header class="header">
+      <h1>Moderator Dashboard</h1>
+      <p>Welcome to the Chronoverse moderation centre.</p>
+    </header>
+
+    <section class="cards">
+      <div class="card">
+        <div class="card-title">Your Actions</div>
+        <div class="card-value" id="my-actions">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pending Requests</div>
+        <div class="card-value" id="pending-requests">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Your Rank</div>
+        <div class="card-value" id="my-rank">—</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recent Activity</h2>
+
+      <div class="empty" id="activity">
+        No activity yet.
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
