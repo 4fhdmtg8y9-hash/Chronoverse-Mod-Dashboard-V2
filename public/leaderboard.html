@@ -4,101 +4,337 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse • Leaderboard</title>
+  <title>Marvel Chronoverse • Leaderboard</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .leaderboard-wrap {
+      margin-top: 14px;
     }
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
+    .podium {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 12px;
+
+      align-items: end;
+
+      margin-bottom: 14px;
     }
 
-    .page {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 45px 25px;
-    }
+    .podium-card {
+      min-height: 190px;
 
-    .back {
-      display: inline-block;
-      margin-bottom: 30px;
-      color: #9292a7;
-      text-decoration: none;
-    }
+      padding: 20px 16px;
 
-    .back:hover {
-      color: #ffffff;
-    }
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
+      text-align: center;
 
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 30px;
-    }
+      border-radius: 9px;
 
-    .leaderboard {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
+      border:
+        1px solid rgba(158, 63, 66, .34);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(31, 17, 19, .88),
+          rgba(7, 7, 8, .98)
+        );
+
+      position: relative;
+
       overflow: hidden;
     }
 
-    .row {
+    .podium-card::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(196, 154, 101, .12),
+          transparent 45%
+        );
+
+      pointer-events: none;
+    }
+
+    .podium-card.first {
+      min-height: 235px;
+
+      border-color:
+        rgba(209, 169, 105, .58);
+
+      box-shadow:
+        0 0 32px
+        rgba(176, 119, 55, .08);
+    }
+
+    .podium-card.second {
+      min-height: 210px;
+    }
+
+    .podium-card.third {
+      min-height: 195px;
+    }
+
+    .podium-rank {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 13px;
+
+      letter-spacing: 2px;
+
+      color: var(--gold-light);
+
+      margin-bottom: 12px;
+
+      position: relative;
+      z-index: 1;
+    }
+
+    .podium-avatar {
+      width: 68px;
+      height: 68px;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+
+      background: #191215;
+
+      border:
+        1px solid var(--gold-border);
+
+      margin-bottom: 12px;
+
+      position: relative;
+      z-index: 1;
+    }
+
+    .podium-card.first .podium-avatar {
+      width: 82px;
+      height: 82px;
+    }
+
+    .podium-name {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 14px;
+
+      position: relative;
+      z-index: 1;
+    }
+
+    .podium-points {
+      margin-top: 8px;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 20px;
+
+      color: var(--red-light);
+
+      position: relative;
+      z-index: 1;
+    }
+
+    .podium-actions {
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+
+      position: relative;
+      z-index: 1;
+    }
+
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+    }
+
+    .rank-row {
       display: grid;
-      grid-template-columns: 70px 1fr 150px;
+
+      grid-template-columns:
+        55px
+        1fr
+        130px
+        110px;
+
+      gap: 12px;
+
       align-items: center;
 
-      padding: 18px 22px;
+      padding: 14px 15px;
 
-      border-bottom: 1px solid #252535;
+      border-radius: 7px;
+
+      border:
+        1px solid rgba(158, 63, 66, .26);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(31, 16, 18, .48),
+          rgba(7, 7, 8, .98)
+        );
     }
 
-    .row:last-child {
-      border-bottom: 0;
+    .rank-number {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      color: var(--gold-light);
+
+      font-size: 12px;
     }
 
-    .header-row {
-      color: #9292a7;
-      font-size: 13px;
-      text-transform: uppercase;
+    .rank-user {
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      min-width: 0;
     }
 
-    .rank {
-      font-weight: 700;
+    .rank-avatar {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      background: #191215;
+
+      border:
+        1px solid rgba(198,154,101,.25);
     }
 
-    .name {
-      font-weight: 600;
+    .rank-name {
+      overflow: hidden;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 10px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .points {
+    .rank-actions {
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    .rank-points {
       text-align: right;
-      font-weight: 700;
+
+      color: var(--red-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 12px;
     }
 
-    .loading,
-    .empty,
-    .error {
-      padding: 40px;
-      text-align: center;
-      color: #9292a7;
+    .you-tag {
+      margin-left: 6px;
+
+      padding:
+        2px
+        6px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(128, 34, 39, .35);
+
+      color: #e7b5b0;
+
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+      font-size: 7px;
     }
 
-    @media (max-width: 600px) {
-      .row {
-        grid-template-columns: 50px 1fr 100px;
-        padding: 15px;
+    .leaderboard-info {
+      margin-bottom: 14px;
+
+      display: flex;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      align-items: center;
+    }
+
+    .leaderboard-note {
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    @media (max-width: 850px) {
+      .podium {
+        grid-template-columns: 1fr;
+      }
+
+      .podium-card,
+      .podium-card.first,
+      .podium-card.second,
+      .podium-card.third {
+        min-height: 170px;
+      }
+
+      .rank-row {
+        grid-template-columns:
+          45px
+          1fr
+          90px;
+      }
+
+      .rank-actions {
+        display: none;
       }
     }
   </style>
@@ -106,36 +342,220 @@
 
 <body>
 
-  <main class="page">
+<div class="app">
 
-    <a
-      class="back"
-      href="/dashboard.html"
-    >
-      ← Back to Dashboard
-    </a>
+  <aside class="sidebar">
 
-    <h1>
-      Moderator Leaderboard
-    </h1>
+    <div class="brand">
 
-    <p class="subtitle">
-      Chronoverse staff rankings based on moderation points.
-    </p>
-
-    <section class="leaderboard">
-
-      <div class="row header-row">
-        <div>Rank</div>
-        <div>Moderator</div>
-        <div style="text-align:right;">
-          Points
-        </div>
+      <div class="brand-marvel">
+        MARVEL
       </div>
 
-      <div id="leaderboard">
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
 
-        <div class="loading">
+      <div class="brand-divider"></div>
+
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
+
+    </div>
+
+    <nav class="nav">
+
+      <a
+        class="nav-link"
+        href="/dashboard.html"
+      >
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/log-action.html"
+      >
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a
+        class="nav-link"
+        href="/my-actions.html"
+      >
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/leaderboard.html"
+      >
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/announcements.html"
+      >
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a
+        class="nav-link"
+        href="/schedule.html"
+      >
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a
+        class="nav-link"
+        href="/inactivity.html"
+      >
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a
+        class="nav-link"
+        href="/requests.html"
+      >
+        <span class="nav-icon">♙</span>
+        Requests
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+
+        <h1>
+          Moderator Leaderboard
+        </h1>
+
+        <p>
+          Rankings based on verified moderation actions.
+        </p>
+
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+
+          <div
+            id="user-name"
+            class="user-name"
+          >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-banner.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+
+          <div class="hero-title">
+            Rise Through the
+            <span class="red-text">
+              Ranks
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            VERIFIED PERFORMANCE
+          </div>
+
+          <div class="hero-quote">
+            “Consistency writes your place in history.”
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="panel leaderboard-wrap">
+
+      <div class="leaderboard-info">
+
+        <div>
+
+          <div class="panel-title">
+            Chronoverse Rankings
+          </div>
+
+          <div class="panel-description">
+            Each verified action awards 5 points.
+          </div>
+
+        </div>
+
+        <div
+          id="my-position"
+          class="leaderboard-note"
+        >
+          Loading your position...
+        </div>
+
+      </div>
+
+      <div
+        id="podium"
+        class="podium"
+      ></div>
+
+      <div
+        id="rank-list"
+        class="rank-list"
+      >
+
+        <div class="empty">
           Loading leaderboard...
         </div>
 
@@ -145,86 +565,254 @@
 
   </main>
 
-  <script>
-    async function loadLeaderboard() {
-      const container =
-        document.getElementById("leaderboard");
+</div>
 
-      try {
-        const response =
-          await fetch("/api/leaderboard");
+<script>
+  let currentUser = null;
+  let leaderboard = [];
 
-        if (!response.ok) {
-          throw new Error(
-            "Unable to load leaderboard"
-          );
-        }
+  async function getJson(url) {
+    const response =
+      await fetch(url);
 
-        const data =
-          await response.json();
+    if (response.status === 401) {
+      window.location.replace("/");
+      throw new Error(
+        "Not authenticated"
+      );
+    }
 
-        const leaderboard =
-          data.leaderboard || [];
+    const data =
+      await response.json();
 
-        if (!leaderboard.length) {
-          container.innerHTML = `
-            <div class="empty">
-              No moderation points have been recorded yet.
-            </div>
-          `;
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
 
-          return;
-        }
+    return data;
+  }
 
-        container.innerHTML =
-          leaderboard
-            .map(
-              (moderator, index) => `
-                <div class="row">
+  async function start() {
+    try {
 
-                  <div class="rank">
-                    #${index + 1}
-                  </div>
+      const [
+        meData,
+        leaderboardData
+      ] = await Promise.all([
+        getJson("/api/auth/me"),
+        getJson("/api/leaderboard")
+      ]);
 
-                  <div class="name">
-                    ${escapeHtml(
-                      moderator.moderator_name
-                    )}
-                  </div>
+      currentUser =
+        meData.user;
 
-                  <div class="points">
-                    ${Number(
-                      moderator.points || 0
-                    )} pts
-                  </div>
+      leaderboard =
+        leaderboardData.leaderboard || [];
 
-                </div>
-              `
-            )
-            .join("");
+      updateUser();
+      renderPosition();
+      renderLeaderboard();
 
-      } catch (error) {
-        console.error(error);
+    } catch (error) {
 
-        container.innerHTML = `
-          <div class="error">
-            Unable to load the leaderboard.
-          </div>
-        `;
+      console.error(error);
+
+      document.getElementById(
+        "rank-list"
+      ).innerHTML = `
+        <div class="empty">
+          Unable to load the leaderboard.
+        </div>
+      `;
+    }
+  }
+
+  function updateUser() {
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      currentUser.username;
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (currentUser.avatar) {
+      avatar.src =
+        currentUser.avatar;
+    } else {
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function renderPosition() {
+    const index =
+      leaderboard.findIndex(
+        item =>
+          item.moderator_id ===
+          currentUser.id
+      );
+
+    document.getElementById(
+      "my-position"
+    ).textContent =
+      index === -1
+        ? "You are not ranked yet."
+        : `YOUR POSITION: #${index + 1}`;
+  }
+
+  function renderLeaderboard() {
+    renderPodium();
+    renderList();
+  }
+
+  function renderPodium() {
+    const podium =
+      document.getElementById(
+        "podium"
+      );
+
+    if (!leaderboard.length) {
+      podium.innerHTML = "";
+      return;
+    }
+
+    const topThree =
+      leaderboard.slice(0, 3);
+
+    const positions = [
+      {
+        rank: "#1",
+        className: "first"
+      },
+      {
+        rank: "#2",
+        className: "second"
+      },
+      {
+        rank: "#3",
+        className: "third"
       }
+    ];
+
+    podium.innerHTML =
+      topThree
+        .map(
+          (moderator, index) => `
+            <article
+              class="podium-card ${positions[index].className}"
+            >
+
+              <div class="podium-rank">
+                ${positions[index].rank}
+              </div>
+
+              <div class="podium-name">
+                ${escapeHtml(
+                  moderator.moderator_name
+                )}
+
+                ${
+                  moderator.moderator_id ===
+                  currentUser.id
+                    ? `<span class="you-tag">YOU</span>`
+                    : ""
+                }
+              </div>
+
+              <div class="podium-points">
+                ${Number(
+                  moderator.points || 0
+                )} PTS
+              </div>
+
+              <div class="podium-actions">
+                ${Number(
+                  moderator.verified_actions || 0
+                )} verified actions
+              </div>
+
+            </article>
+          `
+        )
+        .join("");
+  }
+
+  function renderList() {
+    const container =
+      document.getElementById(
+        "rank-list"
+      );
+
+    if (!leaderboard.length) {
+      container.innerHTML = `
+        <div class="empty">
+          No verified moderation actions yet.
+        </div>
+      `;
+
+      return;
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    container.innerHTML =
+      leaderboard.map(
+        (moderator, index) => `
+          <article class="rank-row">
 
-    loadLeaderboard();
-  </script>
+            <div class="rank-number">
+              #${index + 1}
+            </div>
+
+            <div class="rank-user">
+
+              <div class="rank-name">
+                ${escapeHtml(
+                  moderator.moderator_name
+                )}
+
+                ${
+                  moderator.moderator_id ===
+                  currentUser.id
+                    ? `<span class="you-tag">YOU</span>`
+                    : ""
+                }
+              </div>
+
+            </div>
+
+            <div class="rank-actions">
+              ${Number(
+                moderator.verified_actions || 0
+              )} verified
+            </div>
+
+            <div class="rank-points">
+              ${Number(
+                moderator.points || 0
+              )} PTS
+            </div>
+
+          </article>
+        `
+      ).join("");
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  start();
+</script>
 
 </body>
 </html>
