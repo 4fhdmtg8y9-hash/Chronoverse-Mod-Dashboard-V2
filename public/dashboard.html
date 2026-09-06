@@ -1,647 +1,65 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Marvel Chronoverse • Moderator Panel</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Moderator Panel
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    :root {
-      --bg: #070707;
-      --panel: rgba(12, 10, 11, 0.96);
-      --panel-soft: rgba(23, 14, 15, 0.88);
-
-      --red: #b94f53;
-      --red-bright: #d86b6d;
-      --red-dark: #5b2024;
-
-      --gold: #c9a06b;
-      --gold-soft: #8d6e49;
-
-      --text: #f5f0ea;
-      --muted: #8e8580;
-
-      --border: rgba(177, 78, 79, 0.48);
-      --border-gold: rgba(194, 150, 91, 0.42);
+    .dashboard-hero {
+      min-height: 155px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .dashboard-stats {
+      margin-top: 14px;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-
-      background:
-        radial-gradient(
-          circle at 70% 10%,
-          rgba(115, 37, 38, 0.17),
-          transparent 34%
-        ),
-        radial-gradient(
-          circle at 20% 85%,
-          rgba(92, 45, 24, 0.13),
-          transparent 34%
-        ),
-        #060606;
-
-      color: var(--text);
-
-      font-family:
-        Inter,
-        Arial,
-        sans-serif;
-    }
-
-    body::before {
-      content: "";
-
-      position: fixed;
-      inset: 0;
-
-      pointer-events: none;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(178, 71, 71, 0.035) 1px,
-          transparent 1px
-        ),
-        linear-gradient(
-          rgba(178, 71, 71, 0.02) 1px,
-          transparent 1px
-        );
-
-      background-size: 80px 80px;
-
-      opacity: 0.35;
-
-      z-index: -1;
-    }
-
-    button,
-    a {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       PAGE SHELL
-    ========================= */
-
-    .shell {
-      min-height: 100vh;
-
-      border:
-        1px solid rgba(188, 126, 76, 0.22);
-
-      display: grid;
-
-      grid-template-columns:
-        230px
-        minmax(0, 1fr);
-    }
-
-    /* =========================
-       SIDEBAR
-    ========================= */
-
-    .sidebar {
-      min-height: 100vh;
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(15, 10, 10, 0.98),
-          rgba(5, 5, 6, 0.98)
-        );
-
-      border-right:
-        1px solid var(--border-gold);
-
-      padding:
-        26px
-        15px;
-
-      display: flex;
-      flex-direction: column;
-
-      position: sticky;
-      top: 0;
-
-      height: 100vh;
-    }
-
-    .brand {
-      text-align: center;
-
-      padding:
-        5px
-        8px
-        24px;
-
-      border-bottom:
-        1px solid rgba(193, 151, 94, 0.22);
-
-      margin-bottom: 22px;
-    }
-
-    .brand-small {
-      color: var(--gold);
-
-      font-family:
-        Georgia,
-        serif;
-
-      letter-spacing: 2px;
-
-      font-size: 13px;
-    }
-
-    .brand-main {
-      margin-top: 3px;
-
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 25px;
-
-      letter-spacing: 1px;
-
-      color: #e6c092;
-
-      text-shadow:
-        0 0 24px rgba(189, 126, 80, 0.23);
-    }
-
-    .brand-line {
-      width: 70%;
-      height: 1px;
-
-      margin:
-        11px
-        auto;
-
-      background:
-        linear-gradient(
-          90deg,
-          transparent,
-          var(--gold),
-          transparent
-        );
-    }
-
-    .brand-sub {
-      color: #9d8467;
-
-      letter-spacing: 4px;
-
-      font-size: 9px;
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-
-      gap: 7px;
-    }
-
-    .nav-item {
-      width: 100%;
-
-      border: 0;
-
-      color: #b5aba5;
-
-      background: transparent;
-
-      padding:
-        12px
-        12px;
-
-      border-radius: 7px;
+    .stat-card {
+      min-height: 112px;
 
       display: flex;
       align-items: center;
 
-      gap: 11px;
-
-      text-align: left;
-
-      transition:
-        background 0.18s ease,
-        color 0.18s ease,
-        transform 0.18s ease;
+      gap: 16px;
     }
 
-    .nav-item:hover {
-      background:
-        linear-gradient(
-          90deg,
-          rgba(120, 34, 37, 0.45),
-          rgba(56, 20, 22, 0.14)
-        );
-
-      color: #fff;
-
-      transform: translateX(2px);
-    }
-
-    .nav-item.active {
-      color: white;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(128, 38, 42, 0.92),
-          rgba(62, 21, 24, 0.3)
-        );
-
-      border-left:
-        2px solid var(--red-bright);
-
-      box-shadow:
-        0 0 18px rgba(144, 48, 51, 0.13);
-    }
-
-    .nav-icon {
-      width: 28px;
-      height: 28px;
-
-      border-radius: 6px;
+    .stat-icon {
+      width: 46px;
+      height: 46px;
 
       display: grid;
       place-items: center;
 
-      background:
-        rgba(255, 255, 255, 0.035);
-
-      font-size: 15px;
-    }
-
-    .latin {
-      margin-top: auto;
-
-      text-align: center;
-
-      padding-top: 35px;
-
-      color: #6f6055;
-    }
-
-    .latin-symbol {
-      color: var(--gold);
-
-      margin-bottom: 18px;
-    }
-
-    .latin-text {
-      font-family:
-        Georgia,
-        serif;
-
-      letter-spacing: 4px;
-
-      line-height: 2.15;
-
-      font-size: 10px;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    .main {
-      min-width: 0;
-
-      padding:
-        0
-        20px
-        28px;
-    }
-
-    /* =========================
-       TOPBAR / BANNER
-    ========================= */
-
-    .topbar {
-      min-height: 105px;
-
-      border-bottom:
-        1px solid var(--border-gold);
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 20px;
-
-      padding:
-        0
-        10px;
-
-      position: relative;
-
-      overflow: hidden;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(30, 16, 16, 0.95),
-          rgba(10, 9, 10, 0.62)
-        );
-    }
-
-    .topbar::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-
-      background-image:
-        url("/assets/chronoverse-top-banner.jpg");
-
-      background-size: cover;
-      background-position: center;
-
-      opacity: 0.28;
-
-      filter:
-        saturate(0.65)
-        sepia(0.15);
-
-      pointer-events: none;
-    }
-
-    .topbar > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .top-quote {
-      margin-left: auto;
-
-      color: #7d716b;
-
-      text-transform: uppercase;
-
-      letter-spacing: 5px;
-
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 11px;
-
-      text-align: center;
-
-      line-height: 1.9;
-    }
-
-    .profile {
-      display: flex;
-      align-items: center;
-
-      gap: 12px;
-
-      min-width: 190px;
-
-      justify-content: flex-end;
-    }
-
-    .profile-avatar {
-      width: 42px;
-      height: 42px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-      border:
-        1px solid rgba(199, 139, 93, 0.5);
-
-      background: #151214;
-    }
-
-    .profile-name {
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 16px;
-    }
-
-    .profile-role {
-      margin-top: 3px;
-
-      color: #8f827b;
-
-      font-size: 10px;
-    }
-
-    /* =========================
-       HERO
-    ========================= */
-
-    .hero {
-      margin-top: 14px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 10px;
-
-      overflow: hidden;
-
-      position: relative;
-
-      min-height: 135px;
-
-      padding:
-        25px
-        28px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      background:
-        radial-gradient(
-          circle at 82% 50%,
-          rgba(126, 51, 51, 0.24),
-          transparent 26%
-        ),
-        linear-gradient(
-          110deg,
-          #090909 12%,
-          #0c090a 56%,
-          #171011 100%
-        );
-    }
-
-    .hero::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-
-      background-image:
-        url("/assets/chronoverse-hero.jpg");
-
-      background-size: cover;
-      background-position: center;
-
-      opacity: 0.23;
-
-      mix-blend-mode: screen;
-
-      pointer-events: none;
-    }
-
-    .hero-left,
-    .hero-right {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero h1 {
-      font-family:
-        Georgia,
-        serif;
-
-      font-weight: 400;
-
-      font-size: 31px;
-    }
-
-    .hero-name {
-      color: var(--red-bright);
-    }
-
-    .hero-role {
-      margin-top: 7px;
-
-      color: #a89890;
-
-      font-family:
-        Georgia,
-        serif;
-
-      letter-spacing: 5px;
-
-      font-size: 11px;
-    }
-
-    .hero-quote {
-      margin-top: 16px;
-
-      color: #756b67;
-
-      font-family:
-        Georgia,
-        serif;
-
-      font-style: italic;
-
-      letter-spacing: 2px;
-
-      font-size: 11px;
-    }
-
-    .hero-right {
-      text-align: right;
-    }
-
-    .hero-date {
-      color: #8f837c;
-
-      letter-spacing: 1px;
-
-      font-size: 11px;
-    }
-
-    .hero-time {
-      margin-top: 9px;
-
-      color: var(--red-bright);
-
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 23px;
-
-      letter-spacing: 2px;
-    }
-
-    /* =========================
-       STAT CARDS
-    ========================= */
-
-    .stats {
-      display: grid;
-
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
-      gap: 12px;
-
-      margin-top: 13px;
-    }
-
-    .stat {
-      min-height: 120px;
-
-      padding:
-        18px
-        20px;
-
-      border:
-        1px solid var(--border);
+      flex-shrink: 0;
 
       border-radius: 8px;
 
       background:
-        linear-gradient(
-          135deg,
-          rgba(25, 13, 14, 0.94),
-          rgba(8, 8, 9, 0.98)
-        );
+        rgba(122, 34, 39, .28);
 
-      display: flex;
-      align-items: center;
+      color: var(--red-light);
 
-      gap: 18px;
+      font-size: 22px;
 
-      box-shadow:
-        inset 0 0 32px rgba(131, 43, 45, 0.05);
-    }
-
-    .stat-icon {
-      font-size: 31px;
-
-      color: var(--red-bright);
-
-      filter:
-        drop-shadow(
-          0 0 10px
-          rgba(190, 75, 76, 0.22)
-        );
+      border:
+        1px solid rgba(176, 69, 73, .25);
     }
 
     .stat-value {
       font-family:
+        Cinzel,
         Georgia,
         serif;
 
@@ -651,203 +69,148 @@
     }
 
     .stat-label {
-      color: #9a8f89;
-
-      font-size: 12px;
-
       margin-top: 6px;
-    }
 
-    .stat-change {
-      margin-top: 8px;
-
-      color: #6bad7b;
+      color: var(--muted);
 
       font-size: 10px;
     }
 
-    /* =========================
-       CINEMATIC STRIP
-    ========================= */
+    .cinematic-banner {
+      min-height: 135px;
 
-    .cinematic-strip {
-      margin-top: 13px;
+      margin-top: 14px;
 
-      min-height: 125px;
+      position: relative;
+      overflow: hidden;
+
+      border-radius: var(--radius);
 
       border:
         1px solid var(--border);
 
-      border-radius: 8px;
-
-      overflow: hidden;
-
-      position: relative;
-
       background:
         linear-gradient(
           90deg,
-          rgba(70, 14, 18, 0.85),
-          rgba(26, 10, 12, 0.78)
+          #441318,
+          #17090b
         );
     }
 
-    .cinematic-strip::before {
-      content: "";
-
+    .cinematic-banner img {
       position: absolute;
       inset: 0;
 
-      background-image:
-        url("/assets/chronoverse-banner.jpg");
+      width: 100%;
+      height: 100%;
 
-      background-size: cover;
-      background-position: center;
+      object-fit: cover;
 
-      opacity: 0.52;
+      opacity: .6;
 
       filter:
-        saturate(0.65)
+        saturate(.75)
         contrast(1.08);
     }
 
-    .cinematic-overlay {
+    .cinematic-shade {
       position: absolute;
       inset: 0;
 
       background:
         linear-gradient(
           90deg,
-          rgba(55, 10, 13, 0.6),
-          rgba(0, 0, 0, 0.15),
-          rgba(20, 5, 6, 0.68)
+          rgba(64, 11, 16, .82),
+          rgba(5, 5, 5, .08),
+          rgba(17, 5, 7, .78)
         );
     }
 
-    .cinematic-text {
+    .cinematic-content {
+      min-height: 135px;
+
       position: relative;
       z-index: 1;
 
-      min-height: 125px;
+      padding:
+        20px
+        45px;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
 
-      padding:
-        20px
-        60px;
+      gap: 30px;
     }
 
-    .quote-large {
-      max-width: 270px;
-
-      color: #c8b8ac;
-
+    .cinematic-quote {
       font-family:
+        Cinzel,
         Georgia,
         serif;
 
-      letter-spacing: 5px;
+      color: #dcc7ba;
 
-      line-height: 1.55;
+      letter-spacing: 4px;
 
-      text-align: center;
+      line-height: 1.6;
 
-      font-size: 16px;
+      font-size: 14px;
+
+      max-width: 310px;
     }
 
-    .banner-brand {
+    .cinematic-brand {
       text-align: right;
 
-      color: #d6a5a0;
-
       font-family:
+        Cinzel,
         Georgia,
         serif;
 
-      font-size: 17px;
+      color: #d9a49f;
 
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+
+      font-size: 15px;
     }
 
-    /* =========================
-       LOWER GRID
-    ========================= */
-
-    .dashboard-grid {
+    .dashboard-main-grid {
       display: grid;
 
       grid-template-columns:
-        minmax(0, 1.7fr)
-        minmax(280px, 0.8fr);
+        minmax(0, 1.65fr)
+        minmax(270px, .8fr);
 
       gap: 12px;
 
-      margin-top: 13px;
-    }
-
-    .panel {
-      border:
-        1px solid var(--border);
-
-      border-radius: 8px;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(14, 12, 13, 0.98),
-          rgba(8, 8, 9, 0.98)
-        );
-
-      padding: 17px;
-
-      min-width: 0;
+      margin-top: 14px;
     }
 
     .panel-header {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
 
-      gap: 12px;
+      gap: 15px;
 
-      margin-bottom: 14px;
-    }
-
-    .panel-title {
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 21px;
-    }
-
-    .panel-subtitle {
-      margin-top: 4px;
-
-      color: #756d68;
-
-      font-size: 11px;
+      margin-bottom: 15px;
     }
 
     .panel-link {
-      color: var(--red-bright);
+      color: var(--red-light);
 
       text-decoration: none;
 
       font-family:
+        Cinzel,
         Georgia,
         serif;
 
-      font-size: 11px;
+      font-size: 9px;
     }
 
-    /* =========================
-       QUICK ACTIONS
-    ========================= */
-
-    .quick-grid {
+    .quick-actions {
       display: grid;
 
       grid-template-columns:
@@ -856,393 +219,215 @@
       gap: 10px;
     }
 
-    .quick-card {
-      min-height: 96px;
+    .quick-action {
+      min-height: 95px;
+
+      text-align: left;
 
       border:
-        1px solid rgba(151, 66, 67, 0.4);
+        1px solid rgba(158, 63, 66, .34);
 
       border-radius: 7px;
 
+      padding: 13px;
+
+      color: var(--text);
+
       background:
         linear-gradient(
           135deg,
-          rgba(46, 24, 25, 0.65),
-          rgba(11, 9, 10, 0.96)
+          rgba(44, 21, 23, .7),
+          rgba(8, 8, 9, .98)
         );
 
-      color: white;
-
-      padding: 13px;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-
-      transition:
-        transform 0.18s ease,
-        border 0.18s ease,
-        background 0.18s ease;
+      transition: .18s ease;
     }
 
-    .quick-card:hover {
+    .quick-action:hover {
       transform: translateY(-2px);
 
       border-color:
-        rgba(205, 97, 98, 0.65);
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(65, 28, 31, 0.8),
-          rgba(12, 10, 11, 0.98)
-        );
+        rgba(208, 100, 104, .62);
     }
 
-    .quick-icon {
-      font-size: 20px;
+    .quick-action-icon {
+      color: var(--red-light);
 
-      color: #d79582;
+      font-size: 19px;
 
-      margin-bottom: 8px;
+      margin-bottom: 9px;
     }
 
-    .quick-title {
+    .quick-action-name {
       font-family:
+        Cinzel,
         Georgia,
         serif;
 
-      font-size: 14px;
+      font-size: 12px;
     }
 
-    .quick-desc {
+    .quick-action-desc {
+      color: var(--muted);
+
       margin-top: 5px;
-
-      color: #7f7671;
-
-      font-size: 10px;
-    }
-
-    /* =========================
-       SCHEDULE
-    ========================= */
-
-    .schedule-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .schedule-item {
-      display: grid;
-
-      grid-template-columns:
-        34px
-        1fr;
-
-      gap: 10px;
-
-      padding:
-        10px
-        0;
-
-      border-bottom:
-        1px solid rgba(255, 255, 255, 0.055);
-    }
-
-    .schedule-item:last-child {
-      border-bottom: 0;
-    }
-
-    .schedule-icon {
-      width: 32px;
-      height: 32px;
-
-      border-radius: 6px;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        rgba(112, 29, 32, 0.36);
-
-      color: var(--red-bright);
-    }
-
-    .schedule-name {
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 13px;
-    }
-
-    .schedule-time {
-      margin-top: 3px;
-
-      color: #736d68;
-
-      font-size: 10px;
-    }
-
-    /* =========================
-       BOTTOM GRID
-    ========================= */
-
-    .bottom-grid {
-      display: grid;
-
-      grid-template-columns:
-        minmax(0, 1.45fr)
-        minmax(300px, 1fr);
-
-      gap: 12px;
-
-      margin-top: 13px;
-    }
-
-    .log-row {
-      display: grid;
-
-      grid-template-columns:
-        32px
-        100px
-        minmax(0, 1fr)
-        auto;
-
-      align-items: center;
-
-      gap: 10px;
-
-      padding:
-        10px
-        0;
-
-      border-bottom:
-        1px solid rgba(255, 255, 255, 0.055);
-    }
-
-    .log-row:last-child {
-      border-bottom: 0;
-    }
-
-    .log-avatar {
-      width: 28px;
-      height: 28px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-      background: #211719;
-    }
-
-    .log-user {
-      font-family:
-        Georgia,
-        serif;
-
-      font-size: 13px;
-    }
-
-    .log-desc {
-      color: #887e78;
-
-      font-size: 10px;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-      white-space: nowrap;
-    }
-
-    .status {
-      border-radius: 999px;
-
-      padding:
-        4px
-        9px;
 
       font-size: 9px;
     }
 
-    .status.approved {
-      color: #87c398;
-
-      border:
-        1px solid rgba(74, 137, 91, 0.55);
-
-      background:
-        rgba(43, 91, 55, 0.15);
-    }
-
-    .status.denied {
-      color: #e17373;
-
-      border:
-        1px solid rgba(171, 59, 60, 0.55);
-
-      background:
-        rgba(120, 39, 41, 0.15);
-    }
-
+    .schedule-row,
     .announcement-row {
+      padding:
+        11px
+        0;
+
+      border-bottom:
+        1px solid rgba(255,255,255,.055);
+    }
+
+    .schedule-row:last-child,
+    .announcement-row:last-child {
+      border-bottom: 0;
+    }
+
+    .schedule-title,
+    .announcement-title {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 11px;
+    }
+
+    .schedule-meta,
+    .announcement-meta {
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    .dashboard-bottom-grid {
       display: grid;
 
       grid-template-columns:
-        38px
-        1fr;
+        minmax(0, 1.4fr)
+        minmax(300px, 1fr);
 
-      gap: 10px;
+      gap: 12px;
+
+      margin-top: 14px;
+    }
+
+    .activity-row {
+      display: grid;
+
+      grid-template-columns:
+        minmax(100px, .7fr)
+        minmax(0, 1.4fr)
+        auto;
+
+      gap: 12px;
+
+      align-items: center;
 
       padding:
         11px
         0;
 
       border-bottom:
-        1px solid rgba(255, 255, 255, 0.055);
+        1px solid rgba(255,255,255,.055);
     }
 
-    .announcement-row:last-child {
+    .activity-row:last-child {
       border-bottom: 0;
     }
 
-    .announcement-icon {
-      width: 34px;
-      height: 34px;
-
-      border-radius: 6px;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        rgba(108, 30, 33, 0.42);
-
-      color: #df7b7d;
-    }
-
-    .announcement-title {
+    .activity-user {
       font-family:
+        Cinzel,
         Georgia,
         serif;
-
-      font-size: 13px;
-    }
-
-    .announcement-date {
-      margin-top: 4px;
-
-      color: #756d68;
 
       font-size: 10px;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
+    .activity-description {
+      overflow: hidden;
+
+      color: var(--muted);
+
+      font-size: 9px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .clock {
+      text-align: right;
+    }
+
+    .clock-date {
+      color: var(--muted);
+
+      font-size: 9px;
+
+      letter-spacing: 1px;
+    }
+
+    .clock-time {
+      margin-top: 7px;
+
+      color: var(--red-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 20px;
+    }
 
     .footer {
-      margin-top: 20px;
+      margin-top: 18px;
 
-      padding:
-        19px
-        8px
-        0;
+      padding-top: 17px;
 
       border-top:
-        1px solid var(--border-gold);
+        1px solid var(--gold-border);
 
       display: flex;
       justify-content: space-between;
 
-      color: #6c5f57;
+      gap: 20px;
+
+      color: #65584f;
+
+      font-size: 7px;
 
       letter-spacing: 3px;
-
-      font-size: 8px;
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 1100px) {
-      .stats {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .dashboard-grid,
-      .bottom-grid {
+    @media (max-width: 1050px) {
+      .dashboard-main-grid,
+      .dashboard-bottom-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 780px) {
-      .shell {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        position: relative;
-
-        width: 100%;
-        height: auto;
-        min-height: auto;
-      }
-
-      .latin {
-        display: none;
-      }
-
-      .nav {
-        display: grid;
-
+    @media (max-width: 760px) {
+      .quick-actions {
         grid-template-columns:
           repeat(2, 1fr);
       }
 
-      .main {
-        padding:
-          0
-          12px
-          20px;
-      }
-
-      .topbar {
-        min-height: 85px;
-      }
-
-      .top-quote {
-        display: none;
-      }
-
-      .hero {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 20px;
-      }
-
-      .hero-right {
-        text-align: left;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .quick-grid {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .cinematic-text {
+      .cinematic-content {
         padding: 20px;
       }
 
-      .banner-brand {
+      .cinematic-brand {
         display: none;
       }
     }
@@ -1251,27 +436,25 @@
 
 <body>
 
-  <div class="shell">
+  <div class="app">
 
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
       <div class="brand">
 
-        <div class="brand-small">
+        <div class="brand-marvel">
           MARVEL
         </div>
 
-        <div class="brand-main">
+        <div class="brand-name">
           CHRONOVERSE
         </div>
 
-        <div class="brand-line"></div>
+        <div class="brand-divider"></div>
 
-        <div class="brand-sub">
+        <div class="brand-subtitle">
           MODERATOR PANEL
         </div>
 
@@ -1279,127 +462,119 @@
 
       <nav class="nav">
 
-        <button
-          class="nav-item active"
-          onclick="location.href='/dashboard.html'"
+        <a
+          class="nav-link active"
+          href="/dashboard.html"
         >
           <span class="nav-icon">⌂</span>
           Dashboard
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/log-action.html'"
+        <a
+          class="nav-link"
+          href="/log-action.html"
         >
           <span class="nav-icon">⚖</span>
           Log Action
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/my-actions.html'"
+        <a
+          class="nav-link"
+          href="/my-actions.html"
         >
-          <span class="nav-icon">▣</span>
+          <span class="nav-icon">▤</span>
           My Actions
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/leaderboard.html'"
+        <a
+          class="nav-link"
+          href="/leaderboard.html"
         >
           <span class="nav-icon">♛</span>
           Leaderboard
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/announcements.html'"
+        <a
+          class="nav-link"
+          href="/announcements.html"
         >
           <span class="nav-icon">◢</span>
           Announcements
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/schedule.html'"
+        <a
+          class="nav-link"
+          href="/schedule.html"
         >
           <span class="nav-icon">▦</span>
           Schedule
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/inactivity.html'"
+        <a
+          class="nav-link"
+          href="/inactivity.html"
         >
           <span class="nav-icon">◷</span>
           Inactivity
-        </button>
+        </a>
 
-        <button
-          class="nav-item"
-          onclick="location.href='/requests.html'"
+        <a
+          class="nav-link"
+          href="/requests.html"
         >
           <span class="nav-icon">♙</span>
           Requests
-        </button>
+        </a>
 
       </nav>
 
-      <div class="latin">
-
-        <div class="latin-symbol">
-          ─ ✦ ─
-        </div>
-
-        <div class="latin-text">
-          ERS<br>
-          TEMPORA<br>
-          VINCIT<br>
-          OMNIA
-        </div>
-
+      <div class="sidebar-footer">
+        ─ ✦ ─
+        <br>
+        ERS TEMPORA
+        <br>
+        VINCIT OMNIA
       </div>
 
     </aside>
 
-    <!-- =========================
-         MAIN
-    ========================== -->
+    <!-- CONTENT -->
 
-    <main class="main">
+    <main class="content">
 
-      <!-- TOP BAR -->
+      <!-- TOPBAR -->
 
       <header class="topbar">
 
-        <div></div>
+        <div class="page-heading">
+          <h1>
+            Moderator Dashboard
+          </h1>
 
-        <div class="top-quote">
-          “DIFFERENT WORLDS<br>
-          SAME PURPOSE”
+          <p>
+            Marvel Chronoverse Staff Command Centre
+          </p>
         </div>
 
-        <div class="profile">
+        <div class="user-box">
 
           <img
-            id="profile-avatar"
-            class="profile-avatar"
-            alt="Discord avatar"
+            id="user-avatar"
+            class="user-avatar"
+            alt="Discord Avatar"
           >
 
           <div>
-
             <div
-              id="profile-name"
-              class="profile-name"
+              id="user-name"
+              class="user-name"
             >
               Loading...
             </div>
 
-            <div class="profile-role">
-              Chronoverse Staff
+            <div class="user-role">
+              CHRONOVERSE STAFF
             </div>
-
           </div>
 
         </div>
@@ -1408,47 +583,56 @@
 
       <!-- HERO -->
 
-      <section class="hero">
+      <section class="hero dashboard-hero">
 
-        <div class="hero-left">
+        <img
+          class="hero-background"
+          src="/assets/chronoverse-hero.jpg"
+          alt=""
+        >
 
-          <h1>
-            Welcome back,
-            <span
-              class="hero-name"
-              id="welcome-name"
+        <div class="hero-shade"></div>
+
+        <div class="hero-content">
+
+          <div>
+
+            <div class="hero-title">
+              Welcome back,
+              <span
+                id="hero-name"
+                class="red-text"
+              >
+                Moderator
+              </span>
+            </div>
+
+            <div class="hero-subtitle">
+              MARVEL CHRONOVERSE STAFF
+            </div>
+
+            <div class="hero-quote">
+              “A greater tomorrow, together.”
+            </div>
+
+          </div>
+
+          <div class="clock">
+
+            <div
+              id="clock-date"
+              class="clock-date"
             >
-              Moderator
-            </span>
-          </h1>
+              —
+            </div>
 
-          <div
-            class="hero-role"
-            id="role-display"
-          >
-            CHRONOVERSE STAFF
-          </div>
+            <div
+              id="clock-time"
+              class="clock-time"
+            >
+              —
+            </div>
 
-          <div class="hero-quote">
-            “A GREATER TOMORROW, TOGETHER.”
-          </div>
-
-        </div>
-
-        <div class="hero-right">
-
-          <div
-            class="hero-date"
-            id="current-date"
-          >
-            —
-          </div>
-
-          <div
-            class="hero-time"
-            id="current-time"
-          >
-            —
           </div>
 
         </div>
@@ -1457,9 +641,11 @@
 
       <!-- STATS -->
 
-      <section class="stats">
+      <section
+        class="grid grid-4 dashboard-stats"
+      >
 
-        <article class="stat">
+        <article class="card stat-card">
 
           <div class="stat-icon">
             ⚖
@@ -1467,8 +653,8 @@
 
           <div>
             <div
-              class="stat-value"
               id="my-actions"
+              class="stat-value"
             >
               0
             </div>
@@ -1476,49 +662,41 @@
             <div class="stat-label">
               Total Actions
             </div>
-
-            <div class="stat-change">
-              Staff activity
-            </div>
           </div>
 
         </article>
 
-        <article class="stat">
+        <article class="card stat-card">
 
           <div class="stat-icon">
-            ☆
+            ✦
           </div>
 
           <div>
             <div
-              class="stat-value"
               id="my-points"
+              class="stat-value"
             >
               0
             </div>
 
             <div class="stat-label">
-              Points
-            </div>
-
-            <div class="stat-change">
-              5 per verified action
+              Verified Points
             </div>
           </div>
 
         </article>
 
-        <article class="stat">
+        <article class="card stat-card">
 
           <div class="stat-icon">
-            ♙
+            ♛
           </div>
 
           <div>
             <div
-              class="stat-value"
               id="my-rank"
+              class="stat-value"
             >
               —
             </div>
@@ -1526,15 +704,11 @@
             <div class="stat-label">
               Leaderboard Rank
             </div>
-
-            <div class="stat-change">
-              Verified actions only
-            </div>
           </div>
 
         </article>
 
-        <article class="stat">
+        <article class="card stat-card">
 
           <div class="stat-icon">
             ◷
@@ -1542,8 +716,8 @@
 
           <div>
             <div
-              class="stat-value"
               id="pending-requests"
+              class="stat-value"
             >
               0
             </div>
@@ -1551,33 +725,33 @@
             <div class="stat-label">
               Pending Requests
             </div>
-
-            <div class="stat-change">
-              Awaiting review
-            </div>
           </div>
 
         </article>
 
       </section>
 
-      <!-- CINEMATIC AVENGERS BANNER -->
+      <!-- AVENGERS STRIP -->
 
-      <section class="cinematic-strip">
+      <section class="cinematic-banner">
 
-        <div class="cinematic-overlay"></div>
+        <img
+          src="/assets/chronoverse-banner.jpg"
+          alt=""
+        >
 
-        <div class="cinematic-text">
+        <div class="cinematic-shade"></div>
 
-          <div class="quote-large">
-            “DISCIPLINE<br>
-            CREATES<br>
-            STRONGER<br>
-            WORLDS”
+        <div class="cinematic-content">
+
+          <div class="cinematic-quote">
+            “DISCIPLINE CREATES
+            STRONGER WORLDS”
           </div>
 
-          <div class="banner-brand">
-            MARVEL<br>
+          <div class="cinematic-brand">
+            MARVEL
+            <br>
             CHRONOVERSE
           </div>
 
@@ -1585,129 +759,127 @@
 
       </section>
 
-      <!-- QUICK ACTIONS + SCHEDULE -->
+      <!-- QUICK ACTIONS / SCHEDULE -->
 
-      <section class="dashboard-grid">
+      <section class="dashboard-main-grid">
 
         <article class="panel">
 
           <div class="panel-header">
 
             <div>
-
               <div class="panel-title">
                 Quick Actions
               </div>
 
-              <div class="panel-subtitle">
+              <div class="panel-description">
                 Everything you need, one click away.
               </div>
-
             </div>
 
           </div>
 
-          <div class="quick-grid">
+          <div class="quick-actions">
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/log-action.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ⚖
               </div>
 
-              <div class="quick-title">
+              <div class="quick-action-name">
                 Log Action
               </div>
 
-              <div class="quick-desc">
-                Record a moderation action
+              <div class="quick-action-desc">
+                Submit moderation activity
               </div>
             </button>
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/my-actions.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ▤
               </div>
 
-              <div class="quick-title">
-                View My Actions
+              <div class="quick-action-name">
+                My Actions
               </div>
 
-              <div class="quick-desc">
-                Check logs and status
+              <div class="quick-action-desc">
+                Track your action history
               </div>
             </button>
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/leaderboard.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ♛
               </div>
 
-              <div class="quick-title">
+              <div class="quick-action-name">
                 Leaderboard
               </div>
 
-              <div class="quick-desc">
-                See top moderators
+              <div class="quick-action-desc">
+                View moderator rankings
               </div>
             </button>
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/announcements.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ◢
               </div>
 
-              <div class="quick-title">
+              <div class="quick-action-name">
                 Announcements
               </div>
 
-              <div class="quick-desc">
-                Staff information
+              <div class="quick-action-desc">
+                Staff news and updates
               </div>
             </button>
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/schedule.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ▦
               </div>
 
-              <div class="quick-title">
+              <div class="quick-action-name">
                 Schedule
               </div>
 
-              <div class="quick-desc">
-                View upcoming events
+              <div class="quick-action-desc">
+                Meetings and staff events
               </div>
             </button>
 
             <button
-              class="quick-card"
+              class="quick-action"
               onclick="location.href='/inactivity.html'"
             >
-              <div class="quick-icon">
+              <div class="quick-action-icon">
                 ◷
               </div>
 
-              <div class="quick-title">
+              <div class="quick-action-name">
                 Inactivity
               </div>
 
-              <div class="quick-desc">
-                View inactivity notices
+              <div class="quick-action-desc">
+                Submit or review notices
               </div>
             </button>
 
@@ -1719,79 +891,25 @@
 
           <div class="panel-header">
 
-            <div class="panel-title">
-              Upcoming Schedule
+            <div>
+              <div class="panel-title">
+                Upcoming Schedule
+              </div>
             </div>
 
             <a
               href="/schedule.html"
               class="panel-link"
             >
-              View all
+              VIEW ALL
             </a>
 
           </div>
 
-          <div class="schedule-list">
+          <div id="schedule-preview">
 
-            <div class="schedule-item">
-
-              <div class="schedule-icon">
-                ♙
-              </div>
-
-              <div>
-
-                <div class="schedule-name">
-                  Staff Schedule
-                </div>
-
-                <div class="schedule-time">
-                  View scheduled staff events
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="schedule-item">
-
-              <div class="schedule-icon">
-                ✦
-              </div>
-
-              <div>
-
-                <div class="schedule-name">
-                  Community Events
-                </div>
-
-                <div class="schedule-time">
-                  Upcoming Chronoverse events
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="schedule-item">
-
-              <div class="schedule-icon">
-                ▤
-              </div>
-
-              <div>
-
-                <div class="schedule-name">
-                  Application Reviews
-                </div>
-
-                <div class="schedule-time">
-                  Staff review periods
-                </div>
-
-              </div>
-
+            <div class="empty">
+              Loading schedule...
             </div>
 
           </div>
@@ -1800,45 +918,33 @@
 
       </section>
 
-      <!-- RECENT LOGS + ANNOUNCEMENTS -->
+      <!-- ACTIVITY / ANNOUNCEMENTS -->
 
-      <section class="bottom-grid">
+      <section class="dashboard-bottom-grid">
 
         <article class="panel">
 
           <div class="panel-header">
 
-            <div class="panel-title">
-              Recent Activity
+            <div>
+              <div class="panel-title">
+                Recent Activity
+              </div>
             </div>
 
             <a
               href="/my-actions.html"
               class="panel-link"
             >
-              View all
+              VIEW ALL
             </a>
 
           </div>
 
           <div id="activity">
 
-            <div class="log-row">
-
-              <div></div>
-
-              <div class="log-user">
-                Loading...
-              </div>
-
-              <div class="log-desc">
-                Loading moderation activity
-              </div>
-
-              <span class="status approved">
-                —
-              </span>
-
+            <div class="empty">
+              Loading moderation activity...
             </div>
 
           </div>
@@ -1849,59 +955,25 @@
 
           <div class="panel-header">
 
-            <div class="panel-title">
-              Latest Announcements
+            <div>
+              <div class="panel-title">
+                Latest Announcements
+              </div>
             </div>
 
             <a
               href="/announcements.html"
               class="panel-link"
             >
-              View all
+              VIEW ALL
             </a>
 
           </div>
 
-          <div>
+          <div id="announcement-preview">
 
-            <div class="announcement-row">
-
-              <div class="announcement-icon">
-                ◢
-              </div>
-
-              <div>
-
-                <div class="announcement-title">
-                  Staff Announcements
-                </div>
-
-                <div class="announcement-date">
-                  View the latest Chronoverse updates
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="announcement-row">
-
-              <div class="announcement-icon">
-                ✦
-              </div>
-
-              <div>
-
-                <div class="announcement-title">
-                  Community Updates
-                </div>
-
-                <div class="announcement-date">
-                  Important staff information
-                </div>
-
-              </div>
-
+            <div class="empty">
+              Loading announcements...
             </div>
 
           </div>
@@ -1917,7 +989,7 @@
         </span>
 
         <span>
-          PEOPLE / PURPOSE / POSSIBILITIES
+          PEOPLE • PURPOSE • POSSIBILITIES
         </span>
 
       </footer>
@@ -1926,55 +998,346 @@
 
   </div>
 
-  <!-- =========================
-       AUTH / PROFILE
-  ========================== -->
-
   <script>
-    async function loadUser() {
+    let currentUser = null;
+
+    async function getJson(url) {
+      const response =
+        await fetch(url);
+
+      if (response.status === 401) {
+        window.location.replace("/");
+        throw new Error("Not authenticated");
+      }
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Request failed"
+        );
+      }
+
+      return data;
+    }
+
+    async function loadDashboard() {
       try {
-        const response =
-          await fetch("/api/auth/me");
+        const [
+          meData,
+          actionsData,
+          leaderboardData,
+          requestsData,
+          scheduleData,
+          announcementsData
+        ] = await Promise.all([
+          getJson("/api/auth/me"),
+          getJson("/api/actions/my-actions"),
+          getJson("/api/leaderboard"),
+          getJson("/api/requests/list"),
+          getJson("/api/schedule/list"),
+          getJson("/api/announcements/list")
+        ]);
 
-        if (!response.ok) {
-          window.location.replace("/");
-          return;
-        }
+        currentUser =
+          meData.user;
 
-        const data =
-          await response.json();
+        updateUser();
+        updateStats(
+          actionsData.actions || [],
+          leaderboardData.leaderboard || [],
+          requestsData.requests || []
+        );
 
-        const user =
-          data.user;
+        renderActivity(
+          actionsData.actions || []
+        );
 
-        document.getElementById(
-          "profile-name"
-        ).textContent =
-          user.username;
+        renderSchedule(
+          scheduleData.events || []
+        );
 
-        document.getElementById(
-          "welcome-name"
-        ).textContent =
-          user.username;
-
-        const avatar =
-          document.getElementById(
-            "profile-avatar"
-          );
-
-        if (user.avatar) {
-          avatar.src =
-            user.avatar;
-        } else {
-          avatar.style.display =
-            "none";
-        }
+        renderAnnouncements(
+          announcementsData.announcements || []
+        );
 
       } catch (error) {
-        console.error(error);
-
-        window.location.replace("/");
+        console.error(
+          "Dashboard error:",
+          error
+        );
       }
+    }
+
+    function updateUser() {
+      document.getElementById(
+        "user-name"
+      ).textContent =
+        currentUser.username;
+
+      document.getElementById(
+        "hero-name"
+      ).textContent =
+        currentUser.username;
+
+      const avatar =
+        document.getElementById(
+          "user-avatar"
+        );
+
+      if (currentUser.avatar) {
+        avatar.src =
+          currentUser.avatar;
+      } else {
+        avatar.style.display =
+          "none";
+      }
+    }
+
+    function updateStats(
+      actions,
+      leaderboard,
+      requests
+    ) {
+      document.getElementById(
+        "my-actions"
+      ).textContent =
+        actions.length;
+
+      const me =
+        leaderboard.find(
+          moderator =>
+            moderator.moderator_id ===
+            currentUser.id
+        );
+
+      document.getElementById(
+        "my-points"
+      ).textContent =
+        me?.points || 0;
+
+      const rank =
+        leaderboard.findIndex(
+          moderator =>
+            moderator.moderator_id ===
+            currentUser.id
+        );
+
+      document.getElementById(
+        "my-rank"
+      ).textContent =
+        rank === -1
+          ? "—"
+          : `#${rank + 1}`;
+
+      document.getElementById(
+        "pending-requests"
+      ).textContent =
+        requests.filter(
+          request =>
+            request.status === "pending"
+        ).length;
+    }
+
+    function renderActivity(actions) {
+      const container =
+        document.getElementById(
+          "activity"
+        );
+
+      if (!actions.length) {
+        container.innerHTML = `
+          <div class="empty">
+            No moderation actions yet.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        actions
+          .slice(0, 5)
+          .map(action => `
+            <div class="activity-row">
+
+              <div class="activity-user">
+                ${escapeHtml(
+                  formatAction(
+                    action.action_type
+                  )
+                )}
+              </div>
+
+              <div class="activity-description">
+                ${
+                  escapeHtml(
+                    action.target_user_name ||
+                    action.target_user_id ||
+                    "No target"
+                  )
+                }
+                •
+                ${
+                  escapeHtml(
+                    action.reason ||
+                    "No reason"
+                  )
+                }
+              </div>
+
+              ${statusBadge(
+                action.verification_status
+              )}
+
+            </div>
+          `)
+          .join("");
+    }
+
+    function renderSchedule(events) {
+      const container =
+        document.getElementById(
+          "schedule-preview"
+        );
+
+      if (!events.length) {
+        container.innerHTML = `
+          <div class="empty">
+            No upcoming events.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        events
+          .slice(0, 4)
+          .map(event => `
+            <div class="schedule-row">
+
+              <div class="schedule-title">
+                ${escapeHtml(event.title)}
+              </div>
+
+              <div class="schedule-meta">
+                ${formatDate(event.event_date)}
+                ${
+                  event.start_time
+                    ? ` • ${event.start_time.slice(0,5)}`
+                    : ""
+                }
+              </div>
+
+            </div>
+          `)
+          .join("");
+    }
+
+    function renderAnnouncements(items) {
+      const container =
+        document.getElementById(
+          "announcement-preview"
+        );
+
+      if (!items.length) {
+        container.innerHTML = `
+          <div class="empty">
+            No announcements yet.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        items
+          .slice(0, 4)
+          .map(item => `
+            <div class="announcement-row">
+
+              <div class="announcement-title">
+                ${escapeHtml(item.title)}
+              </div>
+
+              <div class="announcement-meta">
+                ${escapeHtml(item.author_name)}
+                •
+                ${formatDateTime(item.created_at)}
+              </div>
+
+            </div>
+          `)
+          .join("");
+    }
+
+    function statusBadge(status) {
+      if (status === "approved") {
+        return `
+          <span class="badge badge-approved">
+            VERIFIED
+          </span>
+        `;
+      }
+
+      if (status === "denied") {
+        return `
+          <span class="badge badge-denied">
+            DENIED
+          </span>
+        `;
+      }
+
+      return `
+        <span class="badge badge-pending">
+          PENDING
+        </span>
+      `;
+    }
+
+    function formatAction(value) {
+      return String(value || "")
+        .replaceAll("_", " ")
+        .replace(
+          /\b\w/g,
+          letter =>
+            letter.toUpperCase()
+        );
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "Unknown date";
+      }
+
+      return new Date(
+        `${value}T00:00:00`
+      ).toLocaleDateString(
+        undefined,
+        {
+          month: "short",
+          day: "numeric"
+        }
+      );
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "Unknown";
+      }
+
+      return new Date(
+        value
+      ).toLocaleDateString(
+        undefined,
+        {
+          month: "short",
+          day: "numeric"
+        }
+      );
     }
 
     function updateClock() {
@@ -1982,7 +1345,7 @@
         new Date();
 
       document.getElementById(
-        "current-date"
+        "clock-date"
       ).textContent =
         now
           .toLocaleDateString(
@@ -1997,7 +1360,7 @@
           .toUpperCase();
 
       document.getElementById(
-        "current-time"
+        "clock-time"
       ).textContent =
         now.toLocaleTimeString(
           undefined,
@@ -2008,7 +1371,14 @@
         );
     }
 
-    loadUser();
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
     updateClock();
 
@@ -2016,11 +1386,9 @@
       updateClock,
       30000
     );
+
+    loadDashboard();
   </script>
-
-  <!-- EXISTING DASHBOARD DATA -->
-
-  <script src="/js/dashboard.js"></script>
 
 </body>
 </html>
