@@ -1,3 +1,4 @@
+```js
 import supabase from "../lib/database.js";
 
 export default async function handler(req, res) {
@@ -22,22 +23,30 @@ export default async function handler(req, res) {
       });
     }
 
-    const totals = {};
+    const moderators = {};
 
     for (const action of data || []) {
-      if (!totals[action.moderator_id]) {
-        totals[action.moderator_id] = {
+      if (!moderators[action.moderator_id]) {
+        moderators[action.moderator_id] = {
           moderator_id: action.moderator_id,
           moderator_name: action.moderator_name,
-          total_actions: 0
+          total_actions: 0,
+          points: 0
         };
       }
 
-      totals[action.moderator_id].total_actions++;
+      moderators[action.moderator_id].total_actions += 1;
+      moderators[action.moderator_id].points += 5;
     }
 
-    const leaderboard = Object.values(totals)
-      .sort((a, b) => b.total_actions - a.total_actions);
+    const leaderboard = Object.values(moderators)
+      .sort((a, b) => {
+        if (b.points !== a.points) {
+          return b.points - a.points;
+        }
+
+        return b.total_actions - a.total_actions;
+      });
 
     return res.status(200).json({
       success: true,
@@ -53,3 +62,4 @@ export default async function handler(req, res) {
     });
   }
 }
+```
