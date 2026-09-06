@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chronoverse • Announcements</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Chronoverse • Announcements
+  </title>
 
   <style>
     * {
@@ -17,24 +23,20 @@
       min-height: 100vh;
       font-family: Arial, sans-serif;
       background: #0b0b12;
-      color: #ffffff;
+      color: white;
     }
 
     .page {
       max-width: 1000px;
-      margin: 0 auto;
+      margin: auto;
       padding: 45px 25px;
     }
 
     .back {
       display: inline-block;
-      margin-bottom: 28px;
       color: #9292a7;
+      margin-bottom: 28px;
       text-decoration: none;
-    }
-
-    .back:hover {
-      color: #ffffff;
     }
 
     h1 {
@@ -47,16 +49,19 @@
       margin-bottom: 28px;
     }
 
-    .composer {
+    .composer,
+    .announcement {
       background: #11111b;
       border: 1px solid #252535;
       border-radius: 14px;
+    }
+
+    .composer {
       padding: 22px;
       margin-bottom: 28px;
     }
 
     .composer h2 {
-      font-size: 18px;
       margin-bottom: 18px;
     }
 
@@ -67,18 +72,17 @@
     label {
       display: block;
       margin-bottom: 7px;
-      font-size: 13px;
       font-weight: 700;
     }
 
     input,
     textarea {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
+      padding: 12px;
       border: 1px solid #2c2c3d;
+      border-radius: 8px;
       background: #0b0b12;
-      color: #ffffff;
+      color: white;
       font: inherit;
     }
 
@@ -87,20 +91,20 @@
       resize: vertical;
     }
 
-    .post-button {
+    button {
       width: 100%;
       padding: 12px;
       border: 0;
       border-radius: 8px;
-      background: #ffffff;
+      background: white;
       color: #11111b;
       font-weight: 700;
       cursor: pointer;
     }
 
     .message {
-      margin-top: 14px;
       text-align: center;
+      margin-top: 14px;
       color: #9292a7;
     }
 
@@ -112,29 +116,26 @@
       color: #b9ffcf;
     }
 
-    .announcement-list {
+    .list {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
 
     .announcement {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
       padding: 22px;
     }
 
     .announcement h3 {
-      font-size: 20px;
       margin-bottom: 10px;
+      font-size: 20px;
     }
 
-    .announcement-content {
+    .content {
       color: #d2d2dc;
       line-height: 1.6;
       white-space: pre-wrap;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .meta {
@@ -142,8 +143,8 @@
       font-size: 12px;
     }
 
-    .empty,
-    .loading {
+    .loading,
+    .empty {
       padding: 40px;
       text-align: center;
       color: #9292a7;
@@ -155,21 +156,26 @@
 
   <main class="page">
 
-    <a href="/dashboard.html" class="back">
+    <a
+      href="/dashboard.html"
+      class="back"
+    >
       ← Back to Dashboard
     </a>
 
     <h1>Announcements</h1>
 
     <p class="subtitle">
-      Staff announcements for the Chronoverse moderation team.
+      Chronoverse staff announcements.
     </p>
 
-    <section class="composer" id="composer">
+    <section class="composer">
 
-      <h2>Post Announcement</h2>
+      <h2>
+        Post Announcement
+      </h2>
 
-      <form id="announcement-form">
+      <form id="form">
 
         <div class="field">
           <label for="title">
@@ -178,10 +184,8 @@
 
           <input
             id="title"
-            type="text"
-            maxlength="100"
             required
-            placeholder="Announcement title"
+            maxlength="100"
           >
         </div>
 
@@ -192,25 +196,27 @@
 
           <textarea
             id="content"
-            maxlength="2000"
             required
-            placeholder="Write your announcement..."
+            maxlength="2000"
           ></textarea>
         </div>
 
-        <button class="post-button" type="submit">
+        <button type="submit">
           Post Announcement
         </button>
 
-        <div class="message" id="message"></div>
+        <div
+          id="message"
+          class="message"
+        ></div>
 
       </form>
 
     </section>
 
     <section
-      class="announcement-list"
-      id="announcement-list"
+      id="list"
+      class="list"
     >
       <div class="loading">
         Loading announcements...
@@ -220,45 +226,51 @@
   </main>
 
   <script>
-    const userId =
-      localStorage.getItem("discord_user_id");
-
-    const username =
-      localStorage.getItem("discord_username");
-
-    if (!userId || !username) {
-      window.location.replace("/");
-    }
-
     const form =
-      document.getElementById("announcement-form");
+      document.getElementById("form");
 
     const message =
       document.getElementById("message");
 
+    async function requireLogin() {
+      const response =
+        await fetch("/api/auth/me");
+
+      if (!response.ok) {
+        window.location.replace("/");
+        return false;
+      }
+
+      return true;
+    }
+
     async function loadAnnouncements() {
-      const container =
-        document.getElementById("announcement-list");
+      const list =
+        document.getElementById("list");
 
       try {
         const response =
-          await fetch("/api/announcements/list");
+          await fetch(
+            "/api/announcements/list"
+          );
+
+        if (response.status === 401) {
+          window.location.replace("/");
+          return;
+        }
 
         const data =
           await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Unable to load announcements"
-          );
+          throw new Error(data.error);
         }
 
         const announcements =
           data.announcements || [];
 
         if (!announcements.length) {
-          container.innerHTML = `
+          list.innerHTML = `
             <div class="empty">
               No announcements yet.
             </div>
@@ -267,7 +279,7 @@
           return;
         }
 
-        container.innerHTML =
+        list.innerHTML =
           announcements.map(item => `
             <article class="announcement">
 
@@ -275,7 +287,7 @@
                 ${escapeHtml(item.title)}
               </h3>
 
-              <div class="announcement-content">
+              <div class="content">
                 ${escapeHtml(item.content)}
               </div>
 
@@ -292,7 +304,7 @@
       } catch (error) {
         console.error(error);
 
-        container.innerHTML = `
+        list.innerHTML = `
           <div class="empty">
             Unable to load announcements.
           </div>
@@ -324,8 +336,6 @@
                 },
 
                 body: JSON.stringify({
-                  author_id: userId,
-                  author_name: username,
                   title:
                     document
                       .getElementById("title")
@@ -344,10 +354,15 @@
           const data =
             await response.json();
 
+          if (response.status === 401) {
+            window.location.replace("/");
+            return;
+          }
+
           if (!response.ok) {
             throw new Error(
               data.error ||
-              "Unable to post announcement"
+              "Unable to post"
             );
           }
 
@@ -362,8 +377,6 @@
           await loadAnnouncements();
 
         } catch (error) {
-          console.error(error);
-
           message.textContent =
             error.message;
 
@@ -372,16 +385,6 @@
         }
       }
     );
-
-    function formatDate(value) {
-      if (!value) {
-        return "Unknown date";
-      }
-
-      return new Date(
-        value
-      ).toLocaleString();
-    }
 
     function escapeHtml(value) {
       return String(value)
@@ -392,8 +395,7 @@
         .replaceAll("'", "&#039;");
     }
 
-    loadAnnouncements();
-  </script>
-
-</body>
-</html>
+    function formatDate(value) {
+      return new Date(
+        value
+     
