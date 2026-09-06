@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Staff Directory
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
+
+  <style>
+    .directory-wrap {
+      margin-top: 14px;
+    }
+
+    .directory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .staff-count {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .staff-count strong {
+      color: var(--red-light);
+      font-size: 16px;
+    }
+
+    .staff-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .staff-card {
+      display: grid;
+      grid-template-columns:
+        48px
+        minmax(150px, 1.2fr)
+        minmax(140px, 1fr)
+        minmax(120px, .8fr)
+        minmax(120px, .8fr);
+
+      align-items: center;
+      gap: 15px;
+
+      padding: 15px 17px;
+
+      border-radius: 8px;
+
+      border:
+        1px solid
+        rgba(158, 63, 66, .28);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34, 17, 19, .55),
+          rgba(7, 7, 8, .98)
+        );
+    }
+
+    .staff-avatar {
+      width: 44px;
+      height: 44px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      border:
+        1px solid
+        rgba(208, 100, 104, .45);
+
+      background:
+        rgba(255,255,255,.04);
+    }
+
+    .staff-avatar-fallback {
+      width: 44px;
+      height: 44px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background:
+        rgba(126, 34, 39, .35);
+
+      border:
+        1px solid
+        rgba(208, 100, 104, .45);
+
+      color:
+        var(--red-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 15px;
+    }
+
+    .staff-name {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 12px;
+    }
+
+    .staff-id {
+      margin-top: 4px;
+
+      color:
+        var(--muted);
+
+      font-size: 8px;
+    }
+
+    .staff-rank {
+      display: inline-block;
+
+      width: fit-content;
+
+      padding: 6px 9px;
+
+      border-radius: 5px;
+
+      border:
+        1px solid
+        rgba(181, 116, 119, .28);
+
+      background:
+        rgba(126, 34, 39, .18);
+
+      color:
+        #d7aaa8;
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 8px;
+
+      letter-spacing: .5px;
+    }
+
+    .staff-meta-label {
+      color:
+        #715e55;
+
+      font-size: 7px;
+
+      letter-spacing: 1px;
+
+      text-transform: uppercase;
+    }
+
+    .staff-meta-value {
+      margin-top: 5px;
+
+      color:
+        #b5a8a1;
+
+      font-size: 9px;
+    }
+
+    .directory-columns {
+      display: grid;
+
+      grid-template-columns:
+        48px
+        minmax(150px, 1.2fr)
+        minmax(140px, 1fr)
+        minmax(120px, .8fr)
+        minmax(120px, .8fr);
+
+      gap: 15px;
+
+      padding:
+        0 17px 9px;
+
+      color:
+        #715e55;
+
+      font-size: 7px;
+
+      letter-spacing: 1px;
+
+      text-transform: uppercase;
+    }
+
+    .directory-columns div:first-child {
+      color: transparent;
+    }
+
+    .access-denied {
+      padding:
+        55px 20px;
+
+      text-align:
+        center;
+    }
+
+    .access-denied h2 {
+      color:
+        var(--red-light);
+
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
+
+      font-size: 22px;
+    }
+
+    .access-denied p {
+      max-width: 500px;
+
+      margin:
+        12px auto 0;
+
+      color:
+        var(--muted);
+
+      font-size: 10px;
+
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .directory-columns {
+        display: none;
+      }
+
+      .staff-card {
+        grid-template-columns:
+          48px
+          minmax(0, 1fr);
+      }
+
+      .staff-card > div:nth-child(3),
+      .staff-card > div:nth-child(4),
+      .staff-card > div:nth-child(5) {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .directory-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-marvel">
+        MARVEL
+      </div>
+
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
+
+      <div class="brand-divider"></div>
+
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
+
+    </div>
+
+    <nav class="nav">
+
+      <a
+        class="nav-link"
+        href="/dashboard.html"
+      >
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/log-action.html"
+      >
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a
+        class="nav-link"
+        href="/my-actions.html"
+      >
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a
+        class="nav-link"
+        href="/leaderboard.html"
+      >
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a
+        class="nav-link"
+        href="/announcements.html"
+      >
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a
+        class="nav-link"
+        href="/schedule.html"
+      >
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a
+        class="nav-link"
+        href="/inactivity.html"
+      >
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a
+        class="nav-link"
+        href="/requests.html"
+      >
+        <span class="nav-icon">◫</span>
+        Inactivity Logs
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/staff.html"
+      >
+        <span class="nav-icon">♚</span>
+        Staff Directory
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+
+        <h1>
+          Staff Directory
+        </h1>
+
+        <p>
+          Chronoverse Staff Registry
+        </p>
+
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+
+          <div
+            id="user-name"
+            class="user-name"
+          >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-banner.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+
+          <div class="hero-title">
+            Chronoverse
+            <span class="red-text">
+              Staff
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            OFFICIAL STAFF DIRECTORY
+          </div>
+
+          <div class="hero-quote">
+            “Those entrusted with the timeline.”
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section
+      id="directory-panel"
+      class="panel directory-wrap"
+    >
+
+      <div class="directory-header">
+
+        <div>
+
+          <div class="panel-title">
+            Staff Members
+          </div>
+
+          <div class="panel-description">
+            Staff members who have accessed the Chronoverse Moderator Panel.
+          </div>
+
+        </div>
+
+        <div class="staff-count">
+          <strong id="staff-count">
+            0
+          </strong>
+          REGISTERED
+        </div>
+
+      </div>
+
+      <div class="directory-columns">
+
+        <div>—</div>
+
+        <div>
+          Staff Member
+        </div>
+
+        <div>
+          Rank
+        </div>
+
+        <div>
+          First Login
+        </div>
+
+        <div>
+          Last Login
+        </div>
+
+      </div>
+
+      <div
+        id="staff-list"
+        class="staff-list"
+      >
+
+        <div class="empty">
+          Loading staff directory...
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+  const RANK_ORDER = {
+    "FOUNDER": 1,
+    "CHRONARCH OVERSEER": 2,
+    "EXECUTIVE DIVISION": 3,
+    "NEXUS DIRECTOR": 4,
+    "ADMINISTRATOR": 5,
+    "LEAD MODERATOR": 6,
+    "SENIOR MODERATOR": 7,
+    "MODERATOR": 8
+  };
+
+  async function getJson(
+    url
+  ) {
+    const response =
+      await fetch(url);
+
+    if (
+      response.status === 401
+    ) {
+      window.location.replace("/");
+
+      throw new Error(
+        "Not authenticated"
+      );
+    }
+
+    let data = {};
+
+    try {
+      data =
+        await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (
+      response.status === 403
+    ) {
+      throw new Error(
+        data.error ||
+        "Access denied"
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
+
+    return data;
+  }
+
+  async function start() {
+    try {
+
+      const [
+        meData,
+        staffData
+      ] =
+        await Promise.all([
+          getJson(
+            "/api/auth/me"
+          ),
+
+          getJson(
+            "/api/staff/list"
+          )
+        ]);
+
+      updateUser(
+        meData.user
+      );
+
+      renderStaff(
+        staffData.staff || []
+      );
+
+    } catch (error) {
+
+      if (
+        error.message
+          .toLowerCase()
+          .includes(
+            "permission"
+          ) ||
+        error.message
+          .toLowerCase()
+          .includes(
+            "access"
+          )
+      ) {
+        renderAccessDenied(
+          error.message
+        );
+
+        return;
+      }
+
+      console.error(
+        error
+      );
+
+      document.getElementById(
+        "staff-list"
+      ).innerHTML = `
+        <div class="empty">
+          Unable to load Staff Directory.
+        </div>
+      `;
+    }
+  }
+
+  function updateUser(user) {
+
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
+
+    const role =
+      document.querySelector(
+        ".user-role"
+      );
+
+    if (
+      role &&
+      user.rank
+    ) {
+      role.textContent =
+        user.rank;
+    }
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (user.avatar) {
+
+      avatar.src =
+        user.avatar;
+
+    } else {
+
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function renderStaff(
+    staff
+  ) {
+
+    const container =
+      document.getElementById(
+        "staff-list"
+      );
+
+    const sorted =
+      [...staff].sort(
+        (a, b) => {
+
+          const rankA =
+            RANK_ORDER[
+              a.rank
+            ] || 999;
+
+          const rankB =
+            RANK_ORDER[
+              b.rank
+            ] || 999;
+
+          if (
+            rankA !== rankB
+          ) {
+            return (
+              rankA -
+              rankB
+            );
+          }
+
+          return String(
+            a.username || ""
+          ).localeCompare(
+            String(
+              b.username || ""
+            )
+          );
+        }
+      );
+
+    document.getElementById(
+      "staff-count"
+    ).textContent =
+      sorted.length;
+
+    if (!sorted.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          No staff members have logged in yet.
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      sorted
+        .map(
+          member => {
+
+            const username =
+              member.username ||
+              "Unknown";
+
+            const avatar =
+              member.avatar
+                ? `
+                  <img
+                    class="staff-avatar"
+                    src="${escapeHtml(
+                      member.avatar
+                    )}"
+                    alt=""
+                  >
+                `
+                : `
+                  <div
+                    class="staff-avatar-fallback"
+                  >
+                    ${escapeHtml(
+                      username
+                        .charAt(0)
+                        .toUpperCase()
+                    )}
+                  </div>
+                `;
+
+            return `
+              <article class="staff-card">
+
+                <div>
+                  ${avatar}
+                </div>
+
+                <div>
+
+                  <div class="staff-name">
+                    ${escapeHtml(
+                      username
+                    )}
+                  </div>
+
+                  <div class="staff-id">
+                    ${escapeHtml(
+                      member.discord_id
+                    )}
+                  </div>
+
+                </div>
+
+                <div>
+
+                  <span class="staff-rank">
+                    ${escapeHtml(
+                      member.rank ||
+                      "STAFF"
+                    )}
+                  </span>
+
+                </div>
+
+                <div>
+
+                  <div class="staff-meta-label">
+                    First Login
+                  </div>
+
+                  <div class="staff-meta-value">
+                    ${formatDate(
+                      member.first_login
+                    )}
+                  </div>
+
+                </div>
+
+                <div>
+
+                  <div class="staff-meta-label">
+                    Last Login
+                  </div>
+
+                  <div class="staff-meta-value">
+                    ${formatDate(
+                      member.last_login
+                    )}
+                  </div>
+
+                </div>
+
+              </article>
+            `;
+          }
+        )
+        .join("");
+  }
+
+  function renderAccessDenied(
+    message
+  ) {
+
+    const panel =
+      document.getElementById(
+        "directory-panel"
+      );
+
+    panel.innerHTML = `
+      <div class="access-denied">
+
+        <h2>
+          ACCESS DENIED
+        </h2>
+
+        <p>
+          ${escapeHtml(
+            message ||
+            "You do not have permission to view the Staff Directory."
+          )}
+        </p>
+
+        <p>
+          This directory is restricted to
+          Founder, Chronarch Overseer and
+          Executive Division.
+        </p>
+
+      </div>
+    `;
+  }
+
+  function formatDate(
+    value
+  ) {
+    if (!value) {
+      return "Unknown";
+    }
+
+    return new Date(
+      value
+    ).toLocaleString(
+      undefined,
+      {
+        month:
+          "short",
+
+        day:
+          "numeric",
+
+        year:
+          "numeric",
+
+        hour:
+          "2-digit",
+
+        minute:
+          "2-digit"
+      }
+    );
+  }
+
+  function escapeHtml(
+    value
+  ) {
+    return String(
+      value ?? ""
+    )
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
+  }
+
+  start();
+</script>
+
+<script src="/js/auth.js"></script>
+
+</body>
+</html>
