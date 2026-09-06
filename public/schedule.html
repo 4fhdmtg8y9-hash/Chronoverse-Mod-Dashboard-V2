@@ -1,0 +1,531 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chronoverse • Schedule</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b0b12;
+      color: #ffffff;
+    }
+
+    .page {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 45px 25px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #9292a7;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9292a7;
+      margin-bottom: 28px;
+    }
+
+    .creator {
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 28px;
+    }
+
+    .creator h2 {
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #2c2c3d;
+      background: #0b0b12;
+      color: #ffffff;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .create-button {
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #11111b;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 14px;
+      text-align: center;
+      color: #9292a7;
+    }
+
+    .success {
+      color: #b9ffcf;
+    }
+
+    .error {
+      color: #ffbcbc;
+    }
+
+    .events {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .event {
+      padding: 20px;
+      background: #11111b;
+      border: 1px solid #252535;
+      border-radius: 14px;
+    }
+
+    .event-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .event-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .event-date {
+      color: #9292a7;
+      font-size: 13px;
+    }
+
+    .event-description {
+      color: #c9c9d4;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+    }
+
+    .event-meta {
+      color: #77778b;
+      font-size: 12px;
+    }
+
+    .loading,
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: #9292a7;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+
+      .event-top {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <a href="/dashboard.html" class="back">
+      ← Back to Dashboard
+    </a>
+
+    <h1>Staff Schedule</h1>
+
+    <p class="subtitle">
+      Add and view Chronoverse staff events and shifts.
+    </p>
+
+    <section class="creator">
+
+      <h2>Create Schedule Event</h2>
+
+      <form id="schedule-form">
+
+        <div class="grid">
+
+          <div class="field full">
+            <label for="title">
+              Event Title
+            </label>
+
+            <input
+              id="title"
+              type="text"
+              required
+              placeholder="Example: Moderator Meeting"
+            >
+          </div>
+
+          <div class="field">
+            <label for="event-date">
+              Date
+            </label>
+
+            <input
+              id="event-date"
+              type="date"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="start-time">
+              Start Time
+            </label>
+
+            <input
+              id="start-time"
+              type="time"
+            >
+          </div>
+
+          <div class="field">
+            <label for="end-time">
+              End Time
+            </label>
+
+            <input
+              id="end-time"
+              type="time"
+            >
+          </div>
+
+          <div class="field full">
+            <label for="description">
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              placeholder="Add notes or details..."
+            ></textarea>
+          </div>
+
+        </div>
+
+        <button
+          class="create-button"
+          type="submit"
+        >
+          Add to Schedule
+        </button>
+
+        <div
+          class="message"
+          id="message"
+        ></div>
+
+      </form>
+
+    </section>
+
+    <section
+      class="events"
+      id="events"
+    >
+      <div class="loading">
+        Loading schedule...
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const userId =
+      localStorage.getItem("discord_user_id");
+
+    const username =
+      localStorage.getItem("discord_username");
+
+    if (!userId || !username) {
+      window.location.replace("/");
+    }
+
+    const form =
+      document.getElementById("schedule-form");
+
+    const message =
+      document.getElementById("message");
+
+    async function loadSchedule() {
+      const container =
+        document.getElementById("events");
+
+      try {
+        const response =
+          await fetch("/api/schedule/list");
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Unable to load schedule"
+          );
+        }
+
+        const events =
+          data.events || [];
+
+        if (!events.length) {
+          container.innerHTML = `
+            <div class="empty">
+              No schedule events yet.
+            </div>
+          `;
+
+          return;
+        }
+
+        container.innerHTML =
+          events.map(event => `
+            <article class="event">
+
+              <div class="event-top">
+
+                <div class="event-title">
+                  ${escapeHtml(event.title)}
+                </div>
+
+                <div class="event-date">
+                  ${formatDate(event.event_date)}
+                  ${formatTimeRange(
+                    event.start_time,
+                    event.end_time
+                  )}
+                </div>
+
+              </div>
+
+              <div class="event-description">
+                ${escapeHtml(
+                  event.description ||
+                  "No description."
+                )}
+              </div>
+
+              <div class="event-meta">
+                Added by
+                ${escapeHtml(
+                  event.created_by_name
+                )}
+              </div>
+
+            </article>
+          `).join("");
+
+      } catch (error) {
+        console.error(error);
+
+        container.innerHTML = `
+          <div class="empty">
+            Unable to load schedule.
+          </div>
+        `;
+      }
+    }
+
+    form.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        message.textContent =
+          "Adding event...";
+
+        message.className =
+          "message";
+
+        try {
+          const response =
+            await fetch(
+              "/api/schedule/create",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  title:
+                    document
+                      .getElementById("title")
+                      .value
+                      .trim(),
+
+                  description:
+                    document
+                      .getElementById("description")
+                      .value
+                      .trim() || null,
+
+                  event_date:
+                    document
+                      .getElementById("event-date")
+                      .value,
+
+                  start_time:
+                    document
+                      .getElementById("start-time")
+                      .value || null,
+
+                  end_time:
+                    document
+                      .getElementById("end-time")
+                      .value || null,
+
+                  created_by:
+                    userId,
+
+                  created_by_name:
+                    username
+                })
+              }
+            );
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.error ||
+              "Unable to create event"
+            );
+          }
+
+          form.reset();
+
+          message.textContent =
+            "Schedule event added.";
+
+          message.className =
+            "message success";
+
+          await loadSchedule();
+
+        } catch (error) {
+          console.error(error);
+
+          message.textContent =
+            error.message;
+
+          message.className =
+            "message error";
+        }
+      }
+    );
+
+    function formatDate(value) {
+      if (!value) {
+        return "Unknown date";
+      }
+
+      return new Date(
+        `${value}T00:00:00`
+      ).toLocaleDateString();
+    }
+
+    function formatTimeRange(
+      start,
+      end
+    ) {
+      if (!start && !end) {
+        return "";
+      }
+
+      if (start && end) {
+        return ` • ${start.slice(0, 5)} - ${end.slice(0, 5)}`;
+      }
+
+      if (start) {
+        return ` • ${start.slice(0, 5)}`;
+      }
+
+      return "";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    loadSchedule();
+  </script>
+
+</body>
+</html>
+```
