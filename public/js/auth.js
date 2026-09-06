@@ -1,4 +1,4 @@
-const INACTIVITY_LOG_RANKS = [
+const SENIOR_ACCESS_RANKS = [
   "FOUNDER",
   "CHRONARCH OVERSEER",
   "EXECUTIVE DIVISION"
@@ -41,25 +41,92 @@ function updateRestrictedNavigation(user) {
   const rank =
     user?.rank || "";
 
-  const canViewLogs =
-    INACTIVITY_LOG_RANKS.includes(
+  const hasSeniorAccess =
+    SENIOR_ACCESS_RANKS.includes(
       rank
     );
 
-  const links =
+  // =================================
+  // INACTIVITY LOGS
+  // =================================
+
+  const inactivityLinks =
     document.querySelectorAll(
       'a[href="/requests.html"]'
     );
 
-  links.forEach(link => {
-    if (!canViewLogs) {
-      link.style.display =
-        "none";
-    } else {
-      link.style.display =
-        "";
-    }
+  inactivityLinks.forEach(link => {
+    link.style.display =
+      hasSeniorAccess
+        ? ""
+        : "none";
   });
+
+  // =================================
+  // STAFF DIRECTORY
+  // =================================
+
+  const nav =
+    document.querySelector(
+      ".nav"
+    );
+
+  if (!nav) {
+    return;
+  }
+
+  let staffLink =
+    nav.querySelector(
+      'a[href="/staff.html"]'
+    );
+
+  // If user is allowed and the link
+  // doesn't already exist, create it.
+  if (
+    hasSeniorAccess &&
+    !staffLink
+  ) {
+    staffLink =
+      document.createElement(
+        "a"
+      );
+
+    staffLink.href =
+      "/staff.html";
+
+    staffLink.className =
+      "nav-link";
+
+    staffLink.innerHTML = `
+      <span class="nav-icon">♚</span>
+      Staff Directory
+    `;
+
+    // If we're actually on staff.html,
+    // make the button active.
+    if (
+      window.location.pathname ===
+      "/staff.html"
+    ) {
+      staffLink.classList.add(
+        "active"
+      );
+    }
+
+    nav.appendChild(
+      staffLink
+    );
+  }
+
+  // If user is NOT allowed,
+  // hide any Staff Directory link.
+  if (
+    !hasSeniorAccess &&
+    staffLink
+  ) {
+    staffLink.style.display =
+      "none";
+  }
 }
 
 async function loadChronoverseUser() {
