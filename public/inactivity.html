@@ -2,302 +2,667 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chronoverse • Inactivity</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Marvel Chronoverse • Inactivity
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/chronoverse.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .inactivity-layout {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.3fr)
+        minmax(300px, .7fr);
+      gap: 14px;
+      margin-top: 14px;
     }
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 45px 25px;
-    }
-
-    .back {
-      display: inline-block;
-      margin-bottom: 28px;
-      color: #9292a7;
-      text-decoration: none;
-    }
-
-    .back:hover {
-      color: #ffffff;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: #9292a7;
-      margin-bottom: 28px;
-    }
-
-    .notices {
+    .notice-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 10px;
     }
 
-    .notice {
-      background: #11111b;
-      border: 1px solid #252535;
-      border-radius: 14px;
-      padding: 20px;
+    .notice-card {
+      padding: 17px;
+      border-radius: 8px;
+      border:
+        1px solid rgba(158, 63, 66, .28);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34, 17, 19, .55),
+          rgba(7, 7, 8, .98)
+        );
     }
 
     .notice-top {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 15px;
-      margin-bottom: 12px;
     }
 
-    .username {
-      font-weight: 700;
-    }
-
-    .status {
-      color: #9292a7;
+    .notice-user {
+      font-family:
+        Cinzel,
+        Georgia,
+        serif;
       font-size: 12px;
-      text-transform: uppercase;
     }
 
-    .reason {
-      color: #9292a7;
-      line-height: 1.5;
-      margin-bottom: 16px;
+    .notice-date {
+      color: var(--muted);
+      font-size: 8px;
+      text-align: right;
     }
 
-    .date {
-      color: #77778b;
-      font-size: 13px;
-      margin-bottom: 16px;
+    .notice-reason {
+      margin-top: 10px;
+      color: #b5a8a1;
+      font-size: 10px;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
-    .buttons {
+    .notice-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
+      margin-top: 13px;
     }
 
-    button {
-      border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: 700;
+    .notice-actions .btn {
+      flex: 1;
     }
 
-    .approve {
-      background: #ffffff;
-      color: #11111b;
+    .submit-panel {
+      position: sticky;
+      top: 14px;
     }
 
-    .deny {
-      background: #252535;
-      color: #ffffff;
-    }
-
-    .loading,
-    .empty,
-    .error {
-      padding: 40px;
+    .message {
+      margin-top: 12px;
       text-align: center;
-      color: #9292a7;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .message.success {
+      color: var(--success);
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 900px) {
+      .inactivity-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .submit-panel {
+        position: static;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="page">
+<div class="app">
 
-    <a href="/dashboard.html" class="back">
-      ← Back to Dashboard
-    </a>
+  <aside class="sidebar">
 
-    <h1>Inactivity Notices</h1>
+    <div class="brand">
 
-    <p class="subtitle">
-      Review pending staff inactivity notices.
-    </p>
-
-    <section class="notices" id="notices">
-      <div class="loading">
-        Loading inactivity notices...
+      <div class="brand-marvel">
+        MARVEL
       </div>
+
+      <div class="brand-name">
+        CHRONOVERSE
+      </div>
+
+      <div class="brand-divider"></div>
+
+      <div class="brand-subtitle">
+        MODERATOR PANEL
+      </div>
+
+    </div>
+
+    <nav class="nav">
+
+      <a class="nav-link" href="/dashboard.html">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a class="nav-link" href="/log-action.html">
+        <span class="nav-icon">⚖</span>
+        Log Action
+      </a>
+
+      <a class="nav-link" href="/my-actions.html">
+        <span class="nav-icon">▤</span>
+        My Actions
+      </a>
+
+      <a class="nav-link" href="/leaderboard.html">
+        <span class="nav-icon">♛</span>
+        Leaderboard
+      </a>
+
+      <a class="nav-link" href="/announcements.html">
+        <span class="nav-icon">◢</span>
+        Announcements
+      </a>
+
+      <a class="nav-link" href="/schedule.html">
+        <span class="nav-icon">▦</span>
+        Schedule
+      </a>
+
+      <a
+        class="nav-link active"
+        href="/inactivity.html"
+      >
+        <span class="nav-icon">◷</span>
+        Inactivity
+      </a>
+
+      <a class="nav-link" href="/requests.html">
+        <span class="nav-icon">♙</span>
+        Requests
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      ─ ✦ ─
+      <br>
+      ERS TEMPORA
+      <br>
+      VINCIT OMNIA
+    </div>
+
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div class="page-heading">
+
+        <h1>
+          Inactivity Notices
+        </h1>
+
+        <p>
+          Submit and review staff inactivity requests.
+        </p>
+
+      </div>
+
+      <div class="user-box">
+
+        <img
+          id="user-avatar"
+          class="user-avatar"
+          alt="Discord Avatar"
+        >
+
+        <div>
+
+          <div
+            id="user-name"
+            class="user-name"
+          >
+            Loading...
+          </div>
+
+          <div class="user-role">
+            CHRONOVERSE STAFF
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="hero">
+
+      <img
+        class="hero-background"
+        src="/chronoverse-hero.png"
+        alt=""
+      >
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+
+        <div>
+
+          <div class="hero-title">
+            Step Away,
+            <span class="red-text">
+              Stay Connected
+            </span>
+          </div>
+
+          <div class="hero-subtitle">
+            STAFF AVAILABILITY
+          </div>
+
+          <div class="hero-quote">
+            “Even heroes need time away from the timeline.”
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="inactivity-layout">
+
+      <article class="panel">
+
+        <div class="panel-title">
+          Pending Notices
+        </div>
+
+        <div class="panel-description">
+          Review submitted staff inactivity notices.
+        </div>
+
+        <div
+          id="notice-list"
+          class="notice-list mt"
+        >
+
+          <div class="empty">
+            Loading inactivity notices...
+          </div>
+
+        </div>
+
+      </article>
+
+      <aside class="panel submit-panel">
+
+        <div class="panel-title">
+          Submit Inactivity
+        </div>
+
+        <div class="panel-description">
+          Let senior staff know when you will be unavailable.
+        </div>
+
+        <form
+          id="inactivity-form"
+          class="mt"
+        >
+
+          <div class="field">
+
+            <label for="reason">
+              Reason
+            </label>
+
+            <textarea
+              id="reason"
+              required
+              maxlength="2000"
+              placeholder="Explain why you will be inactive..."
+            ></textarea>
+
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-gold"
+            style="width:100%;"
+          >
+            Submit Notice
+          </button>
+
+          <div
+            id="message"
+            class="message"
+          ></div>
+
+        </form>
+
+      </aside>
+
     </section>
 
   </main>
 
-  <script>
-    const reviewerId =
-      localStorage.getItem("discord_user_id");
+</div>
 
-    async function loadNotices() {
-      const container =
-        document.getElementById("notices");
+<script>
+  const list =
+    document.getElementById(
+      "notice-list"
+    );
 
-      try {
-        const response =
-          await fetch("/api/inactivity/list");
+  const form =
+    document.getElementById(
+      "inactivity-form"
+    );
 
-        if (!response.ok) {
-          throw new Error(
-            "Failed to load inactivity notices"
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+  async function getJson(
+    url,
+    options
+  ) {
+    const response =
+      await fetch(
+        url,
+        options
+      );
+
+    if (
+      response.status === 401
+    ) {
+      window.location.replace("/");
+      throw new Error(
+        "Not authenticated"
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Request failed"
+      );
+    }
+
+    return data;
+  }
+
+  async function start() {
+    try {
+
+      const me =
+        await getJson(
+          "/api/auth/me"
+        );
+
+      updateUser(
+        me.user
+      );
+
+      await loadNotices();
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadNotices() {
+    try {
+
+      const data =
+        await getJson(
+          "/api/inactivity/list"
+        );
+
+      const notices =
+        (data.notices || [])
+          .filter(
+            notice =>
+              notice.status ===
+              "pending"
           );
-        }
 
-        const data = await response.json();
+      if (!notices.length) {
+        list.innerHTML = `
+          <div class="empty">
+            No pending inactivity notices.
+          </div>
+        `;
 
-        const notices =
-          (data.notices || []).filter(
-            notice => notice.status === "pending"
-          );
+        return;
+      }
 
-        if (!notices.length) {
-          container.innerHTML = `
-            <div class="empty">
-              No pending inactivity notices.
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML =
-          notices.map(notice => `
-            <article class="notice">
+      list.innerHTML =
+        notices
+          .map(notice => `
+            <article class="notice-card">
 
               <div class="notice-top">
-                <span class="username">
-                  ${escapeHtml(notice.username)}
-                </span>
 
-                <span class="status">
-                  ${escapeHtml(notice.status)}
-                </span>
+                <div class="notice-user">
+                  ${escapeHtml(
+                    notice.username
+                  )}
+                </div>
+
+                <div class="notice-date">
+                  ${formatDate(
+                    notice.created_at
+                  )}
+                </div>
+
               </div>
 
-              <div class="reason">
-                ${escapeHtml(notice.reason)}
+              <div class="notice-reason">
+                ${escapeHtml(
+                  notice.reason
+                )}
               </div>
 
-              <div class="date">
-                Submitted:
-                ${formatDate(notice.created_at)}
-              </div>
-
-              <div class="buttons">
+              <div class="notice-actions">
 
                 <button
-                  class="approve"
+                  class="btn"
+                  type="button"
                   onclick="reviewNotice(
-                    ${notice.id},
-                    'approved'
-                  )"
-                >
-                  Approve
-                </button>
-
-                <button
-                  class="deny"
-                  onclick="reviewNotice(
-                    ${notice.id},
+                    ${Number(notice.id)},
                     'denied'
                   )"
                 >
                   Deny
                 </button>
 
+                <button
+                  class="btn btn-gold"
+                  type="button"
+                  onclick="reviewNotice(
+                    ${Number(notice.id)},
+                    'approved'
+                  )"
+                >
+                  Approve
+                </button>
+
               </div>
 
             </article>
-          `).join("");
+          `)
+          .join("");
 
-      } catch (error) {
-        console.error(error);
+    } catch (error) {
 
-        container.innerHTML = `
-          <div class="error">
-            Unable to load inactivity notices.
-          </div>
-        `;
-      }
+      console.error(error);
+
+      list.innerHTML = `
+        <div class="empty">
+          Unable to load inactivity notices.
+        </div>
+      `;
     }
+  }
 
-    async function reviewNotice(
-      noticeId,
-      status
-    ) {
-      if (!reviewerId) {
-        alert("You must be logged in.");
-        return;
-      }
+  form.addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+
+      message.textContent =
+        "Submitting notice...";
+
+      message.className =
+        "message";
 
       try {
-        const response =
-          await fetch("/api/inactivity/review", {
+
+        await getJson(
+          "/api/inactivity/create",
+          {
             method: "POST",
+
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             },
+
             body: JSON.stringify({
-              notice_id: noticeId,
-              status,
-              reviewed_by: reviewerId
+              reason:
+                document
+                  .getElementById(
+                    "reason"
+                  )
+                  .value
+                  .trim()
             })
-          });
+          }
+        );
 
-        const data = await response.json();
+        form.reset();
 
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Unable to review inactivity notice"
-          );
-        }
+        message.textContent =
+          "Inactivity notice submitted.";
+
+        message.className =
+          "message success";
 
         await loadNotices();
 
       } catch (error) {
-        console.error(error);
 
-        alert(
-          "Unable to review inactivity notice."
-        );
+        message.textContent =
+          error.message;
+
+        message.className =
+          "message error";
       }
     }
+  );
 
-    function formatDate(value) {
-      if (!value) return "Unknown date";
+  async function reviewNotice(
+    noticeId,
+    status
+  ) {
+    try {
 
-      return new Date(value).toLocaleString();
+      await getJson(
+        "/api/inactivity/review",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            notice_id:
+              noticeId,
+
+            status
+          })
+        }
+      );
+
+      await loadNotices();
+
+    } catch (error) {
+
+      alert(
+        error.message
+      );
+    }
+  }
+
+  function updateUser(user) {
+
+    document.getElementById(
+      "user-name"
+    ).textContent =
+      user.username;
+
+    const avatar =
+      document.getElementById(
+        "user-avatar"
+      );
+
+    if (user.avatar) {
+
+      avatar.src =
+        user.avatar;
+
+    } else {
+
+      avatar.style.display =
+        "none";
+    }
+  }
+
+  function formatDate(value) {
+
+    if (!value) {
+      return "Unknown";
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    return new Date(
+      value
+    ).toLocaleString(
+      undefined,
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+  }
 
-    loadNotices();
-  </script>
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  start();
+</script>
 
 </body>
 </html>
