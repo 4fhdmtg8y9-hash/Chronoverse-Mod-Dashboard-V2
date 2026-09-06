@@ -1,6 +1,6 @@
-import db from "../../lib/database.js";
+import supabase from "../../lib/database.js";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -21,24 +21,38 @@ export default function handler(req, res) {
     });
   }
 
-  const result = db.prepare(`
-    INSERT INTO requests (
-      type,
-      user_id,
-      username,
-      reason,
-      status
-    )
-    VALUES (?, ?, ?, ?, 'pending')
-  `).run(
-    "inactivity",
-    user_id,
-    username,
-    reason
-  );
+  try {
+    const { data, error } = await supabase
+      .from("inactivity_notices")
+      .insert({
+        user_id,
+        username,
+        reason,
+        status: "pending"
+      })
+      .select("id")
+      .single();
 
-  return res.status(201).json({
-    success: true,
-    request_id: result.lastInsertRowid
-  });
+    if (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        error: "Failed to create inactivity notice"
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      request_id: data.id
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Database error"
+    });
+  }
 }
