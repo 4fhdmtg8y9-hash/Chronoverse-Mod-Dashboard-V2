@@ -1,3 +1,4 @@
+```js
 import {
   getSupabase
 } from "../../_lib/supabase.js";
@@ -101,12 +102,12 @@ export async function onRequestPost(context) {
 
               body: JSON.stringify({
                 content:
-                  "<@&1538505102644740167> <@&1543383003445723159>",
+                  "<@&1542018762285252690> <@&1561102957007601856>",
 
                 allowed_mentions: {
                   roles: [
-                    "1538505102644740167",
-                    "1543383003445723159"
+                    "1542018762285252690",
+                    "1561102957007601856"
                   ]
                 },
 
@@ -116,7 +117,7 @@ export async function onRequestPost(context) {
                       "⏳ Inactivity Notice Request",
 
                     description:
-                      "A Chronoverse staff member has submitted an inactivity notice.",
+                      "A Fairy Academy staff member has submitted an inactivity notice.",
 
                     color:
                       11027200,
@@ -159,7 +160,7 @@ export async function onRequestPost(context) {
 
                     footer: {
                       text:
-                        "Marvel Chronoverse • Inactivity System"
+                        "Fairy Warden • Inactivity System"
                     },
 
                     timestamp:
@@ -258,3 +259,4 @@ export async function onRequestPost(context) {
     );
   }
 }
+```
