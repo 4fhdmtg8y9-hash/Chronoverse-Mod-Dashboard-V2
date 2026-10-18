@@ -1,3 +1,4 @@
+```js
 import {
   getSupabase
 } from "../../_lib/supabase.js";
@@ -8,9 +9,9 @@ import {
 } from "../../_lib/session.js";
 
 const ANNOUNCEMENT_ROLES = [
-  "1538324425546666114",
-  "1538505102644740167",
-  "1543383003445723159"
+  "1542072789958131732", // Owner
+  "1542018762285252690", // Community Manager
+  "1561102957007601856"  // Director
 ];
 
 export async function onRequestPost(context) {
@@ -74,7 +75,7 @@ export async function onRequestPost(context) {
       await memberResponse.json();
 
     const permitted =
-      member.roles.some(role =>
+      (member.roles || []).some(role =>
         ANNOUNCEMENT_ROLES.includes(role)
       );
 
@@ -83,7 +84,7 @@ export async function onRequestPost(context) {
         {
           success: false,
           error:
-            "Only Founder, Chronarch Overseer, and Executive Division can post announcements."
+            "Only the Owner, Community Manager, and Director can post announcements."
         },
         {
           status: 403
@@ -193,3 +194,4 @@ export async function onRequestPost(context) {
     );
   }
 }
+```
