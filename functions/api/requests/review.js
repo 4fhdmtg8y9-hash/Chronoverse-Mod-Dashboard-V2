@@ -1,3 +1,4 @@
+```js
 import {
   getSupabase
 } from "../../_lib/supabase.js";
@@ -8,14 +9,21 @@ import {
 } from "../../_lib/session.js";
 
 const REVIEW_ROLES = [
-  "1538505102644740167",
-  "1543383003445723159"
+  "1542018762285252690", // Community Manager
+  "1561102957007601856"  // Director
 ];
 
 async function canReview(
   session,
   env
 ) {
+  if (
+    !env.DISCORD_GUILD_ID ||
+    !env.DISCORD_BOT_TOKEN
+  ) {
+    return false;
+  }
+
   const response =
     await fetch(
       `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/members/${session.id}`,
@@ -34,7 +42,9 @@ async function canReview(
   const member =
     await response.json();
 
-  return member.roles.some(role =>
+  return (
+    member.roles || []
+  ).some(role =>
     REVIEW_ROLES.includes(role)
   );
 }
@@ -61,7 +71,7 @@ export async function onRequestPost(context) {
       {
         success: false,
         error:
-          "You do not have permission to review requests."
+          "Only the Community Manager or Director can review requests."
       },
       {
         status: 403
@@ -159,3 +169,4 @@ export async function onRequestPost(context) {
     );
   }
 }
+```
