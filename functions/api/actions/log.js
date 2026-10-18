@@ -1,3 +1,4 @@
+```js
 import {
   getSupabase
 } from "../../_lib/supabase.js";
@@ -8,8 +9,8 @@ import {
 } from "../../_lib/session.js";
 
 const REVIEW_ROLE_IDS = [
-  "1538505102644740167",
-  "1543383003445723159"
+  "1542018762285252690", // Community Manager
+  "1561102957007601856"  // Director
 ];
 
 export async function onRequestPost(context) {
@@ -410,3 +411,4 @@ export async function onRequestPost(context) {
     );
   }
 }
+```
