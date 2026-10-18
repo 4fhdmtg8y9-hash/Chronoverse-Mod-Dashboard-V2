@@ -1,43 +1,34 @@
+
 const STAFF_ROLES = [
   {
-    id: "1538324425546666114",
-    name: "FOUNDER",
+    id: "1542072789958131732",
+    name: "OWNER",
     priority: 1
   },
   {
-    id: "1538505102644740167",
-    name: "CHRONARCH OVERSEER",
+    id: "1542018762285252690",
+    name: "COMMUNITY MANAGER",
     priority: 2
   },
   {
-    id: "1543383003445723159",
-    name: "EXECUTIVE DIVISION",
+    id: "1561102957007601856",
+    name: "DIRECTOR",
     priority: 3
   },
   {
-    id: "1538626569831055390",
-    name: "NEXUS DIRECTOR",
+    id: "1561144901373268039",
+    name: "ADMIN",
     priority: 4
   },
   {
-    id: "1538626890649174170",
-    name: "ADMINISTRATOR",
+    id: "1561145345533157426",
+    name: "SENIOR MODERATOR",
     priority: 5
   },
   {
-    id: "1538534696483426365",
-    name: "LEAD MODERATOR",
-    priority: 6
-  },
-  {
-    id: "1538569564340879420",
-    name: "SENIOR MODERATOR",
-    priority: 7
-  },
-  {
-    id: "1538569917471916083",
+    id: "1561145428517593129",
     name: "MODERATOR",
-    priority: 8
+    priority: 6
   }
 ];
 
@@ -150,7 +141,7 @@ async function getStaffRank(
     !DISCORD_BOT_TOKEN ||
     !DISCORD_GUILD_ID
   ) {
-    return "CHRONOVERSE STAFF";
+    return null;
   }
 
   try {
@@ -171,7 +162,7 @@ async function getStaffRank(
         response.status
       );
 
-      return "CHRONOVERSE STAFF";
+      return null;
     }
 
     const member =
@@ -191,7 +182,7 @@ async function getStaffRank(
         );
 
     if (!matches.length) {
-      return "CHRONOVERSE STAFF";
+      return null;
     }
 
     return matches[0].name;
@@ -202,7 +193,7 @@ async function getStaffRank(
       error
     );
 
-    return "CHRONOVERSE STAFF";
+    return null;
   }
 }
 
@@ -299,6 +290,20 @@ export async function onRequestGet(context) {
         user.id,
         context.env
       );
+
+    if (!rank) {
+      return Response.json(
+        {
+          success: false,
+          authenticated: false,
+          error:
+            "You are not authorized to access Fairy Warden."
+        },
+        {
+          status: 403
+        }
+      );
+    }
 
     return Response.json({
       success: true,
