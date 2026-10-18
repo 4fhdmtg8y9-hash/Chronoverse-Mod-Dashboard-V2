@@ -1,3 +1,4 @@
+```js
 import {
   getSupabase
 } from "../../_lib/supabase.js";
@@ -8,9 +9,9 @@ import {
 } from "../../_lib/session.js";
 
 const LOG_ACCESS_ROLES = [
-  "1538324425546666114", // Founder
-  "1538505102644740167", // Chronarch Overseer
-  "1543383003445723159"  // Executive Division
+  "1542072789958131732", // Owner
+  "1542018762285252690", // Community Manager
+  "1561102957007601856"  // Director
 ];
 
 async function canViewLogs(
@@ -86,7 +87,7 @@ export async function onRequestGet(context) {
       {
         success: false,
         error:
-          "You do not have permission to view inactivity logs."
+          "Only the Owner, Community Manager, or Director can view inactivity logs."
       },
       {
         status: 403
@@ -154,3 +155,4 @@ export async function onRequestGet(context) {
     );
   }
 }
+```
