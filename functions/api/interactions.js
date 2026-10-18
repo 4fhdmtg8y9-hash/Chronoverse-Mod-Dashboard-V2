@@ -1,3 +1,4 @@
+
 import nacl from "tweetnacl";
 
 import {
@@ -5,8 +6,8 @@ import {
 } from "../_lib/supabase.js";
 
 const REVIEW_ROLE_IDS = [
-  "1538505102644740167", // Chronarch Overseer
-  "1543383003445723159"  // Executive Division
+  "1542018762285252690", // Community Manager
+  "1561102957007601856"  // Director
 ];
 
 function hexToBytes(hex) {
@@ -471,7 +472,7 @@ async function handleInactivity(
 
           footer: {
             text:
-              "Marvel Chronoverse • Inactivity System"
+              "Fairy Warden • Inactivity System"
           },
 
           timestamp:
@@ -624,7 +625,7 @@ export async function onRequestPost(
 
         data: {
           content:
-            "Only Chronarch Overseer or Executive Division can review this request.",
+            "Only the Community Manager or Director can review this request.",
           flags: 64
         }
       });
