@@ -1,47 +1,38 @@
+
 import {
   getSupabase
 } from "../../_lib/supabase.js";
 
 const STAFF_ROLES = [
   {
-    id: "1538324425546666114",
-    name: "FOUNDER",
+    id: "1542072789958131732",
+    name: "OWNER",
     priority: 1
   },
   {
-    id: "1538505102644740167",
-    name: "CHRONARCH OVERSEER",
+    id: "1542018762285252690",
+    name: "COMMUNITY MANAGER",
     priority: 2
   },
   {
-    id: "1543383003445723159",
-    name: "EXECUTIVE DIVISION",
+    id: "1561102957007601856",
+    name: "DIRECTOR",
     priority: 3
   },
   {
-    id: "1538626569831055390",
-    name: "NEXUS DIRECTOR",
+    id: "1561144901373268039",
+    name: "ADMIN",
     priority: 4
   },
   {
-    id: "1538626890649174170",
-    name: "ADMINISTRATOR",
+    id: "1561145345533157426",
+    name: "SENIOR MODERATOR",
     priority: 5
   },
   {
-    id: "1538534696483426365",
-    name: "LEAD MODERATOR",
-    priority: 6
-  },
-  {
-    id: "1538569564340879420",
-    name: "SENIOR MODERATOR",
-    priority: 7
-  },
-  {
-    id: "1538569917471916083",
+    id: "1561145428517593129",
     name: "MODERATOR",
-    priority: 8
+    priority: 6
   }
 ];
 
@@ -243,7 +234,7 @@ export async function onRequestGet(
       await userResponse.json();
 
     // =====================================
-    // GET SERVER MEMBER + ROLES
+    // GET FAIRY ACADEMY MEMBER + ROLES
     // =====================================
 
     const memberResponse =
@@ -259,7 +250,7 @@ export async function onRequestGet(
 
     if (!memberResponse.ok) {
       return new Response(
-        "You must be a member of the Chronoverse server.",
+        "You must be a member of the Fairy Academy server.",
         {
           status: 403
         }
@@ -282,7 +273,7 @@ export async function onRequestGet(
 
     if (!allowed) {
       return new Response(
-        "You do not have permission to access this dashboard.",
+        "You do not have permission to access Fairy Warden.",
         {
           status: 403
         }
@@ -300,7 +291,7 @@ export async function onRequestGet(
 
     if (!rank) {
       return new Response(
-        "Unable to determine your Chronoverse staff rank.",
+        "Unable to determine your Fairy Warden staff rank.",
         {
           status: 403
         }
@@ -409,7 +400,7 @@ export async function onRequestGet(
       `${payload}.${signature}`;
 
     // =====================================
-    // REDIRECT TO DASHBOARD
+    // REDIRECT TO FAIRY WARDEN
     // =====================================
 
     return new Response(
